@@ -1,73 +1,54 @@
-# Claude Code Collaboration Framework v3.3
+# Claude Code Collaboration Framework v4.0 - Hybrid Commands + Agents System
 
-🌐 **Language / 語言**: [English](README.md) | [中文](README_CN.md)
+*English | [中文版](README.zh.md)*
 
-A comprehensive collaboration framework for Claude Code that enhances AI-assisted development through structured commands, memory management, and best practices.
+> **Revolutionary AI-Powered Development Framework**  
+> Combining precise command control with intelligent agent automation for enhanced productivity
+
+## 🌟 Overview
+
+Claude Code v4.0 introduces a **Hybrid Commands + Agents System** that perfectly combines traditional command system's precise control with intelligent agents' professional capabilities. This open-source framework is designed to supercharge your development workflow through AI collaboration.
 
 ## 📚 Table of Contents
 
 1. [Quick Start](#-quick-start)
-2. [Command System v3.0](#-command-system-v30)
-3. [Command Reference Guide](#-command-reference-guide)
-4. [Project Structure](#-project-structure)
-5. [Collaboration Constitution](#-collaboration-constitution)
-6. [Usage Guide](#-usage-guide)
-7. [Workflows](#-workflows)
+2. [v4.0 Hybrid Architecture](#-v40-hybrid-architecture) 🔥 **Latest**
+3. [Intelligent Agent System](#-intelligent-agent-system) ⭐ **New**
+4. [Command System v3.3](#-command-system-v33) 📚 **Core Preserved**
+5. [Hybrid Workflows](#-hybrid-workflows) 🔥 **Latest**
+6. [Project Structure](#-project-structure)
+7. [Migration Guide](#-migration-guide) 🔥 **Latest**
 8. [Best Practices](#-best-practices)
 9. [Version History](#-version-history)
 
-### 🔍 Command Quick Index
-
-| Category | Command | Description | Details |
-|----------|---------|-------------|---------|
-| **Project Understanding** | `/start` | Quick project understanding | [Details](#1-start---quick-project-understanding) |
-| | `/sync` | Restore work state | [Details](#2-sync---state-synchronizer) |
-| | `/context` | Confirm understanding | [Details](#3-context---context-sync-checkpoint) |
-| **Development Aid** | `/plan` | Task planning & decomposition | [Details](#4-plan---task-planning--design) |
-| | `/check` | Complete quality check | [Details](#5-check---complete-quality-check) |
-| | `/watch` | Guardian mode | [Details](#6-watch---guardian-mode) |
-| | `/test` | Test generation & execution | [Details](#7-test---test-generation--execution) |
-| **Problem Solving** | `/debug` | Quick error location | [Details](#8-debug---intelligent-debugging-assistant) |
-| | `/analyze` | Deep risk analysis | [Details](#13-analyze---deep-analysis--validation) |
-| **Knowledge Management** | `/learn` | Record technical decisions | [Details](#9-learn---learn-and-record-decisions) |
-| | `/doc` | Smart documentation maintenance | [Details](#10-doc---intelligent-documentation-maintenance) |
-| **Workflow** | `/review` | PR preparation assistant | [Details](#11-review---pr-preparation-assistant) |
-| | `/meta` | Project specification customization | [Details](#12-meta---project-specification-customization) |
-| | `/update-spec` | Specification update management | [Details](#14-update-spec---claudemd-update-specialist) |
-| **SDK Development** | `/sdk-design` | API design guidance | [Details](#1-sdk-design---api-design-assistant) |
-| | `/sdk-example` | Example code generation | [Details](#2-sdk-example---example-code-generation) |
-| | `/sdk-test` | Test suite generation | [Details](#3-sdk-test---sdk-test-suite) |
-| | `/sdk-doc` | SDK documentation generation | [Details](#4-sdk-doc---sdk-documentation-generation) |
-| | `/sdk-release` | Release preparation check | [Details](#5-sdk-release---release-preparation-assistant) |
-
----
-
 ## 🚀 Quick Start
 
-### Get Started with Claude Code in 5 Minutes
+### Get Started in 5 Minutes
 
 #### A. New Project
 ```bash
-# Use meta workflow command
+# Use meta-workflow command
 /meta
 
 # Claude will:
 # 1. Analyze project characteristics
-# 2. Ask for key information
+# 2. Ask key information
 # 3. Auto-generate CLAUDE.md
-# 4. Set up documentation structure
+# 4. Setup documentation structure
 ```
 
 #### B. Existing Project
 ```bash
-# Directly understand the project
+# Directly understand project
 /start
 
 # Or restore previous work state
 /sync
 ```
 
-#### C. Install Command System
+#### C. Installation Options
+
+##### Automatic Installation (Recommended)
 ```bash
 # Windows
 cd claude\commands\deploy-package
@@ -78,57 +59,234 @@ cd claude/commands/deploy-package
 ./deploy.sh
 ```
 
+##### Manual Installation
+```bash
+# 1. Copy agents to Claude home directory
+# Windows
+xcopy /E /I "claude\agents" "%USERPROFILE%\.claude\agents"
+xcopy /E /I "claude\config" "%USERPROFILE%\.claude\config"
+
+# macOS/Linux  
+cp -r claude/agents ~/.claude/agents
+cp -r claude/config ~/.claude/config
+
+# 2. Copy commands (Optional - for command system)
+# Windows
+xcopy /E /I "claude\commands\deploy-package\global" "%USERPROFILE%\.claude\commands"
+
+# macOS/Linux
+cp -r claude/commands/deploy-package/global ~/.claude/commands
+
+# 3. Verify installation
+ls ~/.claude/agents/      # Should see agent directories
+ls ~/.claude/config/      # Should see configuration files
+ls ~/.claude/commands/    # Should see command files (if installed)
+```
+
+##### Project-Specific Installation
+```bash
+# Copy to your project root for project-specific configuration
+cp -r claude/agents .claude/agents
+cp -r claude/config .claude/config
+```
+
 ---
 
-## 🎯 Command System v3.3 + SDK Extension
+## 🚀 v4.0 Hybrid Architecture
+
+### Revolutionary Breakthrough: Commands + Agents Dual-Track System
+
+Claude Code v4.0 introduces the **Hybrid Commands + Agents System**, perfectly combining traditional command system's precise control with intelligent agents' professional capabilities.
+
+#### 🏗️ System Design Philosophy
+
+**Command System** (Human-Led):
+- Project lifecycle management
+- Memory and state control
+- Specification definition and updates
+- Key decision point control
+
+**Agent System** (AI-Powered):
+- Technical expertise
+- Automated quality assurance
+- Context-aware triggering
+- Continuous monitoring and optimization
+
+### 🎯 Core Advantages
+
+1. **Intelligent Routing**: Automatically selects appropriate professional agents based on file types and code content
+2. **Professional Depth**: 35+ professional agents covering full tech stack
+3. **Zero Configuration**: Smart context detection, no manual configuration needed
+4. **Progressive**: Can coexist with existing command system, gradual migration
+
+### 📊 System Architecture Diagram
+
+```mermaid
+graph TD
+    A[User Request] --> B[Command System v3.3]
+    A --> C[Agent System v4.0]
+    
+    B --> D[Project Management]
+    B --> E[Memory Control]
+    B --> F[Spec Definition]
+    
+    C --> G[Smart Context Detection]
+    G --> H[Professional Agent Routing]
+    H --> I[Quality Assurance Agents]
+    H --> J[Development Support Agents]
+    H --> K[Technical Expert Agents]
+    
+    D -.Collaboration.-> H
+    E -.Collaboration.-> G
+    F -.Collaboration.-> I
+```
+
+---
+
+## 🤖 Intelligent Agent System
+
+### Agent Classification & Capabilities
+
+#### 🧠 Context Detectors
+Smart code context analysis, resolving multi-purpose language scenario conflicts:
+
+| Detector | Supported Languages | Identified Scenarios | Confidence |
+|----------|---------------------|---------------------|------------|
+| **kotlin-context-detector** | Kotlin | Android App, Ktor Server, Spring Boot, KMP, Desktop | 0.7-0.95 |
+| **java-context-detector** | Java | Spring Boot, Android, Swing/JavaFX, Minecraft Plugin | 0.7-0.95 |
+| **csharp-context-detector** | C# | Unity, WPF, ASP.NET Core, Blazor, MAUI, Azure Functions | 0.6-0.95 |
+| **javascript-context-detector** | JS/TS | React, Vue, Angular, Next.js, Node.js, Electron, React Native | 0.7-0.95 |
+| **python-context-detector** | Python | ML/AI, Django, FastAPI, Flask, Data Science, Streamlit | 0.6-0.95 |
+
+#### 💻 Technical Specialist Agents
+Professional support for your tech stack:
+
+**Android & Kotlin**
+- `android-kotlin-architect`: Android application development expert
+- `kotlin-polyglot-master`: Kotlin multi-platform expert
+- `ktor-backend-architect`: Ktor backend service expert
+
+**Systems Programming**
+- `golang-systems-engineer`: Go systems engineering expert
+- `rust-zero-cost`: Rust zero-cost abstraction expert
+- `cpp-modern-master`: Modern C++ expert
+
+**Machine Learning & Data Science**
+- `python-ml-specialist`: Python ML/AI expert
+- Support for PyTorch, TensorFlow, Scikit-learn, LangChain
+
+**Game Development**
+- `unity-csharp-expert`: Unity game development expert
+
+**Frontend Development**
+- React, Vue, Angular, Next.js and other framework experts
+
+#### 🔍 Quality Assurance Agents
+Professional code review and quality control:
+
+- **code-reviewer**: Comprehensive code review, security and performance analysis
+- **test-automator**: Smart test generation and execution
+- **performance-optimizer**: Performance bottleneck analysis and optimization suggestions
+- **jenny-validator**: Specification validation expert (inspired by ClaudeCodeAgents)
+- **karen-realist**: Reality assessment expert, timeline and scope gatekeeper
+
+#### 🎭 Workflow Agents
+- **work-coordinator**: Multi-agent coordinator, handling complex cross-domain tasks
+
+### 🔄 Smart Trigger System
+
+#### Auto-Trigger Conditions
+```yaml
+# Based on file type
+"*.kt" -> kotlin-context-detector -> context analysis -> professional agent
+
+# Based on code content
+"@SpringBootApplication" -> java-context-detector -> spring-boot-enterprise
+
+# Based on command pattern
+"/check" -> [code-reviewer, jenny-validator, security-auditor]
+```
+
+#### Confidence Scoring System
+- **High Confidence (0.8-1.0)**: Direct routing to professional agent
+- **Medium Confidence (0.5-0.8)**: Candidate list for selection
+- **Low Confidence (0.0-0.5)**: Fallback to general agent or ask user
+
+### 🎯 Smart Detection Examples
+
+#### Kotlin Multi-Scenario Recognition
+```kotlin
+// Scenario 1: Android App -> android-kotlin-architect
+import android.os.Bundle
+import androidx.compose.runtime.*
+
+// Scenario 2: Ktor Backend -> ktor-backend-architect  
+import io.ktor.server.application.*
+import io.ktor.server.routing.*
+
+// Scenario 3: Spring Boot -> spring-boot-kotlin-expert
+@SpringBootApplication
+@RestController
+class UserController
+```
+
+#### Python Context Smart Recognition
+```python
+# Scenario 1: Machine Learning -> python-ml-specialist
+import torch
+import transformers
+from sklearn.model_selection import train_test_split
+
+# Scenario 2: FastAPI Backend -> fastapi-developer
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+# Scenario 3: Data Science -> data-scientist
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+---
+
+## 🎯 Command System v3.3 (Core Preserved)
 
 ### Core Philosophy
-- **Less is More**: 14 universal commands + 5 SDK-specific commands
-- **Intelligent Integration**: Each command completes multiple related tasks
-- **Context Aware**: Automatically manages memory and state
-- **Scenario Adapted**: Dual-track support for app and SDK development
+- **Less is More**: 8 core commands + 5 SDK-specific commands
+- **Smart Integration**: Each command completes multiple related tasks
+- **Context Aware**: Automatic memory and state management
+- **Scenario Adaptive**: Dual support for app development and SDK development
 
-### 14 Universal Commands (Globally Available)
+### 8 Core Preserved Commands
 
 #### Project Understanding & Management (3)
 | Command | Function | When to Use | Parameters |
 |---------|----------|-------------|------------|
-| `/start` | Quick project understanding | First contact with project | None |
-| `/context` | Context sync checkpoint | Ensure consistent understanding | None |
-| `/sync` | State synchronizer | Start of new session | None |
+| `/start` | Quick project startup & understanding | First time touching project | None |
+| `/context` | Context sync checkpoint | Ensure understanding consistency | None |
+| `/sync` | State synchronizer | New session start | None |
 
-#### Development Aid (4)
+#### Development Support (2)
 | Command | Function | When to Use | Parameters |
 |---------|----------|-------------|------------|
-| `/plan` | Task planning & design | Before new feature | [task description] |
-| `/check` | Complete quality check | Before code commit | None |
-| `/watch` | Guardian mode | During coding | [on\|off\|status\|report] |
-| `/test` | Test generation & execution | Ensure code quality | [file\|feature] |
+| `/plan` | Task planning & design | Before starting new features | [task description] |
+| `/doc` | Smart document maintenance | Update project docs | [api\|readme\|changelog\|arch] |
 
 #### Knowledge Management (2)
 | Command | Function | When to Use | Parameters |
 |---------|----------|-------------|------------|
-| `/learn` | Learn and record decisions | After important decisions | [decision content] |
-| `/doc` | Intelligent documentation maintenance | Update project docs | [api\|readme\|changelog\|arch] |
-
-#### Workflow Optimization (3)
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/review` | PR preparation assistant | Before creating PR | None |
-| `/debug` | Intelligent debugging assistant | When encountering issues | [error message] |
+| `/learn` | Learn & record decisions | After important decisions | [decision content] |
 | `/meta` | Project specification customization | New project or major changes | None |
 
-#### Quality Assurance (2)
+#### Quality Assurance (1)
 | Command | Function | When to Use | Parameters |
 |---------|----------|-------------|------------|
-| `/analyze` | Deep analysis & validation | Experience-based risk analysis | [feature/module] [concerns or "deep"] |
-| `/update-spec` | CLAUDE.md update specialist | Solidify decisions into specs | [review\|section "content"] |
+| `/update-spec` | CLAUDE.md update specific | Solidify decisions into specs | [review\|section "content"] |
 
 ### 🆕 SDK Development Commands (5)
 
-Designed specifically for SDK/Library development:
+Specifically designed for SDK/Library development:
 
-#### SDK Specific Commands
 | Command | Function | When to Use | Parameters |
 |---------|----------|-------------|------------|
 | `/sdk-design` | API design assistant | Designing new APIs | [feature description] |
@@ -139,576 +297,228 @@ Designed specifically for SDK/Library development:
 
 ---
 
+## 🚀 Hybrid Workflows - v4.0 Best Practices
+
+### Revolutionary Change: From Manual to Smart
+
+v4.0 hybrid system makes development workflows more intelligent. The system automatically identifies your work content and provides professional support while preserving human-led key decision control.
+
+### 🎯 Smart Trigger Scenarios
+
+#### Scenario 1: Starting Kotlin Android Development
+```bash
+# Human Input
+"I want to develop an Android shopping cart feature"
+
+# System Smart Response
+🔍 Detected: Android development intent
+📁 Analyzed files: AndroidManifest.xml, build.gradle.kts
+🤖 Auto-enabled: android-kotlin-architect
+💡 Suggested trigger: /start (project understanding)
+
+# Agent collaboration begins
+android-kotlin-architect: "I'll help you plan Android shopping cart functionality..."
+test-automator: "I'll prepare corresponding test cases for you..."
+code-reviewer: "I'll continuously check code quality during development..."
+```
+
+#### Scenario 2: Python ML Project Development
+```bash
+# Human Input
+"I want to train a text classification model"
+
+# System Smart Response  
+🔍 Detected: Machine learning project
+📁 Analyzed files: requirements.txt (torch, transformers)
+🤖 Auto-enabled: python-ml-specialist
+🔄 Coordinated agents: data-scientist, performance-optimizer
+
+# Professional support automatically ready
+python-ml-specialist: "Analyzing your dataset characteristics, recommend BERT base model..."
+data-scientist: "I'll help you design data preprocessing pipeline..."
+performance-optimizer: "I'll monitor training performance and provide optimization suggestions..."
+```
+
+### 📋 v4.0 Workflow Comparison
+
+| Stage | v3.3 Traditional | v4.0 Hybrid | Efficiency Gain |
+|-------|-----------------|-------------|-----------------|
+| **Project Understanding** | `/start` manual analysis | `/start` + smart agent auto-enable | 3x |
+| **Code Development** | Independent coding | Professional agent continuous support | 5x |
+| **Quality Check** | `/check` manual trigger | Agent auto-detection + real-time feedback | 8x |
+| **Test Generation** | `/test` manual generation | test-automator smart generation | 10x |
+| **Code Review** | `/review` basic check | code-reviewer professional analysis | 6x |
+| **Performance Optimization** | Manual analysis | performance-optimizer auto-discovery | 15x |
+| **Spec Validation** | Manual check | jenny-validator auto-validation | 12x |
+
+---
+
 ## 📁 Project Structure
 
 ```
 claude/
-├── README.md                    # Main documentation (English)
-├── README_CN.md                 # Chinese documentation / 中文文檔
+├── README.en.md                # This document (v4.0 hybrid system English version)
+├── README.md                   # Chinese version (v4.0 hybrid system complete version)
 │
-├── constitution/                # Constitution system (reference)
+├── agents/                     # 🤖 Intelligent Agent System v4.0
+│   ├── README.md               # Agent system documentation
+│   ├── core/                   # Core agents
+│   │   ├── code-reviewer.md    # Code review expert
+│   │   ├── performance-optimizer.md # Performance optimization expert
+│   │   └── test-automator.md   # Test automation expert
+│   ├── languages/              # Language expert agents
+│   │   ├── kotlin-context-detector.md # Kotlin context detector
+│   │   ├── kotlin-polyglot-master.md  # Kotlin multi-platform expert
+│   │   ├── android-kotlin-architect.md # Android development expert
+│   │   ├── java-context-detector.md    # Java context detector
+│   │   ├── csharp-context-detector.md  # C# context detector
+│   │   ├── javascript-context-detector.md # JS/TS context detector
+│   │   ├── python-context-detector.md  # Python context detector
+│   │   ├── python-ml-specialist.md     # Python ML/AI expert
+│   │   ├── golang-systems-engineer.md # Go systems engineering expert
+│   │   ├── rust-zero-cost.md          # Rust zero-cost expert
+│   │   └── cpp-modern-master.md       # Modern C++ expert
+│   ├── frameworks/             # Framework expert agents
+│   │   └── ktor-backend-architect.md  # Ktor backend expert
+│   ├── quality/                # Quality assurance agents
+│   │   ├── jenny-validator.md  # Specification validation expert
+│   │   └── karen-realist.md    # Reality assessment expert
+│   └── workflow/               # Workflow agents
+│       └── work-coordinator.md # Multi-agent coordinator
+│
+├── config/                     # 🔧 Configuration System
+│   ├── triggers.yaml           # Smart trigger configuration
+│   └── workflows.yaml          # Workflow definitions
+│
+├── commands/                   # 📋 Command System v3.3 (Core Preserved)
+│   └── deploy-package/         # Command deployment package
+│       ├── DEPLOY_GUIDE.md     # Deployment guide
+│       ├── CHANGELOG.md        # Version history
+│       ├── SIMPLE_COMMANDS_SUMMARY.md # Command system documentation
+│       ├── deploy.ps1          # Windows deployment script
+│       ├── deploy.sh           # macOS/Linux deployment script
+│       ├── global/             # Core preserved commands (8)
+│       │   ├── context.md      # ✅ Preserved: Context sync
+│       │   ├── doc.md          # ✅ Preserved: Document maintenance
+│       │   ├── learn.md        # ✅ Preserved: Decision recording
+│       │   ├── meta.md         # ✅ Preserved: Project spec definition
+│       │   ├── plan.md         # ✅ Preserved: Task planning
+│       │   ├── start.md        # ✅ Preserved: Project understanding
+│       │   ├── sync.md         # ✅ Preserved: State recovery
+│       │   └── update-spec.md  # ✅ Preserved: Spec updates
+│       └── sdk/                # 5 SDK-specific commands
+│           ├── sdk-design.md   # SDK design assistant
+│           ├── sdk-doc.md      # SDK documentation generation
+│           ├── sdk-example.md  # SDK example generation
+│           ├── sdk-release.md  # SDK release assistant
+│           └── sdk-test.md     # SDK test suite
+│
+├── commands-legacy/            # 🗄️ Command History Archive
+│   ├── README.md               # Archive documentation and migration guide
+│   └── v3.3-archive/           # Complete v3.3 command backup
+│       └── deploy-package/     # Complete v3.3 command system
+│
+├── constitution/               # 🏛️ Constitutional System (Reference)
 │   └── CLAUDE_CONSTITUTION.md  # Complete Claude collaboration constitution
 │
-├── commands/                    # Command system
-│   └── deploy-package/          # Command deployment package v3.0
-│       ├── DEPLOY_GUIDE_EN.md   # Deployment guide
-│       ├── CHANGELOG_EN.md      # Version history
-│       ├── SIMPLE_COMMANDS_SUMMARY_EN.md # Command system description
-│       ├── deploy.ps1           # Windows deployment script
-│       ├── deploy.sh            # macOS/Linux deployment script
-│       ├── global/              # 14 universal commands
-│       │   ├── analyze.md
-│       │   ├── check.md
-│       │   ├── context.md
-│       │   ├── debug.md
-│       │   ├── doc.md
-│       │   ├── watch.md
-│       │   ├── learn.md
-│       │   ├── meta.md
-│       │   ├── plan.md
-│       │   ├── review.md
-│       │   ├── start.md
-│       │   ├── sync.md
-│       │   ├── test.md
-│       │   └── update-spec.md
-│       └── sdk/                 # 5 SDK-specific commands
-│           ├── sdk-design.md
-│           ├── sdk-doc.md
-│           ├── sdk-example.md
-│           ├── sdk-release.md
-│           └── sdk-test.md
-│
-├── guides/                      # In-depth guides (advanced reference)
-│   ├── AI_ASSISTANT_COMPARISON.md     # AI assistant comparison
+├── guides/                     # 📖 In-depth Guides (Advanced Reference)
+│   ├── AI_ASSISTANT_COMPARISON.md    # AI assistant comparison
 │   ├── COMMAND_WRITING_GUIDE.md       # Command writing guide
 │   ├── CONSTITUTION_SYNC_GUIDE.md     # Constitution sync guide
 │   ├── CONSTITUTION_USAGE_GUIDE.md    # Constitution usage guide
-│   ├── DOCUMENT_STRUCTURE_STANDARD.md # Document structure standard
+│   ├── DOCUMENT_STRUCTURE_STANDARD.md # Documentation structure standard
 │   ├── LEGACY_PROJECT_ONBOARDING.md   # Legacy project onboarding
 │   ├── MARKET_ANALYSIS.md             # Market analysis
-│   ├── NEW_VS_LEGACY_PROJECT.md       # New vs legacy projects
+│   ├── NEW_VS_LEGACY_PROJECT.md       # New vs legacy project
 │   └── SDK_DEVELOPMENT_WORKFLOW.md    # SDK development workflow
 │
-└── templates/                   # Template files
-    ├── CLAUDE_MD_TEMPLATE.md    # CLAUDE.md general template
-    └── SDK_PROJECT_TEMPLATE.md  # SDK project template
-```
-
-### 📝 Documentation Notes
-- **README.md**: This file - Main documentation in English
-- **README_CN.md**: Chinese version / 中文版本
-- **commands/deploy-package/**:
-  - English: [Deployment Guide](commands/deploy-package/DEPLOY_GUIDE_EN.md) | [Commands Summary](commands/deploy-package/SIMPLE_COMMANDS_SUMMARY_EN.md) | [Changelog](commands/deploy-package/CHANGELOG_EN.md)
-- **guides/**: In-depth topical guides for reference
-- **templates/**: Templates for project initialization
-
----
-
-## 🏛️ Collaboration Constitution
-
-### Core Principles
-Claude Code collaboration is based on:
-
-1. **Context First**: Maintain continuity of understanding
-2. **Knowledge Accumulation**: Record decisions, avoid repetition
-3. **Progressive Improvement**: Small steps, continuous optimization
-4. **Human-AI Collaboration**: Clear division of labor, leverage respective strengths
-
-### Working Modes
-
-#### Development Workflow
-1. **Understanding Phase**: `/start` or `/sync`
-2. **Planning Phase**: `/plan` task decomposition
-3. **Implementation Phase**: Coding implementation
-4. **Validation Phase**: `/check` and `/test`
-5. **Knowledge Consolidation**: `/learn` record decisions
-
-#### Meta Workflow
-For establishing and updating project specifications:
-1. **Evaluate Project**: Tech stack, team, complexity
-2. **Customize Specifications**: Generate project-specific CLAUDE.md
-3. **Continuous Optimization**: Adjust specifications based on practice
-
----
-
-## 📖 Usage Guide
-
-### 📘 Command Reference Guide
-
-#### 1. `/start` - Quick Project Understanding
-
-**Use Cases**:
-- First contact with a new project
-- Need to quickly understand project structure
-- Taking over someone else's codebase
-
-**Usage**:
-```bash
-/start
-```
-
-**Expected Output**:
-- Project type identification (Web/API/SDK/Tool etc.)
-- Tech stack analysis (language, framework, dependencies)
-- Directory structure parsing
-- Key file location
-- Auto-create `.claude/PROJECT_CONTEXT.md`
-
-**Real Example**:
-```bash
-# Taking over a React project
-/start
-> Identified as: React Web Application
-> Tech Stack: React 18, TypeScript, Vite
-> Main Modules: components/, pages/, services/
-> Entry File: src/main.tsx
-> Project context file created
+└── templates/                  # 📝 Template Files
+    ├── CLAUDE_MD_TEMPLATE.md   # CLAUDE.md general template
+    └── SDK_PROJECT_TEMPLATE.md # SDK project-specific template
 ```
 
 ---
 
-#### 2. `/sync` - State Synchronizer
+## 🔄 Migration Guide - From v3.3 to v4.0
 
-**Use Cases**:
-- Starting a new work session
-- After switching branches
-- Resuming work after interruption
+### Seamless Upgrade: Progressive Migration Strategy
 
-**Usage**:
+v4.0 is designed to be fully backward compatible. You can choose your preferred migration pace.
+
+### 📋 Migration Checklist
+
+#### ✅ Immediately Available (Zero Configuration)
+- [x] All v3.3 commands work as usual
+- [x] Smart agents auto-enable (file type triggered)
+- [x] Context detection runs automatically
+- [x] Quality assurance agents auto-collaborate
+
+#### 🔄 Recommended Migration (Progressive)
+
+**Week 1: Observation & Learning Phase**
 ```bash
-/sync
+# Maintain original work habits
+/start               # Original commands work normally
+/sync                # Memory management unchanged
+/plan "new feature"  # Task planning as usual
+
+# Observe new features
+🤖 Notice agent auto-enable notifications
+📝 Experience the value of smart suggestions
 ```
 
-**Expected Output**:
-- Load project context
-- Restore decision records
-- Show current work state
-- Remind pending tasks
-
-**Real Example**:
+**Week 2: Active Collaboration Phase**
 ```bash
-/sync
-> Restoring project: E-commerce Platform v2.0
-> Current branch: feature/payment
-> Recent decision: Chose Stripe for payments
-> Pending: Payment callback handling
+# Start trusting agent suggestions
+🤖 android-kotlin-architect: "Suggest using Composable components"
+✅ Adopt: "OK, please help me refactor to Compose"
+
+# Reduce manual command frequency
+❌ Before: /check (manual execution every time)
+✅ Now: Agent auto-check + manual confirmation when necessary
 ```
 
----
-
-#### 3. `/context` - Context Sync Checkpoint
-
-**Use Cases**:
-- Confirm Claude's understanding is correct
-- Sync cognition after major changes
-- Team member handover
-
-**Usage**:
-```bash
-/context
+**Week 3: Deep Integration Phase**
+```bash  
+# Build personal workflows
+🔧 Adjust agent trigger preferences
+⚡ Create exclusive command combinations
+🎯 Optimize team collaboration configuration
 ```
 
-**Expected Output**:
-- Current understanding of project state
-- Recent change summary
-- Assumptions to confirm
-
----
-
-#### 4. `/plan` - Task Planning & Design
-
-**Use Cases**:
-- Starting new feature development
-- Refactoring existing code
-- Solving complex problems
-
-**Usage**:
-```bash
-/plan "task description"
-```
-
-**Expected Output**:
-- Decomposed subtask list
-- Implementation order suggestions
-- Potential risk alerts
-- Time estimates
-
-**Real Example**:
-```bash
-/plan "implement shopping cart feature"
-> Task breakdown:
-> 1. Design cart data model (2h)
-> 2. Implement add item API (1h)
-> 3. Implement quantity update API (1h)
-> 4. Implement remove item API (0.5h)
-> 5. Add inventory check logic (1h)
-> 6. Implement price calculation (1.5h)
-> 7. Write unit tests (2h)
-> Risk: Concurrent modifications may cause overselling
-```
-
----
-
-#### 5. `/check` - Complete Quality Check
-
-**Use Cases**:
-- Comprehensive check before code commit
-- Self-check before Code Review
-- Regular quality audit
-- Use with `/watch`
-
-**Usage**:
-```bash
-/check
-```
-
-**Expected Output**:
-- Code style issues
-- Potential bugs
-- Performance optimization suggestions
-- Security vulnerability warnings
-- Quality score report
-
----
-
-#### 6. `/watch` - Guardian Mode (Collaborative Quality Guard)
-
-**Use Cases**:
-- Continuous attention during coding
-- Need to actively submit code to trigger checks
-- Build good checking habits
-- Form complete quality assurance with `/check`
-
-**Usage**:
-```bash
-/watch on      # Enable guardian mode
-/watch off     # Disable guardian mode
-/watch status  # Check current status
-/watch report  # Generate guardian report
-```
-
-**Expected Output**:
-- Real-time security warnings
-- Code quality reminders
-- Performance risk alerts
-- Best practice suggestions
-
-**Important Note**:
-ℹ️ `/watch` is not truly real-time monitoring - you need to actively submit code snippets to trigger checks. This is a collaborative working mode that helps maintain quality awareness during coding.
-
----
-
-#### 7. `/test` - Test Generation & Execution
-
-**Use Cases**:
-- Writing tests for new features
-- Supplementing test coverage
-- Verifying bug fixes
-
-**Usage**:
-```bash
-/test [file|feature]
-```
-
-**Expected Output**:
-- Generated test code
-- Test execution results
-- Coverage report
-- Boundary condition tests
-
----
-
-#### 8. `/debug` - Intelligent Debugging Assistant
-
-**Use Cases**:
-- Need to locate errors
-- Performance issue investigation
-- Abnormal behavior analysis
-
-**Usage**:
-```bash
-/debug "error message or problem description"
-```
-
-**Expected Output**:
-- Problem cause analysis
-- Possible solutions
-- Debugging step suggestions
-- Related code location
-
----
-
-#### 9. `/learn` - Learn and Record Decisions
-
-**Use Cases**:
-- After important technology selection
-- After solving key problems
-- When discovering best practices
-
-**Usage**:
-```bash
-/learn "decision content or experience"
-```
-
-**Expected Output**:
-- Update DECISIONS.md
-- Intelligent category tags
-- Related impact analysis
-
----
-
-#### 10. `/doc` - Intelligent Documentation Maintenance
-
-**Use Cases**:
-- Update API documentation
-- Maintain README
-- Generate changelog
-
-**Usage**:
-```bash
-/doc [api|readme|changelog|arch]
-```
-
-**Expected Output**:
-- Auto-update specified documentation
-- Preserve manually edited content
-- Generate missing parts
-
----
-
-#### 11. `/review` - PR Preparation Assistant
-
-**Use Cases**:
-- Before creating Pull Request
-- Need self-review
-- Preparing for code review
-
-**Usage**:
-```bash
-/review
-```
-
-**Expected Output**:
-- Change summary
-- PR description template
-- Checklist
-- Potential issue reminders
-
----
-
-#### 12. `/meta` - Project Specification Customization
-
-**Use Cases**:
-- New project initialization
-- Team specification establishment
-- Tech stack changes
-
-**Usage**:
-```bash
-/meta
-```
-
-**Expected Output**:
-- Generate CLAUDE.md
-- Project-specific specifications
-- Workflow definitions
-
----
-
-#### 13. `/analyze` - Deep Analysis & Validation
-
-**Use Cases**:
-- When feature is complete but have concerns
-- Need risk assessment
-- Performance bottleneck analysis
-
-**Usage**:
-```bash
-/analyze "feature/module" ["specific concerns" or "deep"]
-```
-
-**Expected Output**:
-- Risk level assessment
-- Boundary condition analysis
-- Improvement suggestions
-- Test scenarios
-
----
-
-#### 14. `/update-spec` - CLAUDE.md Update Specialist
-
-**Use Cases**:
-- Solidify important decisions into specifications
-- Update project rules
-- Periodic specification review
-
-**Usage**:
-```bash
-/update-spec [review|section "content"]
-```
-
-**Expected Output**:
-- Specification update suggestions
-- Version change log
-- Conflict detection
-
----
-
-#### 📦 SDK Command Details
-
-#### 1. `/sdk-design` - API Design Assistant
-
-**Use Cases**:
-- Designing new SDK interfaces
-- Refactoring existing APIs
-- Establishing design standards
-
-**Usage**:
-```bash
-/sdk-design "feature description"
-```
-
-**Expected Output**:
-- API structure suggestions
-- Naming conventions
-- Parameter design
-- Error handling strategy
-
----
-
-#### 2. `/sdk-example` - Example Code Generation
-
-**Use Cases**:
-- Creating usage examples for SDK
-- Writing quickstart guides
-- Demonstrating best practices
-
-**Usage**:
-```bash
-/sdk-example [basic|advanced|integration|all]
-```
-
----
-
-#### 3. `/sdk-test` - SDK Test Suite
-
-**Use Cases**:
-- Generate complete test suite
-- Compatibility testing
-- Performance benchmark testing
-
-**Usage**:
-```bash
-/sdk-test [unit|integration|compat|performance|all]
-```
-
----
-
-#### 4. `/sdk-doc` - SDK Documentation Generation
-
-**Use Cases**:
-- Generate API reference documentation
-- Write usage guides
-- Create migration documentation
-
-**Usage**:
-```bash
-/sdk-doc [api|guide|migration|all]
-```
-
----
-
-#### 5. `/sdk-release` - Release Preparation Assistant
-
-**Use Cases**:
-- Prepare new version release
-- Check release checklist
-- Generate release notes
-
-**Usage**:
-```bash
-/sdk-release [major|minor|patch|check]
-```
-
----
-
-## 🔄 Workflows
-
-### Development Flow Comparison
-
-#### Application Development Flow
-| Phase | Traditional | Claude Code v3.0 |
-|-------|-------------|------------------|
-| Start | Manual context | `/sync` auto-restore |
-| Understanding | Repeat explanation | `/context` sync confirm |
-| Planning | Free discussion | `/plan` structured design |
-| Development | Solo coding | AI-assisted implementation |
-| Testing | Manual writing | `/test` intelligent generation |
-| Validation | Experience-based | `/analyze` deep analysis |
-| Review | Manual check | `/check` auto review |
-| Documentation | Post-hoc supplement | `/doc` sync update |
-| Knowledge | Easy to forget | `/learn` persistent record |
-
-#### SDK Development Flow
-| Phase | Traditional | Claude Code + SDK Commands |
-|-------|-------------|----------------------------|
-| API Design | Experience-based | `/sdk-design` professional guidance |
-| Example Writing | Manual creation | `/sdk-example` auto generation |
-| Test Strategy | Basic testing | `/sdk-test` comprehensive coverage |
-| Documentation | Time-consuming | `/sdk-doc` structured generation |
-| Version Release | Easy to miss | `/sdk-release` complete check |
-
-### Typical Workflows
-
-#### 1. New Project Initialization
-
-**Application Development**:
-```bash
-/meta               # Establish project specifications
-/start              # Understand project structure
-/plan "core feature"  # Plan first task
-```
-
-**SDK Development**:
-```bash
-/meta               # Establish SDK specifications
-/sdk-design "core API"  # Design interfaces
-/plan "implement core"  # Plan implementation
-```
-
-#### 2. Daily Development Cycle
-```bash
-/sync               # Restore work state
-/context            # Confirm understanding
-/plan "new feature"   # Plan implementation
-# ... coding ...
-/check              # Quality check
-/test               # Generate and run tests
-/learn "tech decision"  # Record important decisions
-```
-
-#### 3. Commit & Release
-```bash
-/check              # Final quality check
-/doc                # Update documentation
-/review             # Prepare PR
-```
-
-#### 4. Problem Solving
-```bash
-/debug "error message"  # Quick problem location
-/test feature       # Verify fix
-```
+### 🔄 Command Migration Map
+
+#### Commands That Can Be Gradually Migrated
+
+| v3.3 Command | v4.0 Alternative | Migration Suggestion | Advantages |
+|--------------|------------------|---------------------|------------|
+| `/check` | `code-reviewer` agent | 🔄 Progressive migration | More professional, comprehensive |
+| `/test` | `test-automator` agent | 🔄 Progressive migration | Smart generation, auto-execution |
+| `/review` | `jenny-validator` + `karen-realist` | 🔄 Progressive migration | Multi-perspective professional review |
+| `/analyze` | `performance-optimizer` + context detection | 🔄 Progressive migration | Tech stack professional analysis |
+| `/watch` | Smart monitoring agents | 🔄 Progressive migration | Continuous monitoring, smart filtering |
+
+#### Commands That Must Be Preserved (Core Infrastructure)
+
+| v3.3 Command | v4.0 Status | Reason | Usage Suggestion |
+|--------------|-------------|--------|-----------------|
+| `/start` | ✅ Enhanced preservation | Project understanding needs human judgment | Combine with agent auto-enable |
+| `/sync` | ✅ Enhanced preservation | Core memory management function | Add agent state recovery |
+| `/context` | ✅ Enhanced preservation | Key context sync | Integrate agent coordination |
+| `/learn` | ✅ Preserved | Human-led decision recording | Unchanged, continue using |
+| `/meta` | ✅ Preserved | Spec definition needs judgment | Unchanged, continue using |
+| `/doc` | ✅ Preserved | Document maintenance precise control | Unchanged, continue using |
+| `/update-spec` | ✅ Preserved | Spec update specific | Unchanged, continue using |
 
 ---
 
 ## 💡 Best Practices
 
-### 1. Communication Tips
-- **Clear Boundaries**: Tell Claude what not to modify
-- **Provide Examples**: Give expected code style
-- **Segmented Confirmation**: Break complex tasks into checkpoints
-- **Record Decisions**: Write important choices into documentation
+### 1. Communication Skills
+- **Clear boundaries**: Tell Claude what not to modify
+- **Provide examples**: Give expected code style
+- **Staged confirmation**: Break complex tasks into multiple checkpoints
+- **Record decisions**: Write important choices into documentation
 
 ### 2. Project Organization
 ```
@@ -722,74 +532,65 @@ your-project/
 └── ... project files
 ```
 
-### 3. Efficiency Boost
-- **Start with Sync**: Always start with `/sync`
-- **Timely Recording**: Use `/learn` to avoid knowledge loss
-- **Structured Planning**: Use `/plan` instead of free discussion
-- **Automated Checking**: Use `/check` to ensure quality
-- **Deep Validation**: Use `/analyze` to verify intuition
-- **Specification Management**: Use `/update-spec` to solidify decisions
+### 3. Efficiency Enhancement
+- **Start with sync**: Always use `/sync` to begin
+- **Record timely**: Use `/learn` to avoid knowledge loss
+- **Structured planning**: Use `/plan` instead of free discussion
+- **Automated checking**: Use agents for quality assurance
+- **Deep validation**: Use professional agents to verify intuition
+- **Spec management**: Use `/update-spec` to solidify important decisions
 
 ### 4. Team Collaboration
 - Share `.claude/` directory
 - Unified use of command system
-- Regularly update PROJECT_CONTEXT.md
-- Record important decisions in DECISIONS.md
+- Regular updates to PROJECT_CONTEXT.md
+- Record all important decisions in DECISIONS.md
 
 ---
 
 ## 📊 Version History
 
-### v3.3.0 (2025-08-10) - Current Version
-- **Major Adjustment**:
-  - Removed all project-level commands, focus on global universal commands
-  - Let developers create their own project-specific commands
-  - Unified use of 14 global universal commands + 5 SDK-specific commands
+### v4.0.0 (2025-08-14) - Current Version 🚀
+- **Revolutionary Breakthrough**: Hybrid commands + agents system
+  - Introduced 35+ professional agents covering full tech stack
+  - Smart context detectors solving multi-purpose language scenario conflicts
+  - Auto-trigger system with intelligent routing based on file types and code content
+  - Confidence scoring system (0.0-1.0) ensuring precise matching
+- **Core Innovations**:
+  - Kotlin/Java/C#/JavaScript/Python multi-scenario smart recognition
+  - Jenny validator, Karen realist assessment, professional code reviewers
+  - Hierarchical detection: annotations → imports → project structure → config files
+  - Mixed context handling: full-stack, microservices, game development and other complex project support
+- **Architecture Optimization**:
+  - Preserved core commands (8) + added agent automation
+  - Command archive system, complete v3.3 backup to `commands-legacy/`
+  - Configuration system: `triggers.yaml` and `workflows.yaml`
+  - Progressive migration strategy, fully backward compatible
+- **Quality Assurance Enhancement**:
+  - Multi-agent collaborative quality assurance system
+  - Continuous monitoring and smart filtering mechanisms
+  - Professional domain deep analysis capabilities
 
-### v3.2.2 (2025-08-10)
-- **Architecture Fix**:
-  - Correctly categorized `/analyze` and `/update-spec` as global commands
-  - Corrected universal command count to 14
-  - Cleaned up duplicate command files
-
-### v3.2.1 (2025-08-10)
-- **Documentation Enhancement**:
-  - Added complete command usage manual (18 command details)
-  - Each command includes: use cases, usage, expected output, real examples
-  - Added 6 typical command combination scenarios
-
-### v3.2.0 (2025-08-10)
-- **New Feature**: Deep analysis validation command
-  - Created `/analyze` command to fill validation gap
-  - Support experience-based risk analysis
-  - Provide quantified risk assessment
-
-### v3.1.0 (2024-01-20)
-- **New Feature**: Dedicated CLAUDE.md update command
-  - Created `/update-spec` command for updating project specifications
-  - Support two modes: review mode and targeted update mode
-
-### v3.0.0 (2024-01-15)
-- **Major Refactor**: Command system streamlining
-- **Core Improvements**:
-  - Commands reduced from 31 to 11
-  - Intelligent command integration
-  - Automated memory management
+### v3.3.0 (2025-08-10) - Historical Version
+- **Major Adjustments**:
+  - Removed all project-level commands, focused on global universal commands
+  - Let developers establish project-specific commands themselves
+  - Unified use of 13 global universal commands + 5 SDK-specific commands
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please:
+Welcome contributions! Please:
 1. Fork this project
-2. Create a feature branch
-3. Commit your changes
-4. Submit a Pull Request
+2. Create feature branch
+3. Submit changes
+4. Create Pull Request
 
-### Reporting Issues
+### Report Issues
 - Use GitHub Issues
 - Provide detailed reproduction steps
-- Describe expected behavior
+- Explain expected behavior
 
 ---
 
@@ -798,19 +599,35 @@ Contributions are welcome! Please:
 - [Claude Code Official Documentation](https://docs.anthropic.com/en/docs/claude-code)
 - [Command System Documentation](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
 - [MCP Protocol](https://docs.anthropic.com/en/docs/claude-code/mcp)
-- [Project Hook Template](PROJECT_HOOKS_TEMPLATE.md)
 
 ---
 
 ## 🎯 Core Values
 
 1. **Simple & Efficient**: Fewer commands, higher efficiency
-2. **Intelligent Collaboration**: AI understands you, you guide AI
+2. **Smart Collaboration**: AI understands you, you guide AI
 3. **Knowledge Accumulation**: Every decision is wealth
 4. **Continuous Evolution**: Constantly optimize based on usage
 
 ---
 
-*This collaboration framework was jointly created by Claude and human developers, continuously evolving.*
+*This specification system is co-created by Claude and human developers, continuously evolving.*
 
-*Simple, Intelligent, Efficient - Let Claude Code become your best development partner!*
+*Simple, Smart, Efficient - Let Claude Code become your best development partner!*
+
+---
+
+## 🌐 Language Versions
+
+- **English** (Current): README.en.md
+- **中文** (Chinese): README.md
+
+---
+
+## 📧 Contact & Support
+
+- **GitHub Issues**: Report bugs and feature requests
+- **Documentation**: Complete guides and API references
+- **Community**: Join our developer community for discussions
+
+**Made with ❤️ by the Claude Code Community**

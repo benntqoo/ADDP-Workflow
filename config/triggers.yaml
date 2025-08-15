@@ -1,0 +1,604 @@
+# Claude Code Agents - Automatic Trigger Configuration
+# This file defines when agents are automatically activated based on file types and context
+
+# File Type Triggers
+file_triggers:
+  # System Programming Languages
+  "*.c":
+    primary: c-systems-architect
+    support: [performance-optimizer, test-automator]
+    
+  "*.h":
+    primary: c-systems-architect
+    support: [code-reviewer]
+    
+  "*.cpp|*.cc|*.cxx":
+    primary: cpp-modern-master
+    support: [performance-optimizer, test-automator]
+    
+  "*.hpp|*.h++":
+    primary: cpp-modern-master
+    support: [code-reviewer]
+    
+  "*.rs":
+    primary: rust-zero-cost
+    support: [test-automator, performance-optimizer]
+    
+  "Cargo.toml":
+    primary: rust-zero-cost
+    support: []
+    
+  "CMakeLists.txt|*.cmake":
+    primary: cmake-ndk-specialist
+    support: [cpp-modern-master]
+
+  # Modern Languages
+  "*.go":
+    primary: golang-systems-engineer
+    support: [test-automator, code-reviewer]
+    
+  "go.mod|go.sum":
+    primary: golang-systems-engineer
+    support: []
+    
+  "*.kt|*.kts":
+    # Intelligent context detection for Kotlin's multiple use cases
+    smart_detection: true
+    detector: kotlin-context-detector
+    context_dependent:
+      android_app:
+        detect: 
+          - "AndroidManifest.xml"
+          - "import android.*"
+          - "import androidx.*"
+          - "@Composable with Activity"
+        primary: android-kotlin-architect
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      ktor_server:
+        detect:
+          - "Application.kt"
+          - "import io.ktor.*"
+          - "embeddedServer"
+          - "routing {"
+        primary: ktor-backend-architect
+        support: [test-automator, api-designer, database-architect]
+        confidence_required: 0.7
+        
+      spring_boot:
+        detect:
+          - "@SpringBootApplication"
+          - "import org.springframework.*"
+          - "@RestController"
+        primary: spring-boot-kotlin-expert
+        support: [test-automator, database-architect]
+        confidence_required: 0.7
+        
+      kmp_shared:
+        detect:
+          - "commonMain"
+          - "expect"
+          - "actual"
+          - "shared/src"
+        primary: kotlin-multiplatform-expert
+        support: [test-automator]
+        confidence_required: 0.6
+        
+      compose_desktop:
+        detect:
+          - "import androidx.compose.desktop"
+          - "Window("
+          - "application { window"
+        primary: compose-desktop-expert
+        support: [test-automator, ui-designer]
+        confidence_required: 0.6
+        
+      gradle_script:
+        detect:
+          - "*.gradle.kts"
+          - "plugins {"
+          - "dependencies {"
+        primary: gradle-kotlin-expert
+        support: []
+        confidence_required: 0.8
+        
+      mixed_fullstack:
+        detect:
+          - "Multiple contexts detected"
+        primary: work-coordinator
+        support: [android-kotlin-architect, ktor-backend-architect, kotlin-multiplatform-expert]
+        confidence_required: 0.5
+        
+      general:
+        detect: ["Fallback when no specific context"]
+        primary: kotlin-general-expert
+        support: [test-automator]
+        confidence_required: 0.0
+    
+  "*.java":
+    # Intelligent context detection for Java's multiple use cases
+    smart_detection: true
+    detector: java-context-detector
+    context_dependent:
+      spring_boot:
+        detect: ["@SpringBootApplication", "@RestController", "import org.springframework"]
+        primary: spring-boot-enterprise
+        support: [test-automator, database-architect]
+        confidence_required: 0.7
+        
+      android_java:
+        detect: ["AndroidManifest.xml", "import android.", "extends Activity"]
+        primary: android-java-developer
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      minecraft_plugin:
+        detect: ["extends JavaPlugin", "import org.bukkit", "plugin.yml"]
+        primary: minecraft-plugin-developer
+        support: [test-automator]
+        confidence_required: 0.7
+        
+      swing_desktop:
+        detect: ["import javax.swing", "extends JFrame"]
+        primary: swing-desktop-developer
+        support: [ui-designer]
+        confidence_required: 0.6
+        
+      javafx_desktop:
+        detect: ["import javafx.", "extends Application"]
+        primary: javafx-desktop-developer
+        support: [ui-designer]
+        confidence_required: 0.6
+        
+      general:
+        detect: ["Fallback when no specific context"]
+        primary: java-enterprise-architect
+        support: [test-automator]
+        confidence_required: 0.0
+    
+  "*.swift":
+    primary: swift-ios-architect
+    support: [test-automator, ui-designer]
+    
+  "*.cs":
+    # Intelligent context detection for C#'s multiple use cases
+    smart_detection: true
+    detector: csharp-context-detector
+    context_dependent:
+      unity:
+        detect: ["using UnityEngine", "MonoBehaviour", "*.unity"]
+        primary: unity-csharp-expert
+        support: [performance-optimizer, game-designer]
+        confidence_required: 0.7
+        
+      aspnet_core:
+        detect: ["using Microsoft.AspNetCore", "[ApiController]", "IActionResult"]
+        primary: aspnet-core-developer
+        support: [test-automator, api-designer, database-architect]
+        confidence_required: 0.7
+        
+      wpf:
+        detect: ["*.xaml", "using System.Windows", "DependencyProperty"]
+        primary: wpf-desktop-developer
+        support: [ui-designer]
+        confidence_required: 0.7
+        
+      blazor:
+        detect: ["@page", "*.razor", "using Microsoft.AspNetCore.Components"]
+        primary: blazor-developer
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      maui:
+        detect: ["using Microsoft.Maui", "MauiApp", "ContentPage"]
+        primary: maui-cross-platform-developer
+        support: [ui-designer, mobile-tester]
+        confidence_required: 0.7
+        
+      azure_functions:
+        detect: ["[FunctionName]", "HttpTrigger", "using Microsoft.Azure.Functions"]
+        primary: azure-functions-developer
+        support: [cloud-architect]
+        confidence_required: 0.6
+        
+      general:
+        detect: ["Fallback when no specific context"]
+        primary: csharp-dotnet-expert
+        support: [test-automator]
+        confidence_required: 0.0
+
+  # Web Technologies
+  "*.ts|*.tsx|*.js|*.jsx":
+    # Intelligent context detection for JavaScript/TypeScript ecosystem
+    smart_detection: true
+    detector: javascript-context-detector
+    context_dependent:
+      react_app:
+        detect: ["import React", "useState", "useEffect", "package.json:react"]
+        primary: react-developer
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      nextjs_app:
+        detect: ["from 'next/", "getServerSideProps", "next.config.js"]
+        primary: nextjs-fullstack-developer
+        support: [test-automator, performance-optimizer]
+        confidence_required: 0.7
+        
+      vue_app:
+        detect: ["from 'vue'", "*.vue", "createApp", "package.json:vue"]
+        primary: vue-developer
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      angular_app:
+        detect: ["from '@angular/", "@Component", "angular.json"]
+        primary: angular-developer
+        support: [test-automator, ui-designer]
+        confidence_required: 0.7
+        
+      react_native:
+        detect: ["from 'react-native'", "StyleSheet.create", "metro.config.js"]
+        primary: react-native-developer
+        support: [mobile-tester, ui-designer]
+        confidence_required: 0.7
+        
+      electron_app:
+        detect: ["from 'electron'", "BrowserWindow", "ipcMain"]
+        primary: electron-desktop-developer
+        support: [desktop-tester]
+        confidence_required: 0.7
+        
+      nodejs_backend:
+        detect: ["express", "fastify", "koa", "createServer"]
+        primary: nodejs-backend-developer
+        support: [test-automator, api-designer]
+        confidence_required: 0.6
+        
+      nestjs_backend:
+        detect: ["from '@nestjs/", "@Controller", "@Module"]
+        primary: nestjs-enterprise-developer
+        support: [test-automator, api-designer, database-architect]
+        confidence_required: 0.7
+        
+      general:
+        detect: ["Fallback when no specific context"]
+        primary: javascript-general-expert
+        support: [test-automator]
+        confidence_required: 0.0
+    
+  "*.vue":
+    primary: vue-nuxt-specialist
+    support: [test-automator, ui-designer]
+    
+  "*.py|*.ipynb":
+    # Intelligent context detection for Python's diverse ecosystem
+    smart_detection: true
+    detector: python-context-detector
+    context_dependent:
+      machine_learning:
+        detect: ["import torch", "import tensorflow", "import sklearn", "model.fit"]
+        primary: python-ml-specialist
+        support: [test-automator, data-scientist, mlops-engineer]
+        confidence_required: 0.7
+        
+      llm_development:
+        detect: ["import openai", "from langchain", "from llama_index", "ChatCompletion"]
+        primary: llm-development-expert
+        support: [test-automator, ai-architect]
+        confidence_required: 0.7
+        
+      data_science:
+        detect: ["import pandas", "import numpy", "DataFrame", "*.ipynb with analysis"]
+        primary: data-scientist
+        support: [test-automator, visualization-expert]
+        confidence_required: 0.7
+        
+      django:
+        detect: ["from django.", "settings.py", "manage.py", "models.py"]
+        primary: django-developer
+        support: [test-automator, database-architect]
+        confidence_required: 0.7
+        
+      fastapi:
+        detect: ["from fastapi", "FastAPI()", "@app.get", "uvicorn"]
+        primary: fastapi-developer
+        support: [test-automator, api-designer]
+        confidence_required: 0.7
+        
+      flask:
+        detect: ["from flask", "Flask(__name__)", "@app.route"]
+        primary: flask-developer
+        support: [test-automator, api-designer]
+        confidence_required: 0.6
+        
+      streamlit:
+        detect: ["import streamlit", "st.write", "st.sidebar"]
+        primary: streamlit-developer
+        support: [ui-designer, data-scientist]
+        confidence_required: 0.7
+        
+      airflow:
+        detect: ["from airflow", "DAG(", "PythonOperator"]
+        primary: airflow-data-engineer
+        support: [data-engineer, workflow-designer]
+        confidence_required: 0.6
+        
+      general:
+        detect: ["Fallback when no specific context"]
+        primary: python-general-expert
+        support: [test-automator]
+        confidence_required: 0.0
+    
+  "*.ipynb":
+    primary: python-ml-specialist
+    support: [data-scientist]
+
+  # Mobile Development
+  "*.dart":
+    primary: flutter-cross-platform
+    support: [test-automator, ui-designer]
+    
+  "AndroidManifest.xml":
+    primary: android-kotlin-architect
+    support: []
+    
+  "*.xcodeproj|*.xcworkspace":
+    primary: ios-native-architect
+    support: []
+
+  # Game Development
+  "*.gd|*.tscn":
+    primary: godot-gdscript-expert
+    support: [game-designer]
+    
+  "*.uproject":
+    primary: unreal-cpp-architect
+    support: [performance-optimizer]
+
+  # Database & Query
+  "*.sql":
+    primary: database-architect
+    support: [performance-optimizer]
+    
+  "*.graphql|*.gql":
+    primary: graphql-api-expert
+    support: [api-designer]
+
+  # Infrastructure
+  "Dockerfile":
+    primary: docker-kubernetes-architect
+    support: [devops-engineer]
+    
+  "*.yaml|*.yml":
+    context_dependent:
+      kubernetes:
+        detect: ["apiVersion:", "kind:"]
+        primary: docker-kubernetes-architect
+        support: []
+      github_actions:
+        detect: [".github/workflows"]
+        primary: cicd-pipeline-engineer
+        support: []
+      general:
+        primary: yaml-config-expert
+        support: []
+    
+  "*.tf|*.tfvars":
+    primary: terraform-iac-expert
+    support: [cloud-architect]
+
+  # Web3 & Blockchain
+  "*.sol":
+    primary: blockchain-web3-expert
+    support: [security-auditor]
+
+  # Documentation
+  "*.md":
+    context_dependent:
+      readme:
+        detect: ["README.md"]
+        primary: doc-maintainer
+        support: []
+      api_doc:
+        detect: ["API.md", "api/"]
+        primary: api-documenter
+        support: []
+      general:
+        primary: technical-writer
+        support: []
+
+# Workflow Agent Triggers - Automatic Quality Enhancement
+workflow_agent_triggers:
+  production_ready_coder:
+    keywords:
+      - "implement"
+      - "create"
+      - "build"
+      - "write"
+      - "develop"
+    contexts:
+      - "function"
+      - "service"
+      - "API"
+      - "component"
+      - "feature"
+    auto_enable: true
+    description: "Automatically writes production-quality code with security and testing"
+    priority: high
+    
+  bug_hunter:
+    keywords:
+      - "bug"
+      - "error"
+      - "issue"
+      - "crash"
+      - "fix"
+      - "debug"
+    contexts:
+      - "stack trace"
+      - "exception"
+      - "not working"
+      - "failing"
+    auto_enable: true
+    description: "Finds and fixes bugs with root cause analysis"
+    priority: critical
+    
+  api_architect:
+    keywords:
+      - "API"
+      - "endpoint"
+      - "REST"
+      - "GraphQL"
+      - "route"
+    contexts:
+      - "design"
+      - "create"
+      - "implement"
+      - "swagger"
+      - "openapi"
+    auto_enable: true
+    description: "Designs APIs with OpenAPI specs and best practices"
+    priority: high
+
+  senior_developer:
+    keywords:
+      - "production"
+      - "enterprise"
+      - "scalable"
+      - "professional"
+    contexts:
+      - "best practices"
+      - "code quality"
+      - "maintainable"
+    auto_enable: false  # Opt-in for specific projects
+    description: "Applies 10+ years of experience to every line of code"
+    priority: medium
+
+# Context-Based Triggers (regardless of file type)
+context_triggers:
+  # When certain patterns are detected in code
+  patterns:
+    "TODO|FIXME|HACK":
+      agents: [code-reviewer, jenny-validator]
+      priority: medium
+      
+    "security|auth|token|password":
+      agents: [security-auditor]
+      priority: high
+      
+    "performance|optimize|slow":
+      agents: [performance-optimizer]
+      priority: medium
+      
+    "test|spec|mock":
+      agents: [test-automator]
+      priority: low
+
+  # When certain commands are used
+  commands:
+    "/check":
+      agents: [code-reviewer, jenny-validator, security-auditor]
+      mode: parallel
+      
+    "/test":
+      agents: [test-automator]
+      mode: single
+      
+    "/optimize":
+      agents: [performance-optimizer]
+      mode: single
+      
+    "/review":
+      agents: [code-reviewer, jenny-validator, karen-realist]
+      mode: parallel
+      
+    "/plan":
+      agents: [work-coordinator, karen-realist]
+      mode: sequential
+
+# Project Type Detection
+project_detection:
+  android_app:
+    required_files: ["AndroidManifest.xml", "build.gradle.kts"]
+    default_agents: [android-kotlin-architect, test-automator]
+    
+  ios_app:
+    required_files: ["*.xcodeproj", "Info.plist"]
+    default_agents: [ios-native-architect, test-automator]
+    
+  flutter_app:
+    required_files: ["pubspec.yaml", "lib/main.dart"]
+    default_agents: [flutter-cross-platform, test-automator]
+    
+  react_app:
+    required_files: ["package.json:react", "src/App.tsx"]
+    default_agents: [react-nextjs-expert, test-automator]
+    
+  vue_app:
+    required_files: ["package.json:vue", "src/App.vue"]
+    default_agents: [vue-nuxt-specialist, test-automator]
+    
+  spring_boot:
+    required_files: ["pom.xml", "@SpringBootApplication"]
+    default_agents: [spring-boot-enterprise, test-automator]
+    
+  ktor_server:
+    required_files: ["Application.kt", "ktor"]
+    default_agents: [ktor-backend-architect, test-automator]
+    
+  go_service:
+    required_files: ["go.mod", "main.go"]
+    default_agents: [golang-systems-engineer, test-automator]
+    
+  ml_project:
+    required_files: ["requirements.txt:torch|tensorflow", "*.ipynb"]
+    default_agents: [python-ml-specialist, data-scientist]
+    
+  unity_game:
+    required_files: ["*.unity", "ProjectSettings/"]
+    default_agents: [unity-csharp-expert, game-designer]
+    
+  rust_project:
+    required_files: ["Cargo.toml", "src/main.rs"]
+    default_agents: [rust-zero-cost, test-automator]
+
+# Agent Priority Levels
+priority_levels:
+  critical:
+    - security-auditor
+    - karen-realist  # Always listen to Karen about timelines
+    
+  high:
+    - code-reviewer
+    - jenny-validator
+    - performance-optimizer
+    
+  medium:
+    - test-automator
+    - work-coordinator
+    - database-architect
+    
+  low:
+    - doc-maintainer
+    - style-formatter
+
+# Conflict Resolution Rules
+conflict_resolution:
+  # When multiple agents want to modify the same file
+  file_conflicts:
+    strategy: sequential  # or parallel_merge
+    priority_order:
+      - security-fixes
+      - bug-fixes
+      - performance-improvements
+      - feature-additions
+      - style-changes
+      
+  # When agents disagree on approach
+  opinion_conflicts:
+    arbitrators:
+      - system-architect  # For design decisions
+      - karen-realist    # For timeline/scope decisions
+      - security-auditor # For security decisions

@@ -1,0 +1,79 @@
+# Token Optimization Settings for Claude Code Agents
+
+# Global Settings
+global:
+  default_mode: balanced  # efficient | balanced | full
+  max_tokens_per_agent: 1000  # For non-max users
+  auto_detect_complexity: true
+  
+# User Tier Detection (if available)
+user_tiers:
+  free:
+    max_tokens: 500
+    mode: efficient
+    
+  basic:
+    max_tokens: 1000
+    mode: balanced
+    
+  pro:
+    max_tokens: 1500
+    mode: balanced
+    
+  max:
+    max_tokens: unlimited
+    mode: full
+
+# Language-Specific Settings
+languages:
+  typescript:
+    core: typescript-expert-core           # 400 tokens
+    patterns: typescript-expert-patterns   # 400 tokens
+    examples: typescript-expert-examples   # 600 tokens
+    full: typescript-fullstack-expert      # 2500 tokens
+    
+  python:
+    core: python-expert-core               # 400 tokens
+    full: python-fullstack-expert          # 2000 tokens
+    
+  rust:
+    # Rust always needs full context for safety
+    always_use: full
+    full: rust-zero-cost                   # 2500 tokens
+
+# Complexity Detection Keywords
+complexity_indicators:
+  simple:
+    - "function"
+    - "variable"
+    - "basic"
+    - "simple"
+    
+  medium:
+    - "component"
+    - "class"
+    - "api"
+    - "service"
+    
+  complex:
+    - "architecture"
+    - "microservice"
+    - "production"
+    - "enterprise"
+    - "scalable"
+    - "distributed"
+
+# Auto-Loading Rules
+auto_loading:
+  rules:
+    - condition: "file_count > 20"
+      action: "load_full"
+      
+    - condition: "has_tests"
+      action: "add_testing_patterns"
+      
+    - condition: "is_new_project"
+      action: "load_core_only"
+      
+    - condition: "error_in_previous_attempt"
+      action: "upgrade_to_next_level"
