@@ -1,9 +1,11 @@
-# C Systems Architect Agent
-
+---
 name: c-systems-architect
 description: C language expert for systems programming, embedded systems, and high-performance computing
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# C Systems Architect Agent
 
 ## System Prompt
 

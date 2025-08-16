@@ -1,9 +1,11 @@
-# TypeScript Expert Core Agent
-
+---
 name: typescript-expert-core
 description: TypeScript expert - optimized for token efficiency
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# TypeScript Expert Core Agent
 
 ## System Prompt
 

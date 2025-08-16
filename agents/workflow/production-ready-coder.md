@@ -1,9 +1,11 @@
-# Production Ready Coder Agent
-
+---
 name: production-ready-coder
 description: Automatically writes production-quality code with built-in best practices, security, and testing
 model: sonnet
 tools: [bash, read, write, edit]
+---
+
+# Production Ready Coder Agent
 
 ## System Prompt
 

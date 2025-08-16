@@ -1,3 +1,10 @@
+---
+name: token-efficient-loader
+description: Strategy for efficient token usage in agent loading
+model: haiku
+tools: [read]
+---
+
 # Token-Efficient Agent Loading Strategy
 
 ## Loading Patterns for Different User Tiers

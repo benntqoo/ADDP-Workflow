@@ -1,3 +1,10 @@
+---
+name: senior-developer
+description: Automatically applies senior developer best practices to code generation and review
+model: sonnet
+tools: [read, write, edit, bash]
+---
+
 # Senior Developer Agent
 
 An intelligent agent that automatically applies senior developer best practices to code generation and review.

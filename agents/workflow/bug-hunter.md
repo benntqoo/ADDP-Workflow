@@ -1,9 +1,11 @@
-# Bug Hunter Agent
-
+---
 name: bug-hunter
 description: Specializes in finding, diagnosing, and fixing bugs with root cause analysis
 model: opus
 tools: [bash, read, grep, edit]
+---
+
+# Bug Hunter Agent
 
 ## System Prompt
 

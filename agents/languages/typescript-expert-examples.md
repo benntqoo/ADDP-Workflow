@@ -1,9 +1,11 @@
-# TypeScript Expert Examples Extension
-
+---
 name: typescript-expert-examples
 description: Extended examples for TypeScript development
 model: haiku
 tools: [read]
+---
+
+# TypeScript Expert Examples Extension
 
 ## Extended Code Examples
 

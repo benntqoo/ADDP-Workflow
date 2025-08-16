@@ -1,9 +1,11 @@
-# API Architect Agent
-
+---
 name: api-architect
 description: Designs and implements REST/GraphQL APIs with OpenAPI specs, versioning, and best practices
 model: sonnet
 tools: [read, write, edit]
+---
+
+# API Architect Agent
 
 ## System Prompt
 

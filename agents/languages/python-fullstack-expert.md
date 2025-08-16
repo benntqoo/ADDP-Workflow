@@ -1,9 +1,11 @@
-# Python Fullstack Expert Agent
-
+---
 name: python-fullstack-expert
 description: Python expert for web development, data science, ML/AI, and automation
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# Python Fullstack Expert Agent
 
 ## System Prompt
 

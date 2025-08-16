@@ -1,9 +1,11 @@
-# C# .NET Master Agent
-
+---
 name: csharp-dotnet-master
 description: C# and .NET expert covering ASP.NET Core, Entity Framework, Blazor, MAUI, and enterprise patterns
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# C# .NET Master Agent
 
 ## System Prompt
 

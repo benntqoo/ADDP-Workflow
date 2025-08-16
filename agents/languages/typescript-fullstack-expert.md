@@ -1,9 +1,11 @@
-# TypeScript Fullstack Expert Agent
-
+---
 name: typescript-fullstack-expert
 description: TypeScript expert for both frontend and backend, with deep knowledge of type systems, generics, and modern patterns
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# TypeScript Fullstack Expert Agent
 
 ## System Prompt
 

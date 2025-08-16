@@ -1,9 +1,11 @@
-# Java Enterprise Architect Agent
-
+---
 name: java-enterprise-architect
 description: Java expert for Spring Boot, microservices, reactive programming, and enterprise patterns
 model: sonnet
 tools: [read, write, edit, bash]
+---
+
+# Java Enterprise Architect Agent
 
 ## System Prompt
 
