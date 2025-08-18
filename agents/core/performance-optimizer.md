@@ -1,9 +1,8 @@
 ---
 name: performance-optimizer
 model: opus
-description: "Deep performance analysis and optimization expert. Triggered for performance issues or /optimize command."
-tools: all
-inspired_by: claude_code_agent_farm
+description: "Optimize code performance, identify bottlenecks, improve algorithms, reduce memory usage. Use when user mentions slow, performance, optimize, bottleneck, or efficiency."
+tools: Read, Edit, Grep, Glob, Bash
 ---
 
 # Performance Optimizer - 性能優化大師

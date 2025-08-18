@@ -1,9 +1,8 @@
 ---
 name: code-reviewer
 model: sonnet
-description: "Comprehensive code review with security and performance focus. Automatically triggered on code changes or via /check command."
-tools: all
-inspired_by: wshobson/agents, ClaudeCodeAgents
+description: "Review code for bugs, security issues, performance problems, and code quality. Use when user mentions review, check, analyze, audit, or when seeing potential issues in code."
+tools: Read, Edit, Grep, Glob, Bash
 ---
 
 # Code Reviewer - 代碼審查專家

@@ -1,6 +1,6 @@
 # Claude Code 協作規範體系 v4.0 - 混合命令+代理系統
 
-*[English](README.md) | 中文版*
+*[English](README.md) | 中文*
 
 > **革命性AI驅動開發框架**  
 > 結合精確命令控制與智能代理自動化，提升開發生產力
@@ -73,11 +73,9 @@ cd claude/commands/deploy-package
 # 1. 複製代理到 Claude 主目錄
 # Windows
 xcopy /E /I "claude\agents" "%USERPROFILE%\.claude\agents"
-xcopy /E /I "claude\config" "%USERPROFILE%\.claude\config"
 
 # macOS/Linux  
 cp -r claude/agents ~/.claude/agents
-cp -r claude/config ~/.claude/config
 
 # 2. 複製命令（可選 - 用於命令系統）
 # Windows
@@ -87,8 +85,7 @@ xcopy /E /I "claude\commands\deploy-package\global" "%USERPROFILE%\.claude\comma
 cp -r claude/commands/deploy-package/global ~/.claude/commands
 
 # 3. 驗證安裝
-ls ~/.claude/agents/      # 應該看到代理目錄
-ls ~/.claude/config/      # 應該看到配置文件
+ls ~/.claude/agents/      # 應該看到代理 .md 文件
 ls ~/.claude/commands/    # 應該看到命令文件（如果安裝了）
 ```
 
@@ -96,7 +93,6 @@ ls ~/.claude/commands/    # 應該看到命令文件（如果安裝了）
 ```bash
 # 複製到項目根目錄以進行項目特定配置
 cp -r claude/agents .claude/agents
-cp -r claude/config .claude/config
 ```
 
 ### 🔍 命令快速索引
@@ -178,18 +174,29 @@ graph TD
 
 ## 🤖 智能代理系統
 
+### ⚠️ 重要更新：配置變更
+
+**已移除文件** (2025-08-16)：
+- `config/triggers.yaml` - **已移除**：Claude Code 不會解析自定義 YAML 觸發配置
+- `config/workflows.yaml` - **已移除**：工作流編排由 Claude Code 內部處理
+- Context detector agents - **已棄用**：基於文件的檢測不如預期工作
+
+**為什麼移除這些文件**：
+1. **沒有執行引擎**：Claude Code 沒有機制來解析和執行這些自定義配置
+2. **與實際不符**：這些文件暗示基於文件類型的自動觸發，但實際上不起作用
+3. **Subagents 工作方式不同**：Claude Code 使用代理描述進行自動委派，而不是基於文件的觸發器
+
+**實際有效的方式**：
+- 具有包含觸發關鍵字的清晰 `description` 欄位的代理
+- Claude Code 基於任務上下文的內建自動委派
+- 使用 "Use the [agent-name] agent" 進行顯式代理調用
+
 ### 代理分類與能力
 
-#### 🧠 上下文檢測器 (Context Detectors)
-智能分析代碼上下文，解決多用途語言場景衝突：
+#### ~~🧠 上下文檢測器 (Context Detectors)~~ （已棄用）
+~~智能分析代碼上下文，解決多用途語言場景衝突~~
 
-| 檢測器 | 支持語言 | 識別場景 | 信心度 |
-|--------|---------|---------|--------|
-| **kotlin-context-detector** | Kotlin | Android App, Ktor Server, Spring Boot, KMP, Desktop | 0.7-0.95 |
-| **java-context-detector** | Java | Spring Boot, Android, Swing/JavaFX, Minecraft Plugin | 0.7-0.95 |
-| **csharp-context-detector** | C# | Unity, WPF, ASP.NET Core, Blazor, MAUI, Azure Functions | 0.6-0.95 |
-| **javascript-context-detector** | JS/TS | React, Vue, Angular, Next.js, Node.js, Electron, React Native | 0.7-0.95 |
-| **python-context-detector** | Python | ML/AI, Django, FastAPI, Flask, Data Science, Streamlit | 0.6-0.95 |
+**注意**：上下文檢測器代理已被棄用。請改用特定語言的專家代理（例如 `kotlin-expert`、`python-ml-specialist`）
 
 #### 💻 技術專家代理 (Technical Specialists)
 針對你的技術棧提供專業支援：
@@ -226,24 +233,12 @@ graph TD
 #### 🎭 工作流程代理 (Workflow Agents)
 - **work-coordinator**: 多代理協調者，處理複雜跨領域任務
 
-### 🔄 智能觸發系統
+### 🔄 ~~智能觸發系統~~ （已棄用）
 
-#### 自動觸發條件
-```yaml
-# 基於文件類型
-"*.kt" -> kotlin-context-detector -> 上下文分析 -> 專業代理
-
-# 基於代碼內容
-"@SpringBootApplication" -> java-context-detector -> spring-boot-enterprise
-
-# 基於命令模式
-"/check" -> [code-reviewer, jenny-validator, security-auditor]
-```
-
-#### 信心度評分系統
-- **高信心度 (0.8-1.0)**: 直接路由到專業代理
-- **中信心度 (0.5-0.8)**: 候選清單供選擇
-- **低信心度 (0.0-0.5)**: 回退到通用代理或詢問用戶
+**此部分已過時**。Claude Code 的實際委派工作方式不同：
+- 基於任務描述和代理的 `description` 欄位
+- 不是基於文件類型或代碼模式
+- 在代理描述中使用清晰的關鍵字以獲得更好的自動委派
 
 ### 🎯 智能檢測範例
 

@@ -1,8 +1,8 @@
 ---
 name: test-automator
 model: sonnet
-description: "Generates comprehensive test suites with high coverage. Triggered on new features or /test command."
-tools: Read, Write, Bash, Grep
+description: "Generate test cases, write unit tests, integration tests, and test suites. Use when user mentions test, testing, coverage, TDD, or when implementing new features."
+tools: Read, Write, Edit, Bash, Grep
 ---
 
 # Test Automator - 測試自動化專家

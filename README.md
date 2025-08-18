@@ -1,6 +1,6 @@
 # Claude Code Collaboration Framework v4.0 - Hybrid Commands + Agents System
 
-*English | [中文版](README.zh.md)*
+*English | [中文](README_cn.md)*
 
 > **Revolutionary AI-Powered Development Framework**  
 > Combining precise command control with intelligent agent automation for enhanced productivity
@@ -64,11 +64,9 @@ cd claude/commands/deploy-package
 # 1. Copy agents to Claude home directory
 # Windows
 xcopy /E /I "claude\agents" "%USERPROFILE%\.claude\agents"
-xcopy /E /I "claude\config" "%USERPROFILE%\.claude\config"
 
 # macOS/Linux  
 cp -r claude/agents ~/.claude/agents
-cp -r claude/config ~/.claude/config
 
 # 2. Copy commands (Optional - for command system)
 # Windows
@@ -78,8 +76,7 @@ xcopy /E /I "claude\commands\deploy-package\global" "%USERPROFILE%\.claude\comma
 cp -r claude/commands/deploy-package/global ~/.claude/commands
 
 # 3. Verify installation
-ls ~/.claude/agents/      # Should see agent directories
-ls ~/.claude/config/      # Should see configuration files
+ls ~/.claude/agents/      # Should see agent .md files
 ls ~/.claude/commands/    # Should see command files (if installed)
 ```
 
@@ -87,7 +84,6 @@ ls ~/.claude/commands/    # Should see command files (if installed)
 ```bash
 # Copy to your project root for project-specific configuration
 cp -r claude/agents .claude/agents
-cp -r claude/config .claude/config
 ```
 
 ---
@@ -145,18 +141,29 @@ graph TD
 
 ## 🤖 Intelligent Agent System
 
+### ⚠️ Important Update: Configuration Changes
+
+**Removed Files** (2025-08-16):
+- `config/triggers.yaml` - **Removed**: Claude Code doesn't parse custom YAML trigger configurations
+- `config/workflows.yaml` - **Removed**: Workflow orchestration is handled by Claude Code internally
+- Context detector agents - **Deprecated**: File-based detection doesn't work as expected
+
+**Why These Were Removed**:
+1. **No Execution Engine**: Claude Code doesn't have a mechanism to parse and execute these custom configurations
+2. **Misaligned with Reality**: These files suggested automatic file-type based triggering which doesn't actually work
+3. **Subagents Work Differently**: Claude Code uses agent descriptions for automatic delegation, not file-based triggers
+
+**What Actually Works**:
+- Agents with clear `description` fields that include trigger keywords
+- Claude Code's built-in automatic delegation based on task context
+- Explicit agent invocation using "Use the [agent-name] agent"
+
 ### Agent Classification & Capabilities
 
-#### 🧠 Context Detectors
-Smart code context analysis, resolving multi-purpose language scenario conflicts:
+#### ~~🧠 Context Detectors~~ (Deprecated)
+~~Smart code context analysis, resolving multi-purpose language scenario conflicts~~
 
-| Detector | Supported Languages | Identified Scenarios | Confidence |
-|----------|---------------------|---------------------|------------|
-| **kotlin-context-detector** | Kotlin | Android App, Ktor Server, Spring Boot, KMP, Desktop | 0.7-0.95 |
-| **java-context-detector** | Java | Spring Boot, Android, Swing/JavaFX, Minecraft Plugin | 0.7-0.95 |
-| **csharp-context-detector** | C# | Unity, WPF, ASP.NET Core, Blazor, MAUI, Azure Functions | 0.6-0.95 |
-| **javascript-context-detector** | JS/TS | React, Vue, Angular, Next.js, Node.js, Electron, React Native | 0.7-0.95 |
-| **python-context-detector** | Python | ML/AI, Django, FastAPI, Flask, Data Science, Streamlit | 0.6-0.95 |
+**Note**: Context detector agents have been deprecated. Use language-specific expert agents instead (e.g., `kotlin-expert`, `python-ml-specialist`)
 
 #### 💻 Technical Specialist Agents
 Professional support for your tech stack:
@@ -193,24 +200,12 @@ Professional code review and quality control:
 #### 🎭 Workflow Agents
 - **work-coordinator**: Multi-agent coordinator, handling complex cross-domain tasks
 
-### 🔄 Smart Trigger System
+### 🔄 ~~Smart Trigger System~~ (Deprecated)
 
-#### Auto-Trigger Conditions
-```yaml
-# Based on file type
-"*.kt" -> kotlin-context-detector -> context analysis -> professional agent
-
-# Based on code content
-"@SpringBootApplication" -> java-context-detector -> spring-boot-enterprise
-
-# Based on command pattern
-"/check" -> [code-reviewer, jenny-validator, security-auditor]
-```
-
-#### Confidence Scoring System
-- **High Confidence (0.8-1.0)**: Direct routing to professional agent
-- **Medium Confidence (0.5-0.8)**: Candidate list for selection
-- **Low Confidence (0.0-0.5)**: Fallback to general agent or ask user
+**This section is outdated**. Claude Code's actual delegation works differently:
+- Based on task description and agent `description` field
+- NOT based on file types or code patterns
+- Use clear keywords in agent descriptions for better automatic delegation
 
 ### 🎯 Smart Detection Examples
 
@@ -387,8 +382,7 @@ claude/
 │       └── work-coordinator.md # Multi-agent coordinator
 │
 ├── config/                     # 🔧 Configuration System
-│   ├── triggers.yaml           # Smart trigger configuration
-│   └── workflows.yaml          # Workflow definitions
+│   └── token-settings.yaml     # Token optimization settings
 │
 ├── commands/                   # 📋 Command System v3.3 (Core Preserved)
 │   └── deploy-package/         # Command deployment package
@@ -564,7 +558,7 @@ your-project/
 - **Architecture Optimization**:
   - Preserved core commands (8) + added agent automation
   - Command archive system, complete v3.3 backup to `commands-legacy/`
-  - Configuration system: `triggers.yaml` and `workflows.yaml`
+  - Simplified configuration: Removed non-functional trigger system
   - Progressive migration strategy, fully backward compatible
 - **Quality Assurance Enhancement**:
   - Multi-agent collaborative quality assurance system

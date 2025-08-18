@@ -1,0 +1,76 @@
+{
+  "scan_timestamp": "2025-08-16T00:00:00Z",
+  "project_info": {
+    "name": "Claude Code Collaboration Framework",
+    "version": "v4.0.1",
+    "type": "AI Collaboration Framework",
+    "language": "Configuration-based (Markdown)",
+    "status": "Production Ready"
+  },
+  "architecture": {
+    "system_type": "Hybrid Commands + Agents",
+    "command_system": {
+      "version": "v3.3",
+      "core_commands": 8,
+      "sdk_commands": 5
+    },
+    "agent_system": {
+      "version": "v4.0",
+      "total_agents": 40,
+      "categories": ["core", "languages", "frameworks", "quality", "workflow"],
+      "context_detectors": 5
+    }
+  },
+  "directory_structure": {
+    "root": "D:\\Code\\ai\\claude",
+    "key_directories": [
+      "agents",
+      "commands",
+      "config",
+      "constitution",
+      "guides",
+      "templates"
+    ],
+    "documentation_files": [
+      "README.md",
+      "README.en.md",
+      "CHANGELOG.md",
+      "CONTRIBUTING.md"
+    ]
+  },
+  "git_info": {
+    "branch": "master",
+    "clean": true,
+    "recent_commits": [
+      "bb1db50 fix: 修復 agent 檔案 YAML frontmatter 格式",
+      "638d87a feat: 擴展專業代理系統與優化 token 使用",
+      "7145541 docs: 重組文檔結構 - 英文為主，中文為輔"
+    ]
+  },
+  "installation_methods": {
+    "automatic": {
+      "windows": "commands\\deploy-package\\deploy.ps1",
+      "unix": "commands/deploy-package/deploy.sh"
+    },
+    "manual": {
+      "agents_path": "~/.claude/agents",
+      "config_path": "~/.claude/config",
+      "commands_path": "~/.claude/commands"
+    }
+  },
+  "key_features": [
+    "Zero-configuration smart routing",
+    "Progressive migration support",
+    "40+ professional agents",
+    "5 context detectors for multi-purpose languages",
+    "Confidence scoring system (0.0-1.0)",
+    "Backward compatible with v3.3"
+  ],
+  "efficiency_metrics": {
+    "project_understanding": "3x",
+    "code_development": "5x",
+    "quality_check": "8x",
+    "test_generation": "10x",
+    "performance_optimization": "15x"
+  }
+}

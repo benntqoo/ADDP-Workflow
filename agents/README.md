@@ -1,5 +1,7 @@
 # 🤖 Claude Code Pro Agents System
 
+*English | [中文](README_cn.md)*
+
 A comprehensive collection of specialized AI agents for Claude Code, designed to provide professional-grade assistance across all aspects of software development.
 
 ## 📋 Table of Contents

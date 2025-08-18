@@ -1,8 +1,8 @@
 ---
 name: bug-hunter
-description: Specializes in finding, diagnosing, and fixing bugs with root cause analysis
 model: opus
-tools: [bash, read, grep, edit]
+description: "Find and fix bugs, debug errors, analyze stack traces, perform root cause analysis. Use when user mentions bug, error, crash, exception, failing, broken, or not working."
+tools: Bash, Read, Grep, Edit, Glob
 ---
 
 # Bug Hunter Agent
