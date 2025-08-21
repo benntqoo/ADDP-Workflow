@@ -9,7 +9,17 @@ examples:
 
 # 任務規劃與設計
 
-我將幫你把需求轉化為可執行的開發計劃：
+我將幫你把需求轉化為可執行的開發計劃，並開始一個新的開發週期：
+
+## 🔄 週期管理
+
+### 自動執行
+當你使用 /plan 時，我會：
+1. 標記新開發週期的開始
+2. 創建/更新 `.claude/state/last-session.yml`
+3. 記錄計劃內容和開始時間
+4. 清理上個週期的遺留任務
+5. 設置工作狀態為 "planning"
 
 ## 📋 規劃流程
 
@@ -64,6 +74,28 @@ examples:
 - 參考的代碼示例
 - 相關的最佳實踐
 
+### 7. 更新狀態文件
+自動更新 `.claude/state/last-session.yml`：
+```yaml
+session:
+  cycle:
+    id: "[date]-[topic]"
+    type: "feature|bugfix|refactor"
+    description: "本次規劃的任務"
+    started_at: "當前時間"
+    
+  workflow_state: "planning"
+  
+  current_task:
+    description: "任務描述"
+    plan_reference: ".claude/plans/[date]-[topic].md"
+    
+  pending_todos: [生成的任務列表]
+  
+  next_cycle:
+    status: "planning"
+```
+
 ## 🎯 輸出格式
 
 ```markdown
@@ -91,4 +123,25 @@ examples:
 2. **提供背景信息**：相關的業務邏輯或技術限制
 3. **明確成功標準**：怎樣算是完成了任務
 
-這個規劃將成為我們後續開發的路線圖！
+## 🔄 與其他命令的連動
+
+### 工作流程
+```
+/plan（開始新週期）
+    ↓ 創建/更新 last-session.yml
+/context（確認理解）
+    ↓ 讀取當前計劃
+[開發工作]
+    ↓
+/learn（記錄決策）
+    ↓ 增量更新
+/update-spec（週期終結）
+    ↓ 完整保存狀態
+```
+
+### 狀態連續性
+- /plan 開始的週期會被 /update-spec 終結
+- 中間的所有工作都會被追踪
+- /sync 可以恢復到任何中斷點
+
+這個規劃將成為我們後續開發的路線圖，並自動管理開發週期！

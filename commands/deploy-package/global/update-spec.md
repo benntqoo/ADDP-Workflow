@@ -1,230 +1,253 @@
 ---
 arguments: optional
-format: "[action] [content]"
-actions: "review | version | backup | [section] [content]"
+format: "[summary]"
 examples:
-  - "/update-spec review  # 審查近期決策並建議更新"
-  - "/update-spec version  # 查看 CLAUDE.md 版本歷史"
-  - "/update-spec backup  # 備份當前 CLAUDE.md"
-  - "/update-spec rules '新增 GraphQL API 命名規範'"
-  - "/update-spec workflow '調整 PR review 流程'"
-  - "/update-spec architecture '引入 Redis 緩存層'"
+  - "/update-spec  # 結束當前開發週期，更新所有規範"
+  - "/update-spec 'Repository層優化完成'  # 帶總結的週期終結"
 ---
 
-# 更新項目規範 (CLAUDE.md) - 單一職責命令
+# 開發週期終結與規範更新
 
-我是專門負責更新 CLAUDE.md 的命令，確保項目規範與演進保持同步。
+我是開發週期的終結儀式，負責總結成果、更新規範、保存狀態，為下一個週期做準備。
 
 ## 🎯 核心職責
 
-**我只做一件事**：智能更新 CLAUDE.md
-- ✅ 讀取、分析、更新 CLAUDE.md
-- ✅ 維護版本歷史和變更記錄
-- ❌ 不會修改 DECISIONS.md（那是 `/learn` 的職責）
-- ❌ 不會修改 PROJECT_CONTEXT.md（那是 `/start` 和 `/sync` 的職責）
+**週期終結的完整儀式**：
+- ✅ 總結本次開發週期成果
+- ✅ 更新 CLAUDE.md（項目規範）
+- ✅ 更新 PROJECT_CONTEXT.md（項目狀態）
+- ✅ 更新 DECISIONS.md（技術決策）
+- ✅ 創建/更新 last-session.yml（會話狀態）
+- ✅ 生成週期報告並歸檔
 
-## 📋 使用模式
+## 📋 執行流程
 
-### 模式 1：審查建議模式（無參數）
+### 1. 收集週期信息
+```yaml
+# 自動分析獲取
+- 週期起止時間（從上次 update-spec 或 /plan）
+- Git 提交歷史和變更統計
+- TodoWrite 完成情況
+- 測試和代碼質量指標
+```
+
+### 2. 總結開發成果
+```yaml
+# 自動生成
+achievements:
+  features_added: [從 git 和 todos 提取]
+  issues_fixed: [從 commit messages 提取]
+  tests_added: [統計新增測試]
+  quality_metrics: [測試覆蓋率、Detekt 變化]
+```
+
+### 3. 更新項目文檔
+自動更新四個核心文檔：
+- **CLAUDE.md** - 添加新規範和最佳實踐
+- **PROJECT_CONTEXT.md** - 更新項目狀態和進度
+- **DECISIONS.md** - 記錄本週期的技術決策
+- **last-session.yml** - 保存完整的週期狀態
+
+### 4. 生成週期報告
+創建 `.claude/reports/[date]-[summary].md` 包含：
+- 週期概覽和關鍵指標
+- 達成目標和遇到的挑戰
+- 經驗總結和下一步建議
+
+### 5. 歸檔當前週期
 ```bash
-/update-spec review
-```
-**功能**：
-1. 掃描最近的 DECISIONS.md 記錄
-2. 分析哪些決策應該固化為規範
-3. 提供具體的更新建議
-4. 生成待執行的更新命令列表
-
-### 模式 2：定向更新模式（帶參數）
-```bash
-/update-spec [section] "[content]"
-```
-**功能**：
-1. 直接更新指定章節
-2. 智能合併相似規則
-3. 維護文檔一致性
-
-## 🔧 支援的更新區域
-
-| 參數 | 更新區域 | 說明 | 示例 |
-|------|----------|------|------|
-| `overview` | 項目概述 | 項目描述、目標、範圍 | 調整項目定位 |
-| `architecture` | 技術架構 | 技術棧、架構模式、依賴 | 引入新框架 |
-| `rules` | 開發規範 | 編碼規範、命名約定 | API 命名規則 |
-| `workflow` | 工作流程 | 開發流程、協作模式 | PR 審查流程 |
-| `behavior` | Claude 行為 | AI 協作原則、輸出風格 | 代碼風格偏好 |
-| `testing` | 測試策略 | 測試要求、覆蓋率 | 單元測試規範 |
-| `security` | 安全規範 | 安全要求、最佳實踐 | 認證授權規則 |
-| `performance` | 性能標準 | 性能指標、優化原則 | 響應時間要求 |
-| `custom` | 項目特定 | LOCAL 區域的內容 | 業務特定規則 |
-
-## 📝 執行流程
-
-### 1. 分析階段
-```
-讀取 CLAUDE.md
-    ↓
-解析文檔結構
-    ↓
-識別目標章節
-    ↓
-分析現有內容
+.claude/archive/cycles/[date]/
+├── session.yml      # 會話狀態快照
+├── report.md       # 週期報告
+├── git-diff.patch  # 代碼變更
+└── metrics.json    # 度量數據
 ```
 
-### 2. 更新階段
-```
-智能判斷更新類型（新增/修改/替換）
-    ↓
-保持格式一致性
-    ↓
-添加版本標記
-    ↓
-執行更新
-```
+## 💾 last-session.yml 結構
 
-### 3. 驗證階段
-```
-檢查語法正確性
-    ↓
-確認沒有破壞結構
-    ↓
-保存備份（如需要）
+```yaml
+session:
+  cycle:
+    id: "[date]-[topic]"
+    type: "feature|bugfix|refactor|optimization"
+    description: "週期主要工作"
+    started_at: "開始時間"
+    completed_at: "結束時間"
+    
+  summary:
+    main_achievement: "主要成果"
+    key_decisions: ["決策列表"]
+    challenges_faced: ["遇到的挑戰"]
+    solutions_applied: ["解決方案"]
+    
+  changes:
+    new_files: ["新建文件列表"]
+    modified_files: ["修改文件列表"]
+    deleted_files: ["刪除文件列表"]
+    
+  knowledge_gained:
+    - topic: "學到的知識點"
+      insight: "具體見解"
+      
+  next_cycle:
+    status: "ready|blocked|pending_review"
+    suggestions: ["下一步建議"]
+    pending_tasks: ["遺留任務"]
+    
+  metrics:
+    commits_count: 數量
+    test_coverage: "百分比"
+    code_quality: "指標變化"
+    performance_gain: "性能提升"
 ```
 
 ## 🎨 智能特性
 
-### 1. 重複檢測
-- 自動識別相似規則
-- 提示是否合併或替換
-- 避免規範冗餘
+### 1. 自動週期識別
+- 從上次 update-spec 或 /plan 計算週期
+- 自動收集期間所有變更
+- 智能分類成果類型
 
-### 2. 衝突預警
-- 檢測矛盾的規則
-- 提示潛在問題
-- 建議解決方案
+### 2. 規範提取
+- 從 DECISIONS.md 識別可固化的規範
+- 從代碼變更推斷最佳實踐
+- 自動生成規範建議
 
-### 3. 版本管理
-```markdown
-<!-- 
-Claude Constitution Version: 3.0.1 → 3.0.2
-Last Updated: 2024-01-20
-Change Log:
-  - Added: GraphQL API naming convention
-  - Modified: PR review process
--->
-```
+### 3. 狀態連續性
+- 讀取上個週期的遺留任務
+- 追踪長期目標進展
+- 維護知識積累鏈條
 
-### 4. 智能分類
-自動將更新內容放到最合適的章節，即使用戶指定錯誤
+### 4. 智能歸檔
+- 自動創建週期目錄結構
+- 保存所有相關快照
+- 生成可追溯的歷史記錄
 
 ## 📝 使用示例
 
-### 示例 1：審查模式（推薦每週執行）
+### 示例 1：無參數執行（標準週期終結）
 ```bash
-/update-spec review
+/update-spec
 ```
 **輸出**：
 ```
-📊 分析了最近 7 個決策，發現 3 個可固化為規範：
+📊 開發週期總結 [2025-01-21]
 
-1. ✅ API 命名約定（2024-01-18）
-   建議執行：/update-spec rules "所有 API endpoint 使用 kebab-case"
-   
-2. ✅ Redis 緩存策略（2024-01-17）
-   建議執行：/update-spec architecture "引入 Redis 作為會話和熱數據緩存"
-   
-3. ⚠️ PR 審查流程（2024-01-16）
-   已存在相似規則，建議修改而非新增
-   建議執行：/update-spec workflow "PR 需要至少 2 個 approval"
+✅ 本週期成果：
+- 完成：Repository層N+1查詢優化
+- 新增：15個測試用例
+- 性能：查詢速度提升300%
+- 質量：Detekt問題 -20
+
+📝 已更新文檔：
+- CLAUDE.md（新增緩存策略規範）
+- PROJECT_CONTEXT.md（更新項目進度）
+- DECISIONS.md（記錄3個技術決策）
+- last-session.yml（保存週期狀態）
+
+📁 週期報告：
+.claude/reports/2025-01-21-optimization.md
+
+💡 下一週期建議：
+- 可以開始新功能開發
+- 建議先運行完整測試套件
+- Detekt問題仍需關注（當前420個）
+
+使用 /sync 開始新的工作週期
 ```
 
-### 示例 2：添加編碼規範
+### 示例 2：帶總結的執行
 ```bash
-/update-spec rules "所有 API endpoint 使用 kebab-case 命名"
+/update-spec "完成用戶認證系統重構"
 ```
-**結果**：
-- ✅ 在"開發規範"章節添加 API 命名規則
-- ✅ 更新版本號：3.0.1 → 3.0.2
-- ✅ 添加變更記錄
+**輸出**：
+```
+📊 開發週期總結：完成用戶認證系統重構
 
-### 示例 3：調整工作流程
+✅ 識別的主要變更：
+- 重構：認證流程從Session改為JWT
+- 新增：設備管理功能
+- 優化：Token刷新機制
+
+[其餘輸出同上]
+```
+
+### 示例 3：週期中的異常情況
 ```bash
-/update-spec workflow "PR 需要至少一個 approval 才能合併"
+/update-spec "緊急修復生產環境bug"
 ```
-**結果**：
-- ✅ 更新"工作流程"章節的 PR 規則
-- ⚠️ 檢測到與現有規則衝突，提示確認
-- ✅ 保留原有流程的其他部分
-
-### 示例 4：更新技術架構
-```bash
-/update-spec architecture "引入 Redis 作為會話存儲和緩存層"
+**輸出**：
 ```
-**結果**：
-- ✅ 在技術架構添加 Redis 說明
-- ✅ 更新依賴列表
-- ✅ 添加相關配置說明
+⚠️ 檢測到非正常週期（僅2小時）
 
-## 🔄 版本管理
+📊 緊急修復總結：
+- 問題：生產環境內存洩漏
+- 解決：修復Repository層資源釋放
+- 影響：已部署並驗證
 
-每次更新都會：
-1. 在文檔頂部更新版本號
-2. 添加變更註釋
-3. 保留歷史記錄
+📝 已記錄到 DECISIONS.md：
+- 緊急修復流程
+- 資源管理最佳實踐
 
-```markdown
-<!-- 
-Claude Constitution Version: 3.0.1
-Last Updated: 2024-01-20
-Changes: 添加 GraphQL API 規範
--->
+💡 建議：
+- 添加內存洩漏檢測測試
+- 完善監控告警機制
 ```
+
+## 🔄 與工作流程的整合
+
+### 你的日常工作流程
+```mermaid
+graph LR
+    A[/sync 開始] --> B{有遺留?}
+    B -->|是| C[/context 繼續]
+    B -->|否| D[/plan 新任務]
+    C --> E[開發工作]
+    D --> E
+    E --> F[/update-spec 終結]
+    F --> G[commit 提交]
+    G --> H[週期完成]
+```
+
+### 命令職責矩陣（更新後）
+| 命令 | CLAUDE.md | DECISIONS.md | PROJECT_CONTEXT.md | last-session.yml |
+|------|-----------|--------------|-------------------|-----------------|
+| `/start` | ❌ | ❌ | ✅ 創建 | ❌ |
+| `/sync` | ❌ | ❌ | ✅ 讀取 | ✅ 讀取 |
+| `/context` | ✅ 讀取 | ✅ 讀取 | ✅ 讀取 | ✅ 讀取 |
+| `/plan` | ❌ | ❌ | ❌ | ✅ 記錄開始 |
+| `/learn` | ❌ | ✅ 更新 | ✅ 智能更新 | ❌ |
+| `/update-spec` | ✅ 更新 | ✅ 更新 | ✅ 更新 | ✅ 創建/更新 |
 
 ## 💡 最佳實踐
 
 ### 推薦工作流
 ```bash
-# 每週/迭代結束時
-1. /update-spec review        # 審查近期決策
-2. 執行建議的更新命令          # 固化重要規範
-3. git commit CLAUDE.md       # 版本控制
-4. /context                   # 確認理解
+# 每日開始
+/sync                    # 讀取 last-session.yml，恢復狀態
+
+# 開發過程
+/context                 # 確認理解
+/plan "新功能"           # 開始新週期（如需要）
+[開發工作...]
+/learn "重要決策"        # 記錄決策（如需要）
+
+# 週期結束
+/update-spec            # 終結週期，更新所有文檔
+git commit              # 提交變更
 ```
 
 ### 使用原則
-1. **職責單一**：只更新 CLAUDE.md，不碰其他文件
-2. **小步快跑**：每次專注一個方面的更新
-3. **及時固化**：重要決策及時轉為規範
-4. **保持簡潔**：定期清理過時內容
-
-## 🎯 與其他命令的協作
-
-### 命令職責矩陣
-| 命令 | CLAUDE.md | DECISIONS.md | PROJECT_CONTEXT.md |
-|------|-----------|--------------|-------------------|
-| `/meta` | ✅ 創建 | ❌ | ❌ |
-| `/update-spec` | ✅ 更新 | ❌ | ❌ |
-| `/learn` | ❌ | ✅ 更新 | ✅ 智能更新 |
-| `/start` | ❌ | ❌ | ✅ 創建/更新 |
-| `/sync` | ❌ | ❌ | ✅ 讀取 |
-| `/context` | ✅ 讀取 | ✅ 讀取 | ✅ 讀取 |
-
-### 協作流程
-```
-/learn "新決策"           # 記錄到 DECISIONS.md
-      ↓
-/update-spec review      # 分析哪些需要固化
-      ↓
-/update-spec rules "..." # 更新到 CLAUDE.md
-      ↓
-/context                 # 確認全部理解
-```
+1. **週期終結**：把 update-spec 當作開發週期的結束儀式
+2. **自動保存**：所有狀態自動保存到 last-session.yml
+3. **持續積累**：每個週期的知識都會被保留
+4. **可追溯性**：所有週期都有完整歸檔
 
 ## 💡 注意事項
 
-1. **不會自動連動**：此命令專注於 CLAUDE.md，不會自動更新其他文件
-2. **手動觸發**：需要你主動執行，不會被其他命令自動調用
-3. **保持獨立**：與 `/learn` 分工明確，各司其職
-4. **版本控制**：建議每次更新後 git commit
+1. **自動創建**：首次執行會自動創建 last-session.yml
+2. **智能識別**：自動識別週期類型（feature/bugfix/refactor）
+3. **連續追踪**：維護週期間的連續性
+4. **知識管理**：自動提取和保存經驗教訓
 
-準備好管理你的項目規範了嗎？使用 `/update-spec review` 開始！
+準備好使用新的週期管理系統了嗎？在完成當前工作後使用 `/update-spec` 終結週期！

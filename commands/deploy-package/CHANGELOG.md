@@ -1,5 +1,31 @@
 # 變更日誌
 
+## v3.1.0 (2025-01-21) - 狀態管理完善
+
+### 🚀 新功能
+- `/plan` 命令現在會創建/更新 `last-session.yml`，標記開發週期開始
+- `/context` 命令新增項目進展對比功能，使用 `initial-scan.json` 作為基線
+- `/update-spec` 命令升級為週期終結儀式，完整保存所有狀態
+- `/sync` 命令增強錯誤處理，優雅處理文件缺失情況
+
+### ⚡ 改進
+- 修復了命令體系中的斷鏈問題（last-session.yml 更新鏈）
+- 激活了孤立文件（initial-scan.json 現在被 /context 使用）
+- 完善了工作流程：sync → context/plan → 開發 → update-spec → commit
+- 所有狀態文件現在能正確流轉
+
+### 📝 文檔更新
+- 更新 SIMPLE_COMMANDS_SUMMARY.md 反映新的狀態管理功能
+- 各命令文檔添加了狀態文件交互說明
+- 創建 COMMAND_SYSTEM_AUDIT.md 記錄體系分析
+
+### 🐛 修復
+- 解決了 last-session.yml 只創建不更新的問題
+- 修復了 initial-scan.json 完全未使用的問題
+- 改進了文件缺失時的錯誤處理邏輯
+
+---
+
 ## v3.0.0 (2024-01-15) - 重大重構
 
 ### 🚀 新功能

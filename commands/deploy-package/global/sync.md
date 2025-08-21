@@ -9,16 +9,17 @@ arguments: none
 ## 🔄 同步內容
 
 ### 1. 自動讀取持久化上下文
-**核心文檔**（如不存在會提示創建）：
+**核心文檔**（優雅處理缺失）：
 - `.claude/PROJECT_CONTEXT.md` - 項目基礎信息
 - `.claude/DECISIONS.md` - 技術決策記錄
 - `.claude/state/last-session.yml` - 上次會話狀態
 - `CLAUDE.md` - 項目特定規則
 
-**如果缺少必要文檔**：
-- 缺少 PROJECT_CONTEXT.md → 提示使用 `/start`
-- 缺少 CLAUDE.md → 提示使用 `/meta`
+**智能處理缺失文檔**：
+- 缺少 PROJECT_CONTEXT.md → 提示使用 `/start` 初始化
+- 缺少 CLAUDE.md → 提示使用 `/meta` 創建規範
 - 缺少 DECISIONS.md → 自動創建基礎框架
+- 缺少 last-session.yml → 從 git 歷史智能推斷
 
 ### 2. 檢查項目狀態
 ```bash
@@ -45,6 +46,11 @@ arguments: none
 
 ```markdown
 📊 工作狀態同步報告
+
+## 🔄 會話恢復
+- 上次工作：[從 last-session.yml 讀取]
+- 週期狀態：[planning/development/reviewing]
+- 中斷時間：[計算時間差]
 
 ## 🎯 當前焦點
 - 正在開發：[功能名稱]
@@ -88,13 +94,19 @@ arguments: none
    - 從一個功能切換到另一個
    - 處理緊急問題後回到原任務
 
-## 💾 狀態保存
+## 💾 錯誤處理機制
 
-同步器會自動保存：
-- 當前任務狀態
-- 重要的上下文信息
-- 工作進度標記
-- 下次需要的信息
+### 優雅降級策略
+如果 last-session.yml 不存在：
+1. 從 git log 提取最近工作
+2. 從 PROJECT_CONTEXT.md 讀取狀態
+3. 從未提交文件推斷進度
+4. 提供智能恢復建議
+
+### 恢復建議
+- 有遺留工作 → 建議使用 `/context` 確認
+- 無遺留工作 → 建議使用 `/plan` 開始新任務
+- 文檔缺失 → 引導使用對應命令創建
 
 ## 🔗 命令連動機制
 
@@ -107,9 +119,9 @@ arguments: none
 
 **日常工作流**：
 ```
-/sync → /plan → [coding] → /learn → /check
- 恢復     規劃      實現       記錄      檢查
- 狀態     任務                 決策
+/sync → /context → /plan → [coding] → /update-spec
+ 恢復      確認      規劃      實現        終結
+ 狀態      理解      任務                 週期
 ```
 
 **文檔關係**：

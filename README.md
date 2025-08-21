@@ -246,10 +246,16 @@ import seaborn as sns
 
 ## 🎯 Command System v3.3 (Core Preserved)
 
+### 🆕 v3.1 State Management Enhancement (Latest)
+- **Complete Lifecycle**: `/plan` creates session → `/update-spec` terminates cycle
+- **State Coherence**: `last-session.yml` tracks full development cycles
+- **Progress Tracking**: `/context` compares against `initial-scan.json` baseline
+- **Robust Recovery**: `/sync` gracefully handles missing files with smart fallbacks
+
 ### Core Philosophy
 - **Less is More**: 8 core commands + 5 SDK-specific commands
 - **Smart Integration**: Each command completes multiple related tasks
-- **Context Aware**: Automatic memory and state management
+- **Context Aware**: Automatic memory and state management via structured files
 - **Scenario Adaptive**: Dual support for app development and SDK development
 
 ### 8 Core Preserved Commands
@@ -565,7 +571,17 @@ your-project/
   - Continuous monitoring and smart filtering mechanisms
   - Professional domain deep analysis capabilities
 
-### v3.3.0 (2025-08-10) - Historical Version
+### v3.1.0 (2025-01-21) - State Management Enhancement
+- **State Management Improvements**:
+  - Fixed command workflow chain breaks
+  - Activated orphaned `initial-scan.json` for progress tracking
+  - Enhanced `/plan`, `/context`, `/sync`, `/update-spec` commands
+  - Complete lifecycle management with `last-session.yml`
+- **Documentation Updates**:
+  - Created COMMAND_MATRIX.md for clear interaction reference
+  - Updated workflow examples in all documentation
+
+### v3.3.0 (2025-08-10) - Historical Version  
 - **Major Adjustments**:
   - Removed all project-level commands, focused on global universal commands
   - Let developers establish project-specific commands themselves
