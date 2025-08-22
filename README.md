@@ -16,29 +16,50 @@ Claude Code Collaboration Framework is a comprehensive AI-assisted development s
 
 ### 🎮 Command System
 
-**Core Commands (8)**
+#### Project Understanding & Management (3)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/start` | Quick project startup & understanding | First time touching project | None |
+| `/context` | Context sync checkpoint | Ensure understanding consistency | None |
+| `/sync` | State synchronizer | New session start | None |
 
-| Command | Function | Use Case |
-|---------|----------|----------|
-| `/start` | Quick project understanding | First time working with project |
-| `/sync` | Restore work state | Beginning new session |
-| `/context` | Sync context understanding | Ensure understanding consistency |
-| `/plan` | Task planning & design | Before starting new features |
-| `/learn` | Record decision knowledge | After important decisions |
-| `/meta` | Customize project specs | New project or major adjustments |
-| `/doc` | Smart document maintenance | Update project docs |
-| `/update-spec` | Update CLAUDE.md | Solidify decisions into specs |
+#### Development Support (4)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/plan` | Task planning & design | Before starting new features | [task description] |
+| `/check` | Complete quality check | Before committing code | None |
+| `/watch` | Watch mode | During coding | [on\|off\|status\|report] |
+| `/test` | Test generation & execution | Ensure code quality | [file\|feature] |
 
-**SDK Development Commands (5)**
+#### Knowledge Management (2)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/learn` | Learn & record decisions | After important decisions | [decision content] |
+| `/doc` | Smart document maintenance | Update project docs | [api\|readme\|changelog\|arch] |
 
-| Command | Function | Parameters |
-|---------|----------|------------|
-| `/sdk-design` | API design assistant | [feature description] |
-| `/sdk-example` | Example code generation | basic/advanced/all |
-| `/sdk-test` | Test suite generation | unit/integration/all |
-| `/sdk-doc` | Documentation generation | api/guide/migration/all |
-| `/sdk-release` | Release preparation | major/minor/patch/check |
+#### Workflow Optimization (3)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/review` | PR preparation assistant | Before creating PR | None |
+| `/debug` | Smart debugging assistant | When encountering problems | [error info] |
+| `/meta` | Project specification customization | New project or major changes | None |
 
+#### Quality Assurance (2)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/analyze` | Deep analysis & validation | Risk analysis based on intuition | [feature/module] [concern or "deep"] |
+| `/update-spec` | CLAUDE.md update specific | Solidify decisions into specs | [review\|section "content"] |
+
+#### SDK Development Commands (5)
+| Command | Function | When to Use | Parameters |
+|---------|----------|-------------|------------|
+| `/sdk-design` | API design assistant | Designing new APIs | [feature description] |
+| `/sdk-example` | Example code generation | Creating usage examples | [basic\|advanced\|integration\|all] |
+| `/sdk-test` | SDK test suite | Generate professional tests | [unit\|integration\|compat\|performance\|all] |
+| `/sdk-doc` | SDK documentation generation | Writing documentation | [api\|guide\|migration\|all] |
+| `/sdk-release` | Release preparation assistant | Preparing new version | [major\|minor\|patch\|check] |
+
+**Total: 19 Commands** (14 Core + 5 SDK)
 📖 Detailed docs: [commands/docs/](commands/docs/)
 
 ### 🤖 Intelligent Agents
@@ -61,18 +82,34 @@ Claude Code Collaboration Framework is a comprehensive AI-assisted development s
 
 📖 Detailed docs: [agents/docs/](agents/docs/)
 
-### 🎨 Output Styles
+### 🎨 Output Styles (9 Professional Personas)
 
+#### Architecture & Design
 | Style Name | Best For | Key Characteristics |
 |------------|----------|---------------------|
 | `senior-architect` | System design | Comprehensive analysis, risk assessment, strategic thinking |
+| `system-architect` | Technical architecture | Transform PRDs to technical designs, multi-platform solutions |
+
+#### Development & Implementation
+| Style Name | Best For | Key Characteristics |
+|------------|----------|---------------------|
 | `concise-developer` | Quick coding | Minimal explanations, direct solutions, code-first |
 | `educational-mentor` | Learning & teaching | Detailed explanations, progressive learning, rich examples |
+
+#### Operations & Security
+| Style Name | Best For | Key Characteristics |
+|------------|----------|---------------------|
 | `devops-engineer` | Infrastructure | Automation-first, reliability, IaC mindset |
 | `security-analyst` | Security review | Threat modeling, vulnerability assessment, compliance |
-| `product-expert` | Product requirements | PRD documents, user stories, roadmap planning |
-| `sdk-design-expert` | SDK design | API design, cross-platform, developer experience |
 
+#### Product & SDK
+| Style Name | Best For | Key Characteristics |
+|------------|----------|---------------------|
+| `product-expert` | Product requirements | PRD documents, user stories, roadmap planning |
+| `sdk-design-expert` | SDK architecture | API design, cross-platform, developer experience |
+| `sdk-prd-expert` | SDK product management | Developer tools PRD, API product strategy |
+
+**Total: 9 Professional Output Styles**
 📖 Detailed docs: [output-styles/README.md](output-styles/README.md)
 
 ## 🚀 Manual Installation
