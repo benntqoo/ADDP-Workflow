@@ -1,12 +1,14 @@
-# Claude Code 命令自动部署脚本
+# Claude Code 命令和 Output Styles 自动部署脚本
 # 适用于 Windows PowerShell
 
-Write-Host "🚀 Claude Code 命令部署脚本" -ForegroundColor Cyan
+Write-Host "🚀 Claude Code 部署脚本" -ForegroundColor Cyan
 Write-Host "==========================" -ForegroundColor Cyan
 
-# 设置命令目录路径
+# 设置目录路径
 $GlobalCmdDir = "$env:USERPROFILE\.claude\commands"
 $ProjectCmdDir = ".\.claude\commands"
+$GlobalStylesDir = "$env:USERPROFILE\.claude\output-styles"
+$ProjectStylesDir = ".\.claude\output-styles"
 
 # 创建全局命令目录
 Write-Host ""
@@ -61,6 +63,32 @@ if ($response -eq 'y' -or $response -eq 'Y') {
     }
 }
 
+# 部署 Output Styles
+Write-Host ""
+Write-Host "🎨 部署 Output Styles..." -ForegroundColor Yellow
+
+# 检查 output-styles 源目录
+$SourceStylesDir = "..\..\output-styles"
+if (Test-Path $SourceStylesDir) {
+    # 创建全局 output-styles 目录
+    Write-Host "📁 创建全局 Output Styles 目录..." -ForegroundColor Yellow
+    if (!(Test-Path $GlobalStylesDir)) {
+        New-Item -ItemType Directory -Force -Path $GlobalStylesDir | Out-Null
+    }
+    
+    # 复制 output styles
+    Write-Host "📋 复制 Output Styles..." -ForegroundColor Yellow
+    try {
+        Copy-Item -Path "$SourceStylesDir\*.md" -Destination $GlobalStylesDir -Force
+        $stylesCount = (Get-ChildItem -Path "$SourceStylesDir\*.md").Count
+        Write-Host "✓ 成功复制 $stylesCount 个 Output Styles" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️ 复制 Output Styles 失败: $_" -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "ℹ️ 未找到 Output Styles 目录，跳过" -ForegroundColor Gray
+}
+
 # 验证部署
 Write-Host ""
 Write-Host "🔍 验证部署结果..." -ForegroundColor Yellow
@@ -70,12 +98,17 @@ if (Test-Path $ProjectCmdDir) {
     $projectDeployed = (Get-ChildItem -Path "$ProjectCmdDir\*.md" -ErrorAction SilentlyContinue).Count
     Write-Host "项目命令数量: $projectDeployed" -ForegroundColor Cyan
 }
+if (Test-Path $GlobalStylesDir) {
+    $stylesDeployed = (Get-ChildItem -Path "$GlobalStylesDir\*.md" -ErrorAction SilentlyContinue).Count
+    Write-Host "Output Styles 数量: $stylesDeployed" -ForegroundColor Cyan
+}
 
 Write-Host ""
 Write-Host "✨ 部署完成！" -ForegroundColor Green
 Write-Host ""
 Write-Host "提示：" -ForegroundColor Yellow
-Write-Host "1. 请重启 Claude Code 以加载新命令"
-Write-Host "2. 使用 /meta 命令开始定制项目规范"
-Write-Host "3. 查看 DEPLOY_GUIDE.md 了解更多信息"
+Write-Host "1. 请重启 Claude Code 以加载新命令和风格"
+Write-Host "2. 使用 /output-style 查看可用风格"
+Write-Host "3. 使用 /meta 命令开始定制项目规范"
+Write-Host "4. 查看 DEPLOY_GUIDE.md 了解更多信息"
 Write-Host ""

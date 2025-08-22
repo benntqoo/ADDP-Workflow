@@ -14,12 +14,13 @@ Claude Code v4.0 introduces a **Hybrid Commands + Agents System** that perfectly
 1. [Quick Start](#-quick-start)
 2. [v4.0 Hybrid Architecture](#-v40-hybrid-architecture) 🔥 **Latest**
 3. [Intelligent Agent System](#-intelligent-agent-system) ⭐ **New**
-4. [Command System v3.3](#-command-system-v33) 📚 **Core Preserved**
-5. [Hybrid Workflows](#-hybrid-workflows) 🔥 **Latest**
-6. [Project Structure](#-project-structure)
-7. [Migration Guide](#-migration-guide) 🔥 **Latest**
-8. [Best Practices](#-best-practices)
-9. [Version History](#-version-history)
+4. [Output Styles System](#-output-styles-system) 🎨 **New**
+5. [Command System v3.3](#-command-system-v33) 📚 **Core Preserved**
+6. [Hybrid Workflows](#-hybrid-workflows) 🔥 **Latest**
+7. [Project Structure](#-project-structure)
+8. [Migration Guide](#-migration-guide) 🔥 **Latest**
+9. [Best Practices](#-best-practices)
+10. [Version History](#-version-history)
 
 ## 🚀 Quick Start
 
@@ -244,6 +245,195 @@ import seaborn as sns
 
 ---
 
+## 🎨 Output Styles System
+
+### Transform Claude's Personality for Any Domain
+
+Output Styles enable complete personality transformation of Claude Code while preserving all tools and capabilities. This powerful feature allows you to customize Claude's communication style, response format, and domain expertise to match your specific needs.
+
+### How Output Styles Work
+
+Output Styles replace Claude Code's system prompt to reshape its personality and approach. Settings persist at the project level (saved to `.claude/settings.local.json`), allowing different projects to maintain different personalities.
+
+### Available Professional Styles
+
+| Style Name | Best For | Key Characteristics |
+|------------|----------|---------------------|
+| **Senior Architect** | System design & architecture | Strategic thinking, risk assessment, comprehensive analysis |
+| **Concise Developer** | Quick coding tasks | Direct solutions, minimal explanations, code-first approach |
+| **Educational Mentor** | Learning & teaching | Step-by-step guidance, detailed explanations, practice exercises |
+| **DevOps Engineer** | Infrastructure & deployment | Automation-first, reliability focus, IaC mindset |
+| **Security Analyst** | Security reviews | Threat modeling, vulnerability assessment, compliance focus |
+
+### Installation & Configuration
+
+#### Method 1: Automatic Installation (Recommended)
+The deployment script installs both commands and Output Styles:
+
+```bash
+# Windows
+cd claude\commands\deploy-package
+.\deploy.ps1
+
+# macOS/Linux
+cd claude/commands/deploy-package
+./deploy.sh
+```
+
+This will:
+- Copy all Output Styles to `~/.claude/output-styles/`
+- Copy all commands to `~/.claude/commands/`
+- Verify installation and provide usage tips
+
+#### Method 2: Manual Installation
+For more control over the installation process:
+
+**Windows:**
+```powershell
+# Create Output Styles directory
+mkdir "%USERPROFILE%\.claude\output-styles"
+
+# Copy all style files
+xcopy /Y "claude\output-styles\*.md" "%USERPROFILE%\.claude\output-styles\"
+
+# Verify installation
+dir "%USERPROFILE%\.claude\output-styles"
+```
+
+**macOS/Linux:**
+```bash
+# Create Output Styles directory
+mkdir -p ~/.claude/output-styles
+
+# Copy all style files
+cp claude/output-styles/*.md ~/.claude/output-styles/
+
+# Set proper permissions
+chmod 644 ~/.claude/output-styles/*.md
+
+# Verify installation
+ls -la ~/.claude/output-styles/
+```
+
+**Selective Installation:**
+```bash
+# Install only specific styles
+cp claude/output-styles/senior-architect.md ~/.claude/output-styles/
+cp claude/output-styles/concise-developer.md ~/.claude/output-styles/
+```
+
+### Using Output Styles
+
+#### Basic Commands
+```bash
+/output-style              # View available styles
+/output-style:set <name>   # Set a specific style
+/output-style:new          # Create a new custom style
+```
+
+#### Configuration Options
+
+**1. Command-Line Usage** (Immediate effect)
+```bash
+/output-style:set senior-architect
+```
+
+**2. Project-Level Configuration** (Persistent for project)
+Create or edit `.claude/settings.local.json`:
+```json
+{
+  "outputStyle": "concise-developer",
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  }
+}
+```
+
+**3. Global Default Configuration** (All projects)
+Edit `~/.claude/settings.json`:
+```json
+{
+  "defaultOutputStyle": "educational-mentor"
+}
+```
+
+**Priority Order:** Command > Project Config > Global Config > Default
+
+#### Workflow Integration Examples
+
+**Architecture Planning**
+```bash
+/output-style:set senior-architect
+/plan Design microservices architecture
+# → Comprehensive analysis with risk assessment, trade-offs, and roadmap
+```
+
+**Rapid Development**
+```bash
+/output-style:set concise-developer
+# Start coding with minimal explanations, direct solutions
+```
+
+**Team Training**
+```bash
+/output-style:set educational-mentor
+/learn Document Redis caching strategy
+# → Detailed explanations with examples and best practices
+```
+
+### Optimal Style + Command Combinations
+
+| Task Type | Recommended Style | Best Commands | Result |
+|-----------|------------------|---------------|--------|
+| Architecture Design | Senior Architect | `/plan`, `/meta` | Strategic planning with comprehensive analysis |
+| Feature Implementation | Concise Developer | `/context`, coding | Fast, efficient development |
+| Knowledge Transfer | Educational Mentor | `/learn`, `/doc` | Clear documentation with learning progression |
+| Deployment Setup | DevOps Engineer | deployment tasks | Automated, reliable infrastructure |
+| Security Audit | Security Analyst | code review | Thorough vulnerability assessment |
+
+### Creating Custom Styles
+
+You can create your own styles tailored to your team's needs:
+
+```bash
+/output-style:new
+# Describe your requirements, Claude will generate a custom style
+```
+
+Custom styles are saved as markdown files with YAML frontmatter:
+```markdown
+---
+description: Brief description of the style
+---
+
+# Style Name
+
+Detailed system prompt defining communication style, 
+response format, and domain-specific behaviors...
+```
+
+### Best Practices
+
+1. **Phase-Based Switching**: Use different styles for different development phases
+2. **Project Consistency**: Set a default style per project in `.claude/settings.local.json`
+3. **Team Alignment**: Share custom styles with your team for consistent interactions
+4. **Combine with Commands**: Leverage style + command combinations for maximum efficiency
+
+### Output Styles vs Agents
+
+| Aspect | Output Styles | Agents |
+|--------|--------------|--------|
+| **Scope** | Transform main Claude instance | Independent specialized assistants |
+| **Persistence** | Project-level settings | Task-specific activation |
+| **Control** | Direct interaction with customized personality | Automated delegation |
+| **Use Case** | Consistent communication style | Specialized technical tasks |
+
+Output Styles and Agents work together: Styles define HOW Claude communicates, while Agents determine WHAT specialized capabilities are applied.
+
+📖 **[Complete Output Styles Guide](output-styles/README.md)** - Advanced configuration, custom style creation, and troubleshooting
+
+---
+
 ## 🎯 Command System v3.3 (Core Preserved)
 
 ### 🆕 v3.1 State Management Enhancement (Latest)
@@ -360,6 +550,13 @@ performance-optimizer: "I'll monitor training performance and provide optimizati
 claude/
 ├── README.en.md                # This document (v4.0 hybrid system English version)
 ├── README.md                   # Chinese version (v4.0 hybrid system complete version)
+│
+├── output-styles/              # 🎨 Output Styles System
+│   ├── senior-architect.md     # Strategic architecture style
+│   ├── concise-developer.md    # Minimalist coding style
+│   ├── educational-mentor.md   # Teaching and learning style
+│   ├── devops-engineer.md      # Infrastructure automation style
+│   └── security-analyst.md     # Security-focused style
 │
 ├── agents/                     # 🤖 Intelligent Agent System v4.0
 │   ├── README.md               # Agent system documentation

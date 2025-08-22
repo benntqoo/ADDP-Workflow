@@ -12,15 +12,16 @@
 ### 🚀 立即開始
 1. [v4.0 混合系統架構](#-v40-混合系統架構) 🔥 **最新革命性突破**
 2. [智能代理系統](#-智能代理系統) ⭐ **35+專業代理自動支援**
-3. [快速開始](#-快速開始) ⚡ **5分鐘上手**
-4. [混合工作流程](#-混合工作流程) 🔥 **全新協作模式**
+3. [Output Styles 系統](#-output-styles-系統) 🎨 **個性化轉換**
+4. [快速開始](#-快速開始) ⚡ **5分鐘上手**
+5. [混合工作流程](#-混合工作流程) 🔥 **全新協作模式**
 
 ### 📖 實用參考
-5. [命令快速索引](#-命令快速索引) 📋 **快速查找**
-6. [命令系統 v3.3](#-命令系統-v33) 📚 **核心保留**
-7. [項目結構](#-項目結構)
-8. [協作憲法](#-協作憲法)
-9. [最佳實踐](#-最佳實踐)
+6. [命令快速索引](#-命令快速索引) 📋 **快速查找**
+7. [命令系統 v3.3](#-命令系統-v33) 📚 **核心保留**
+8. [項目結構](#-項目結構)
+9. [協作憲法](#-協作憲法)
+10. [最佳實踐](#-最佳實踐)
 
 ### 📚 詳細文檔
 10. [命令詳細使用手冊](#-命令詳細使用手冊)
@@ -277,6 +278,195 @@ import seaborn as sns
 
 ---
 
+## 🎨 Output Styles 系統
+
+### 為任何領域轉換 Claude 的個性
+
+Output Styles 能夠完全轉換 Claude Code 的個性，同時保留所有工具和能力。這個強大的功能讓你可以自定義 Claude 的溝通風格、回應格式和領域專業知識，以滿足你的特定需求。
+
+### Output Styles 工作原理
+
+Output Styles 通過替換 Claude Code 的系統提示詞來重塑其個性和方法。設置會在項目級別持久化（保存到 `.claude/settings.local.json`），讓不同項目可以維持不同的個性。
+
+### 可用的專業風格
+
+| 風格名稱 | 最適合 | 關鍵特徵 |
+|---------|--------|---------|
+| **Senior Architect** | 系統設計與架構 | 戰略思維、風險評估、全面分析 |
+| **Concise Developer** | 快速編碼任務 | 直接解決方案、最少解釋、代碼優先 |
+| **Educational Mentor** | 學習與教學 | 循序漸進指導、詳細解釋、練習題 |
+| **DevOps Engineer** | 基礎設施與部署 | 自動化優先、可靠性焦點、IaC 思維 |
+| **Security Analyst** | 安全審查 | 威脅建模、漏洞評估、合規焦點 |
+
+### 安裝與配置
+
+#### 方法 1：自動安裝（推薦）
+部署腳本會同時安裝命令和 Output Styles：
+
+```bash
+# Windows
+cd claude\commands\deploy-package
+.\deploy.ps1
+
+# macOS/Linux
+cd claude/commands/deploy-package
+./deploy.sh
+```
+
+這將會：
+- 複製所有 Output Styles 到 `~/.claude/output-styles/`
+- 複製所有命令到 `~/.claude/commands/`
+- 驗證安裝並提供使用提示
+
+#### 方法 2：手動安裝
+如需更精確控制安裝過程：
+
+**Windows:**
+```powershell
+# 創建 Output Styles 目錄
+mkdir "%USERPROFILE%\.claude\output-styles"
+
+# 複製所有風格文件
+xcopy /Y "claude\output-styles\*.md" "%USERPROFILE%\.claude\output-styles\"
+
+# 驗證安裝
+dir "%USERPROFILE%\.claude\output-styles"
+```
+
+**macOS/Linux:**
+```bash
+# 創建 Output Styles 目錄
+mkdir -p ~/.claude/output-styles
+
+# 複製所有風格文件
+cp claude/output-styles/*.md ~/.claude/output-styles/
+
+# 設置正確權限
+chmod 644 ~/.claude/output-styles/*.md
+
+# 驗證安裝
+ls -la ~/.claude/output-styles/
+```
+
+**選擇性安裝:**
+```bash
+# 只安裝特定風格
+cp claude/output-styles/senior-architect.md ~/.claude/output-styles/
+cp claude/output-styles/concise-developer.md ~/.claude/output-styles/
+```
+
+### 使用 Output Styles
+
+#### 基本命令
+```bash
+/output-style              # 查看可用風格
+/output-style:set <name>   # 設置特定風格
+/output-style:new          # 創建新的自定義風格
+```
+
+#### 配置選項
+
+**1. 命令行使用**（立即生效）
+```bash
+/output-style:set senior-architect
+```
+
+**2. 項目級別配置**（項目持久化）
+創建或編輯 `.claude/settings.local.json`：
+```json
+{
+  "outputStyle": "concise-developer",
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  }
+}
+```
+
+**3. 全局默認配置**（所有項目）
+編輯 `~/.claude/settings.json`：
+```json
+{
+  "defaultOutputStyle": "educational-mentor"
+}
+```
+
+**優先級順序：** 命令 > 項目配置 > 全局配置 > 默認
+
+#### 工作流整合示例
+
+**架構規劃**
+```bash
+/output-style:set senior-architect
+/plan 設計微服務架構
+# → 全面分析包含風險評估、權衡分析和路線圖
+```
+
+**快速開發**
+```bash
+/output-style:set concise-developer
+# 開始編碼，最少解釋，直接解決方案
+```
+
+**團隊培訓**
+```bash
+/output-style:set educational-mentor
+/learn 記錄 Redis 緩存策略
+# → 詳細解釋包含示例和最佳實踐
+```
+
+### 最佳風格 + 命令組合
+
+| 任務類型 | 推薦風格 | 最佳命令 | 結果 |
+|---------|---------|---------|------|
+| 架構設計 | Senior Architect | `/plan`、`/meta` | 戰略規劃與全面分析 |
+| 功能實現 | Concise Developer | `/context`、編碼 | 快速高效開發 |
+| 知識傳遞 | Educational Mentor | `/learn`、`/doc` | 清晰文檔與學習進程 |
+| 部署設置 | DevOps Engineer | 部署任務 | 自動化、可靠的基礎設施 |
+| 安全審計 | Security Analyst | 代碼審查 | 徹底的漏洞評估 |
+
+### 創建自定義風格
+
+你可以創建適合團隊需求的自定義風格：
+
+```bash
+/output-style:new
+# 描述你的需求，Claude 會生成自定義風格
+```
+
+自定義風格保存為帶有 YAML frontmatter 的 markdown 文件：
+```markdown
+---
+description: 風格簡短描述
+---
+
+# 風格名稱
+
+詳細的系統提示詞，定義溝通風格、
+回應格式和領域特定行為...
+```
+
+### 最佳實踐
+
+1. **階段性切換**：為不同開發階段使用不同風格
+2. **項目一致性**：在 `.claude/settings.local.json` 中為每個項目設置默認風格
+3. **團隊協調**：與團隊共享自定義風格以保持一致的交互
+4. **結合命令**：利用風格 + 命令組合獲得最大效率
+
+### Output Styles vs 代理
+
+| 方面 | Output Styles | 代理 |
+|------|--------------|------|
+| **範圍** | 轉換主 Claude 實例 | 獨立的專業助手 |
+| **持久性** | 項目級別設置 | 任務特定激活 |
+| **控制** | 直接交互與自定義個性 | 自動委派 |
+| **用例** | 一致的溝通風格 | 專業技術任務 |
+
+Output Styles 和代理協同工作：Styles 定義 Claude 如何溝通，而代理決定應用什麼專業能力。
+
+📖 **[完整 Output Styles 指南](output-styles/README.md)** - 進階配置、自定義風格創建和故障排除
+
+---
+
 ## 🚀 快速開始
 
 ### 5 分鐘內開始使用 Claude Code
@@ -388,6 +578,13 @@ cd claude/commands/deploy-package
 claude/
 ├── README.md                    # 本文檔（v4.0 混合系統完整版）
 │
+├── output-styles/              # 🎨 Output Styles 系統
+│   ├── senior-architect.md     # 戰略架構風格
+│   ├── concise-developer.md    # 極簡編碼風格
+│   ├── educational-mentor.md   # 教學學習風格
+│   ├── devops-engineer.md      # 基礎設施自動化風格
+│   └── security-analyst.md     # 安全焦點風格
+│
 ├── agents/                     # 🤖 智能代理系統 v4.0
 │   ├── README.md               # 代理系統說明
 │   ├── core/                   # 核心代理
@@ -415,8 +612,7 @@ claude/
 │       └── work-coordinator.md # 多代理協調者
 │
 ├── config/                     # 🔧 配置系統
-│   ├── triggers.yaml           # 智能觸發配置
-│   └── workflows.yaml          # 工作流程配置
+│   └── token-settings.yaml     # Token 優化設置
 │
 ├── commands/                   # 📋 命令系統 v3.3（核心保留）
 │   └── deploy-package/         # 命令部署包
