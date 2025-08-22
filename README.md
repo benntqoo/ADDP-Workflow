@@ -1,345 +1,221 @@
-# Claude Code Collaboration Framework v4.0 - Hybrid Commands + Agents System
+# Claude Code Collaboration Framework
 
-*English | [中文](README_cn.md)*
+*English | [中文](README_zh.md)*
 
-> **Revolutionary AI-Powered Development Framework**  
-> Combining precise command control with intelligent agent automation for enhanced productivity
+Transform AI into your intelligent development partner through command systems, intelligent agents, and personalized styles.
 
-## 🌟 Overview
+## 🎯 Overview
 
-Claude Code v4.0 introduces a **Hybrid Commands + Agents System** that perfectly combines traditional command system's precise control with intelligent agents' professional capabilities. This open-source framework is designed to supercharge your development workflow through AI collaboration.
+Claude Code Collaboration Framework is a comprehensive AI-assisted development system offering three core capabilities:
 
-## 📚 Table of Contents
+1. **Command System** - Project management and workflow control
+2. **Intelligent Agents** - Professional technical support and quality assurance  
+3. **Output Styles** - Personalized communication customization
 
-1. [Quick Start](#-quick-start)
-2. [v4.0 Hybrid Architecture](#-v40-hybrid-architecture) 🔥 **Latest**
-3. [Intelligent Agent System](#-intelligent-agent-system) ⭐ **New**
-4. [Output Styles System](#-output-styles-system) 🎨 **New**
-5. [Command System v3.3](#-command-system-v33) 📚 **Core Preserved**
-6. [Hybrid Workflows](#-hybrid-workflows) 🔥 **Latest**
-7. [Project Structure](#-project-structure)
-8. [Migration Guide](#-migration-guide) 🔥 **Latest**
-9. [Best Practices](#-best-practices)
-10. [Version History](#-version-history)
+## 📚 Feature List
 
-## 🚀 Quick Start
+### 🎮 Command System
 
-### Get Started in 5 Minutes
+**Core Commands (8)**
 
-#### A. New Project
-```bash
-# Use meta-workflow command
-/meta
-
-# Claude will:
-# 1. Analyze project characteristics
-# 2. Ask key information
-# 3. Auto-generate CLAUDE.md
-# 4. Setup documentation structure
-```
-
-#### B. Existing Project
-```bash
-# Directly understand project
-/start
-
-# Or restore previous work state
-/sync
-```
-
-#### C. Installation Options
-
-##### Automatic Installation (Recommended)
-```bash
-# Windows
-cd claude\commands\deploy-package
-.\deploy.ps1
-
-# macOS/Linux
-cd claude/commands/deploy-package
-./deploy.sh
-```
-
-##### Manual Installation
-```bash
-# 1. Copy agents to Claude home directory
-# Windows
-xcopy /E /I "claude\agents" "%USERPROFILE%\.claude\agents"
-
-# macOS/Linux  
-cp -r claude/agents ~/.claude/agents
-
-# 2. Copy commands (Optional - for command system)
-# Windows
-xcopy /E /I "claude\commands\deploy-package\global" "%USERPROFILE%\.claude\commands"
-
-# macOS/Linux
-cp -r claude/commands/deploy-package/global ~/.claude/commands
-
-# 3. Verify installation
-ls ~/.claude/agents/      # Should see agent .md files
-ls ~/.claude/commands/    # Should see command files (if installed)
-```
-
-##### Project-Specific Installation
-```bash
-# Copy to your project root for project-specific configuration
-cp -r claude/agents .claude/agents
-```
+| Command | Function | Use Case |
+|---------|----------|----------|
+| `/start` | Quick project understanding | First time working with project |
+| `/sync` | Restore work state | Beginning new session |
+| `/context` | Sync context understanding | Ensure understanding consistency |
+| `/plan` | Task planning & design | Before starting new features |
+| `/learn` | Record decision knowledge | After important decisions |
+| `/meta` | Customize project specs | New project or major adjustments |
+| `/doc` | Smart document maintenance | Update project docs |
+| `/update-spec` | Update CLAUDE.md | Solidify decisions into specs |
 
----
-
-## 🚀 v4.0 Hybrid Architecture
+**SDK Development Commands (5)**
 
-### Revolutionary Breakthrough: Commands + Agents Dual-Track System
+| Command | Function | Parameters |
+|---------|----------|------------|
+| `/sdk-design` | API design assistant | [feature description] |
+| `/sdk-example` | Example code generation | basic/advanced/all |
+| `/sdk-test` | Test suite generation | unit/integration/all |
+| `/sdk-doc` | Documentation generation | api/guide/migration/all |
+| `/sdk-release` | Release preparation | major/minor/patch/check |
 
-Claude Code v4.0 introduces the **Hybrid Commands + Agents System**, perfectly combining traditional command system's precise control with intelligent agents' professional capabilities.
+📖 Detailed docs: [commands/docs/](commands/docs/)
 
-#### 🏗️ System Design Philosophy
-
-**Command System** (Human-Led):
-- Project lifecycle management
-- Memory and state control
-- Specification definition and updates
-- Key decision point control
-
-**Agent System** (AI-Powered):
-- Technical expertise
-- Automated quality assurance
-- Context-aware triggering
-- Continuous monitoring and optimization
-
-### 🎯 Core Advantages
-
-1. **Intelligent Routing**: Automatically selects appropriate professional agents based on file types and code content
-2. **Professional Depth**: 35+ professional agents covering full tech stack
-3. **Zero Configuration**: Smart context detection, no manual configuration needed
-4. **Progressive**: Can coexist with existing command system, gradual migration
-
-### 📊 System Architecture Diagram
-
-```mermaid
-graph TD
-    A[User Request] --> B[Command System v3.3]
-    A --> C[Agent System v4.0]
-    
-    B --> D[Project Management]
-    B --> E[Memory Control]
-    B --> F[Spec Definition]
-    
-    C --> G[Smart Context Detection]
-    G --> H[Professional Agent Routing]
-    H --> I[Quality Assurance Agents]
-    H --> J[Development Support Agents]
-    H --> K[Technical Expert Agents]
-    
-    D -.Collaboration.-> H
-    E -.Collaboration.-> G
-    F -.Collaboration.-> I
-```
-
----
-
-## 🤖 Intelligent Agent System
-
-### ⚠️ Important Update: Configuration Changes
-
-**Removed Files** (2025-08-16):
-- `config/triggers.yaml` - **Removed**: Claude Code doesn't parse custom YAML trigger configurations
-- `config/workflows.yaml` - **Removed**: Workflow orchestration is handled by Claude Code internally
-- Context detector agents - **Deprecated**: File-based detection doesn't work as expected
-
-**Why These Were Removed**:
-1. **No Execution Engine**: Claude Code doesn't have a mechanism to parse and execute these custom configurations
-2. **Misaligned with Reality**: These files suggested automatic file-type based triggering which doesn't actually work
-3. **Subagents Work Differently**: Claude Code uses agent descriptions for automatic delegation, not file-based triggers
-
-**What Actually Works**:
-- Agents with clear `description` fields that include trigger keywords
-- Claude Code's built-in automatic delegation based on task context
-- Explicit agent invocation using "Use the [agent-name] agent"
-
-### Agent Classification & Capabilities
-
-#### ~~🧠 Context Detectors~~ (Deprecated)
-~~Smart code context analysis, resolving multi-purpose language scenario conflicts~~
-
-**Note**: Context detector agents have been deprecated. Use language-specific expert agents instead (e.g., `kotlin-expert`, `python-ml-specialist`)
-
-#### 💻 Technical Specialist Agents
-Professional support for your tech stack:
-
-**Android & Kotlin**
-- `android-kotlin-architect`: Android application development expert
-- `kotlin-polyglot-master`: Kotlin multi-platform expert
-- `ktor-backend-architect`: Ktor backend service expert
-
-**Systems Programming**
-- `golang-systems-engineer`: Go systems engineering expert
-- `rust-zero-cost`: Rust zero-cost abstraction expert
-- `cpp-modern-master`: Modern C++ expert
-
-**Machine Learning & Data Science**
-- `python-ml-specialist`: Python ML/AI expert
-- Support for PyTorch, TensorFlow, Scikit-learn, LangChain
-
-**Game Development**
-- `unity-csharp-expert`: Unity game development expert
-
-**Frontend Development**
-- React, Vue, Angular, Next.js and other framework experts
-
-#### 🔍 Quality Assurance Agents
-Professional code review and quality control:
-
-- **code-reviewer**: Comprehensive code review, security and performance analysis
-- **test-automator**: Smart test generation and execution
-- **performance-optimizer**: Performance bottleneck analysis and optimization suggestions
-- **jenny-validator**: Specification validation expert (inspired by ClaudeCodeAgents)
-- **karen-realist**: Reality assessment expert, timeline and scope gatekeeper
-
-#### 🎭 Workflow Agents
-- **work-coordinator**: Multi-agent coordinator, handling complex cross-domain tasks
-
-### 🔄 ~~Smart Trigger System~~ (Deprecated)
-
-**This section is outdated**. Claude Code's actual delegation works differently:
-- Based on task description and agent `description` field
-- NOT based on file types or code patterns
-- Use clear keywords in agent descriptions for better automatic delegation
-
-### 🎯 Smart Detection Examples
-
-#### Kotlin Multi-Scenario Recognition
-```kotlin
-// Scenario 1: Android App -> android-kotlin-architect
-import android.os.Bundle
-import androidx.compose.runtime.*
-
-// Scenario 2: Ktor Backend -> ktor-backend-architect  
-import io.ktor.server.application.*
-import io.ktor.server.routing.*
-
-// Scenario 3: Spring Boot -> spring-boot-kotlin-expert
-@SpringBootApplication
-@RestController
-class UserController
-```
-
-#### Python Context Smart Recognition
-```python
-# Scenario 1: Machine Learning -> python-ml-specialist
-import torch
-import transformers
-from sklearn.model_selection import train_test_split
-
-# Scenario 2: FastAPI Backend -> fastapi-developer
-from fastapi import FastAPI
-from pydantic import BaseModel
-
-# Scenario 3: Data Science -> data-scientist
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-```
-
----
-
-## 🎨 Output Styles System
-
-### Transform Claude's Personality for Any Domain
-
-Output Styles enable complete personality transformation of Claude Code while preserving all tools and capabilities. This powerful feature allows you to customize Claude's communication style, response format, and domain expertise to match your specific needs.
-
-### How Output Styles Work
-
-Output Styles replace Claude Code's system prompt to reshape its personality and approach. Settings persist at the project level (saved to `.claude/settings.local.json`), allowing different projects to maintain different personalities.
-
-### Available Professional Styles
+### 🤖 Intelligent Agents
+
+**Quality Assurance Agents**
+- `code-reviewer` - Code review expert
+- `test-automator` - Automated test generation
+- `performance-optimizer` - Performance optimization analysis
+- `bug-hunter` - Bug finding and fixing
+- `security-analyst` - Security vulnerability analysis
+
+**Technical Expert Agents**
+- `kotlin-expert` - Kotlin full-stack development
+- `python-ml-specialist` - Python machine learning
+- `golang-systems-engineer` - Go systems programming
+- `rust-zero-cost` - Rust zero-cost abstractions
+- `typescript-fullstack-expert` - TypeScript full-stack
+
+**35+ More Agents** covering: Android, iOS, Web, Backend, Database, DevOps, etc.
+
+📖 Detailed docs: [agents/docs/](agents/docs/)
+
+### 🎨 Output Styles
 
 | Style Name | Best For | Key Characteristics |
 |------------|----------|---------------------|
-| **Senior Architect** | System design & architecture | Strategic thinking, risk assessment, comprehensive analysis |
-| **Concise Developer** | Quick coding tasks | Direct solutions, minimal explanations, code-first approach |
-| **Educational Mentor** | Learning & teaching | Step-by-step guidance, detailed explanations, practice exercises |
-| **DevOps Engineer** | Infrastructure & deployment | Automation-first, reliability focus, IaC mindset |
-| **Security Analyst** | Security reviews | Threat modeling, vulnerability assessment, compliance focus |
+| `senior-architect` | System design | Comprehensive analysis, risk assessment, strategic thinking |
+| `concise-developer` | Quick coding | Minimal explanations, direct solutions, code-first |
+| `educational-mentor` | Learning & teaching | Detailed explanations, progressive learning, rich examples |
+| `devops-engineer` | Infrastructure | Automation-first, reliability, IaC mindset |
+| `security-analyst` | Security review | Threat modeling, vulnerability assessment, compliance |
+| `product-expert` | Product requirements | PRD documents, user stories, roadmap planning |
+| `sdk-design-expert` | SDK design | API design, cross-platform, developer experience |
 
-### Installation & Configuration
+📖 Detailed docs: [output-styles/README.md](output-styles/README.md)
 
-#### Method 1: Automatic Installation (Recommended)
-The deployment script installs both commands and Output Styles:
+## 🚀 Manual Installation
 
-```bash
-# Windows
-cd claude\commands\deploy-package
-.\deploy.ps1
-
-# macOS/Linux
-cd claude/commands/deploy-package
-./deploy.sh
-```
-
-This will:
-- Copy all Output Styles to `~/.claude/output-styles/`
-- Copy all commands to `~/.claude/commands/`
-- Verify installation and provide usage tips
-
-#### Method 2: Manual Installation
-For more control over the installation process:
+### 1. Command System
 
 **Windows:**
 ```powershell
-# Create Output Styles directory
-mkdir "%USERPROFILE%\.claude\output-styles"
+# Create commands directory
+mkdir "%USERPROFILE%\.claude\commands"
 
-# Copy all style files
-xcopy /Y "claude\output-styles\*.md" "%USERPROFILE%\.claude\output-styles\"
+# Copy core commands
+xcopy /Y "claude\commands\deploy-package\global\*.md" "%USERPROFILE%\.claude\commands\"
 
-# Verify installation
-dir "%USERPROFILE%\.claude\output-styles"
+# Copy SDK commands (optional)
+xcopy /Y "claude\commands\deploy-package\sdk\*.md" "%USERPROFILE%\.claude\commands\"
 ```
 
 **macOS/Linux:**
 ```bash
-# Create Output Styles directory
+# Create commands directory
+mkdir -p ~/.claude/commands
+
+# Copy core commands
+cp claude/commands/deploy-package/global/*.md ~/.claude/commands/
+
+# Copy SDK commands (optional)
+cp claude/commands/deploy-package/sdk/*.md ~/.claude/commands/
+```
+
+### 2. Intelligent Agents
+
+**Windows:**
+```powershell
+# Create agents directory
+mkdir "%USERPROFILE%\.claude\agents"
+
+# Copy all agents
+xcopy /E /Y "claude\agents\*.md" "%USERPROFILE%\.claude\agents\"
+```
+
+**macOS/Linux:**
+```bash
+# Create agents directory
+mkdir -p ~/.claude/agents
+
+# Copy all agents
+cp -r claude/agents/*.md ~/.claude/agents/
+```
+
+### 3. Output Styles
+
+**Windows:**
+```powershell
+# Create styles directory
+mkdir "%USERPROFILE%\.claude\output-styles"
+
+# Copy all styles
+xcopy /Y "claude\output-styles\*.md" "%USERPROFILE%\.claude\output-styles\"
+```
+
+**macOS/Linux:**
+```bash
+# Create styles directory
 mkdir -p ~/.claude/output-styles
 
-# Copy all style files
+# Copy all styles
 cp claude/output-styles/*.md ~/.claude/output-styles/
-
-# Set proper permissions
-chmod 644 ~/.claude/output-styles/*.md
-
-# Verify installation
-ls -la ~/.claude/output-styles/
 ```
 
-**Selective Installation:**
+### 4. Verify Installation
+
 ```bash
-# Install only specific styles
-cp claude/output-styles/senior-architect.md ~/.claude/output-styles/
-cp claude/output-styles/concise-developer.md ~/.claude/output-styles/
+# Check installed files
+ls ~/.claude/commands/       # Should see command files
+ls ~/.claude/agents/         # Should see agent files
+ls ~/.claude/output-styles/  # Should see style files
 ```
 
-### Using Output Styles
+## 📖 Usage Guide
 
-#### Basic Commands
+### Basic Usage
+
+#### 1. Start New Project
 ```bash
-/output-style              # View available styles
-/output-style:set <name>   # Set a specific style
-/output-style:new          # Create a new custom style
+# Use meta command to create project specs
+/meta
+
+# Claude will:
+# - Analyze project characteristics
+# - Ask key information
+# - Generate CLAUDE.md
+# - Setup documentation structure
 ```
 
-#### Configuration Options
-
-**1. Command-Line Usage** (Immediate effect)
+#### 2. Restore Work State
 ```bash
+# At new session start
+/sync
+
+# System will:
+# - Read last work state
+# - Check uncommitted changes
+# - Provide work suggestions
+```
+
+#### 3. Switch Output Style
+```bash
+# View available styles
+/output-style
+
+# Set style
 /output-style:set senior-architect
+
+# Start working with new style
+/plan "Design microservices architecture"
 ```
 
-**2. Project-Level Configuration** (Persistent for project)
-Create or edit `.claude/settings.local.json`:
+#### 4. Use Intelligent Agents
+```bash
+# Agents auto-activate, or manually specify
+"Use python-ml-specialist agent to help design the model"
+
+# Or auto-trigger for specific tasks
+"Review this code for security issues"  # Auto-activates security-analyst
+```
+
+### Project Configuration
+
+Create `.claude/` directory in project root:
+
+```
+your-project/
+├── .claude/
+│   ├── PROJECT_CONTEXT.md  # Project context
+│   ├── DECISIONS.md        # Decision records
+│   ├── settings.local.json # Project settings
+│   └── state/              # State files
+├── CLAUDE.md               # Project specifications
+└── ... project files
+```
+
+Configuration example (`.claude/settings.local.json`):
 ```json
 {
   "outputStyle": "concise-developer",
@@ -349,492 +225,187 @@ Create or edit `.claude/settings.local.json`:
 }
 ```
 
-**3. Global Default Configuration** (All projects)
-Edit `~/.claude/settings.json`:
-```json
-{
-  "defaultOutputStyle": "educational-mentor"
-}
+## 🎯 Workflow Examples
+
+### Scenario 1: New Feature Development
+
+```bash
+# 1. Restore state
+/sync
+# → Restore previous work progress
+
+# 2. Plan task
+/plan "Add user authentication"
+# → Generate task plan and technical solution
+
+# 3. Development
+# Auto-activate relevant agents:
+# - code-reviewer for continuous review
+# - test-automator for test generation
+# - security-analyst for security checks
+
+# 4. Record decisions
+/learn "Decided to use JWT instead of Session because..."
+# → Save to DECISIONS.md
+
+# 5. Update specs
+/update-spec
+# → Update CLAUDE.md
 ```
 
-**Priority Order:** Command > Project Config > Global Config > Default
+### Scenario 2: Code Review & Optimization
 
-#### Workflow Integration Examples
-
-**Architecture Planning**
 ```bash
+# 1. Switch to architect style
 /output-style:set senior-architect
-/plan Design microservices architecture
-# → Comprehensive analysis with risk assessment, trade-offs, and roadmap
+
+# 2. Architecture review
+/context
+# → Comprehensive architecture analysis
+
+# 3. Performance optimization
+"Analyze and optimize database query performance"
+# → Auto-activates performance-optimizer
+
+# 4. Security review
+/output-style:set security-analyst
+"Review authentication system security"
+# → Deep security analysis
 ```
 
-**Rapid Development**
+### Scenario 3: SDK Development
+
 ```bash
-/output-style:set concise-developer
-# Start coding with minimal explanations, direct solutions
+# 1. Design API
+/sdk-design "Payment SDK interface design"
+
+# 2. Generate examples
+/sdk-example advanced
+
+# 3. Create tests
+/sdk-test all
+
+# 4. Write documentation
+/sdk-doc api
+
+# 5. Prepare release
+/sdk-release check
 ```
 
-**Team Training**
+### Scenario 4: Team Collaboration
+
 ```bash
+# 1. Morning start
+/sync
+# → Check team's yesterday changes
+
+# 2. Understand new code
+/context
+# → Sync project understanding
+
+# 3. Switch to teaching style (for onboarding)
 /output-style:set educational-mentor
-/learn Document Redis caching strategy
-# → Detailed explanations with examples and best practices
+"Explain how this authentication module works"
+
+# 4. Record team decisions
+/learn "Team decided to adopt microservices architecture..."
+
+# 5. Update team documentation
+/doc readme
 ```
 
-### Optimal Style + Command Combinations
+## 🏆 Best Practices
 
-| Task Type | Recommended Style | Best Commands | Result |
-|-----------|------------------|---------------|--------|
-| Architecture Design | Senior Architect | `/plan`, `/meta` | Strategic planning with comprehensive analysis |
-| Feature Implementation | Concise Developer | `/context`, coding | Fast, efficient development |
-| Knowledge Transfer | Educational Mentor | `/learn`, `/doc` | Clear documentation with learning progression |
-| Deployment Setup | DevOps Engineer | deployment tasks | Automated, reliable infrastructure |
-| Security Audit | Security Analyst | code review | Thorough vulnerability assessment |
+### 1. Work Habits
+- **Always sync first**: Use `/sync` before each work session
+- **Record promptly**: Use `/learn` immediately after important decisions
+- **Regular updates**: Use `/update-spec` to solidify specifications
 
-### Creating Custom Styles
+### 2. Style Selection
+- **Design phase**: Use `senior-architect`
+- **Rapid development**: Use `concise-developer`
+- **Code review**: Use `security-analyst`
+- **Documentation**: Use `educational-mentor`
 
-You can create your own styles tailored to your team's needs:
+### 3. Agent Collaboration
+- Let agents auto-activate, don't over-control
+- Trust professional agent recommendations
+- Multiple agents can work simultaneously
 
-```bash
-/output-style:new
-# Describe your requirements, Claude will generate a custom style
-```
-
-Custom styles are saved as markdown files with YAML frontmatter:
-```markdown
----
-description: Brief description of the style
----
-
-# Style Name
-
-Detailed system prompt defining communication style, 
-response format, and domain-specific behaviors...
-```
-
-### Best Practices
-
-1. **Phase-Based Switching**: Use different styles for different development phases
-2. **Project Consistency**: Set a default style per project in `.claude/settings.local.json`
-3. **Team Alignment**: Share custom styles with your team for consistent interactions
-4. **Combine with Commands**: Leverage style + command combinations for maximum efficiency
-
-### Output Styles vs Agents
-
-| Aspect | Output Styles | Agents |
-|--------|--------------|--------|
-| **Scope** | Transform main Claude instance | Independent specialized assistants |
-| **Persistence** | Project-level settings | Task-specific activation |
-| **Control** | Direct interaction with customized personality | Automated delegation |
-| **Use Case** | Consistent communication style | Specialized technical tasks |
-
-Output Styles and Agents work together: Styles define HOW Claude communicates, while Agents determine WHAT specialized capabilities are applied.
-
-📖 **[Complete Output Styles Guide](output-styles/README.md)** - Advanced configuration, custom style creation, and troubleshooting
-
----
-
-## 🎯 Command System v3.3 (Core Preserved)
-
-### 🆕 v3.1 State Management Enhancement (Latest)
-- **Complete Lifecycle**: `/plan` creates session → `/update-spec` terminates cycle
-- **State Coherence**: `last-session.yml` tracks full development cycles
-- **Progress Tracking**: `/context` compares against `initial-scan.json` baseline
-- **Robust Recovery**: `/sync` gracefully handles missing files with smart fallbacks
-
-### Core Philosophy
-- **Less is More**: 8 core commands + 5 SDK-specific commands
-- **Smart Integration**: Each command completes multiple related tasks
-- **Context Aware**: Automatic memory and state management via structured files
-- **Scenario Adaptive**: Dual support for app development and SDK development
-
-### 8 Core Preserved Commands
-
-#### Project Understanding & Management (3)
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/start` | Quick project startup & understanding | First time touching project | None |
-| `/context` | Context sync checkpoint | Ensure understanding consistency | None |
-| `/sync` | State synchronizer | New session start | None |
-
-#### Development Support (2)
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/plan` | Task planning & design | Before starting new features | [task description] |
-| `/doc` | Smart document maintenance | Update project docs | [api\|readme\|changelog\|arch] |
-
-#### Knowledge Management (2)
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/learn` | Learn & record decisions | After important decisions | [decision content] |
-| `/meta` | Project specification customization | New project or major changes | None |
-
-#### Quality Assurance (1)
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/update-spec` | CLAUDE.md update specific | Solidify decisions into specs | [review\|section "content"] |
-
-### 🆕 SDK Development Commands (5)
-
-Specifically designed for SDK/Library development:
-
-| Command | Function | When to Use | Parameters |
-|---------|----------|-------------|------------|
-| `/sdk-design` | API design assistant | Designing new APIs | [feature description] |
-| `/sdk-example` | Example code generation | Creating usage examples | [basic\|advanced\|integration\|all] |
-| `/sdk-test` | SDK test suite | Generate professional tests | [unit\|integration\|compat\|performance\|all] |
-| `/sdk-doc` | SDK documentation generation | Writing documentation | [api\|guide\|migration\|all] |
-| `/sdk-release` | Release preparation assistant | Preparing new version | [major\|minor\|patch\|check] |
-
----
-
-## 🚀 Hybrid Workflows - v4.0 Best Practices
-
-### Revolutionary Change: From Manual to Smart
-
-v4.0 hybrid system makes development workflows more intelligent. The system automatically identifies your work content and provides professional support while preserving human-led key decision control.
-
-### 🎯 Smart Trigger Scenarios
-
-#### Scenario 1: Starting Kotlin Android Development
-```bash
-# Human Input
-"I want to develop an Android shopping cart feature"
-
-# System Smart Response
-🔍 Detected: Android development intent
-📁 Analyzed files: AndroidManifest.xml, build.gradle.kts
-🤖 Auto-enabled: android-kotlin-architect
-💡 Suggested trigger: /start (project understanding)
-
-# Agent collaboration begins
-android-kotlin-architect: "I'll help you plan Android shopping cart functionality..."
-test-automator: "I'll prepare corresponding test cases for you..."
-code-reviewer: "I'll continuously check code quality during development..."
-```
-
-#### Scenario 2: Python ML Project Development
-```bash
-# Human Input
-"I want to train a text classification model"
-
-# System Smart Response  
-🔍 Detected: Machine learning project
-📁 Analyzed files: requirements.txt (torch, transformers)
-🤖 Auto-enabled: python-ml-specialist
-🔄 Coordinated agents: data-scientist, performance-optimizer
-
-# Professional support automatically ready
-python-ml-specialist: "Analyzing your dataset characteristics, recommend BERT base model..."
-data-scientist: "I'll help you design data preprocessing pipeline..."
-performance-optimizer: "I'll monitor training performance and provide optimization suggestions..."
-```
-
-### 📋 v4.0 Workflow Comparison
-
-| Stage | v3.3 Traditional | v4.0 Hybrid | Efficiency Gain |
-|-------|-----------------|-------------|-----------------|
-| **Project Understanding** | `/start` manual analysis | `/start` + smart agent auto-enable | 3x |
-| **Code Development** | Independent coding | Professional agent continuous support | 5x |
-| **Quality Check** | `/check` manual trigger | Agent auto-detection + real-time feedback | 8x |
-| **Test Generation** | `/test` manual generation | test-automator smart generation | 10x |
-| **Code Review** | `/review` basic check | code-reviewer professional analysis | 6x |
-| **Performance Optimization** | Manual analysis | performance-optimizer auto-discovery | 15x |
-| **Spec Validation** | Manual check | jenny-validator auto-validation | 12x |
-
----
+### 4. Team Standards
+- Share `.claude/` directory
+- Use command system consistently
+- Regularly update PROJECT_CONTEXT.md
 
 ## 📁 Project Structure
 
 ```
 claude/
-├── README.en.md                # This document (v4.0 hybrid system English version)
-├── README.md                   # Chinese version (v4.0 hybrid system complete version)
-│
-├── output-styles/              # 🎨 Output Styles System
-│   ├── senior-architect.md     # Strategic architecture style
-│   ├── concise-developer.md    # Minimalist coding style
-│   ├── educational-mentor.md   # Teaching and learning style
-│   ├── devops-engineer.md      # Infrastructure automation style
-│   └── security-analyst.md     # Security-focused style
-│
-├── agents/                     # 🤖 Intelligent Agent System v4.0
-│   ├── README.md               # Agent system documentation
-│   ├── core/                   # Core agents
-│   │   ├── code-reviewer.md    # Code review expert
-│   │   ├── performance-optimizer.md # Performance optimization expert
-│   │   └── test-automator.md   # Test automation expert
-│   ├── languages/              # Language expert agents
-│   │   ├── kotlin-context-detector.md # Kotlin context detector
-│   │   ├── kotlin-polyglot-master.md  # Kotlin multi-platform expert
-│   │   ├── android-kotlin-architect.md # Android development expert
-│   │   ├── java-context-detector.md    # Java context detector
-│   │   ├── csharp-context-detector.md  # C# context detector
-│   │   ├── javascript-context-detector.md # JS/TS context detector
-│   │   ├── python-context-detector.md  # Python context detector
-│   │   ├── python-ml-specialist.md     # Python ML/AI expert
-│   │   ├── golang-systems-engineer.md # Go systems engineering expert
-│   │   ├── rust-zero-cost.md          # Rust zero-cost expert
-│   │   └── cpp-modern-master.md       # Modern C++ expert
-│   ├── frameworks/             # Framework expert agents
-│   │   └── ktor-backend-architect.md  # Ktor backend expert
-│   ├── quality/                # Quality assurance agents
-│   │   ├── jenny-validator.md  # Specification validation expert
-│   │   └── karen-realist.md    # Reality assessment expert
-│   └── workflow/               # Workflow agents
-│       └── work-coordinator.md # Multi-agent coordinator
-│
-├── config/                     # 🔧 Configuration System
-│   └── token-settings.yaml     # Token optimization settings
-│
-├── commands/                   # 📋 Command System v3.3 (Core Preserved)
-│   └── deploy-package/         # Command deployment package
-│       ├── DEPLOY_GUIDE.md     # Deployment guide
-│       ├── CHANGELOG.md        # Version history
-│       ├── SIMPLE_COMMANDS_SUMMARY.md # Command system documentation
-│       ├── deploy.ps1          # Windows deployment script
-│       ├── deploy.sh           # macOS/Linux deployment script
-│       ├── global/             # Core preserved commands (8)
-│       │   ├── context.md      # ✅ Preserved: Context sync
-│       │   ├── doc.md          # ✅ Preserved: Document maintenance
-│       │   ├── learn.md        # ✅ Preserved: Decision recording
-│       │   ├── meta.md         # ✅ Preserved: Project spec definition
-│       │   ├── plan.md         # ✅ Preserved: Task planning
-│       │   ├── start.md        # ✅ Preserved: Project understanding
-│       │   ├── sync.md         # ✅ Preserved: State recovery
-│       │   └── update-spec.md  # ✅ Preserved: Spec updates
-│       └── sdk/                # 5 SDK-specific commands
-│           ├── sdk-design.md   # SDK design assistant
-│           ├── sdk-doc.md      # SDK documentation generation
-│           ├── sdk-example.md  # SDK example generation
-│           ├── sdk-release.md  # SDK release assistant
-│           └── sdk-test.md     # SDK test suite
-│
-├── commands-legacy/            # 🗄️ Command History Archive
-│   ├── README.md               # Archive documentation and migration guide
-│   └── v3.3-archive/           # Complete v3.3 command backup
-│       └── deploy-package/     # Complete v3.3 command system
-│
-├── constitution/               # 🏛️ Constitutional System (Reference)
-│   └── CLAUDE_CONSTITUTION.md  # Complete Claude collaboration constitution
-│
-├── guides/                     # 📖 In-depth Guides (Advanced Reference)
-│   ├── AI_ASSISTANT_COMPARISON.md    # AI assistant comparison
-│   ├── COMMAND_WRITING_GUIDE.md       # Command writing guide
-│   ├── CONSTITUTION_SYNC_GUIDE.md     # Constitution sync guide
-│   ├── CONSTITUTION_USAGE_GUIDE.md    # Constitution usage guide
-│   ├── DOCUMENT_STRUCTURE_STANDARD.md # Documentation structure standard
-│   ├── LEGACY_PROJECT_ONBOARDING.md   # Legacy project onboarding
-│   ├── MARKET_ANALYSIS.md             # Market analysis
-│   ├── NEW_VS_LEGACY_PROJECT.md       # New vs legacy project
-│   └── SDK_DEVELOPMENT_WORKFLOW.md    # SDK development workflow
-│
-└── templates/                  # 📝 Template Files
-    ├── CLAUDE_MD_TEMPLATE.md   # CLAUDE.md general template
-    └── SDK_PROJECT_TEMPLATE.md # SDK project-specific template
+├── README.md               # This document (English)
+├── README_zh.md           # Chinese version
+├── RELEASE_NOTE.md        # Version history
+├── commands/              # Command system
+│   ├── docs/             # Command detailed docs
+│   └── deploy-package/   # Deployment package
+│       ├── global/       # Core commands (8)
+│       └── sdk/          # SDK commands (5)
+├── agents/               # Intelligent agents
+│   ├── docs/            # Agent detailed docs
+│   └── *.md             # Agent definition files (35+)
+├── output-styles/        # Output styles
+│   ├── README.md        # Style usage guide
+│   └── *.md             # Style definition files (9)
+└── guides/              # In-depth guides
+    └── *.md             # Various topic guides
 ```
 
----
+## 🆘 FAQ
 
-## 🔄 Migration Guide - From v3.3 to v4.0
+**Q: Commands not working?**
+A: Check if files are copied to correct directory `~/.claude/commands/`
 
-### Seamless Upgrade: Progressive Migration Strategy
+**Q: Agents not auto-activating?**
+A: Agents activate based on task description, use clear keywords
 
-v4.0 is designed to be fully backward compatible. You can choose your preferred migration pace.
+**Q: How to persist output style?**
+A: Set in project's `.claude/settings.local.json`
 
-### 📋 Migration Checklist
-
-#### ✅ Immediately Available (Zero Configuration)
-- [x] All v3.3 commands work as usual
-- [x] Smart agents auto-enable (file type triggered)
-- [x] Context detection runs automatically
-- [x] Quality assurance agents auto-collaborate
-
-#### 🔄 Recommended Migration (Progressive)
-
-**Week 1: Observation & Learning Phase**
-```bash
-# Maintain original work habits
-/start               # Original commands work normally
-/sync                # Memory management unchanged
-/plan "new feature"  # Task planning as usual
-
-# Observe new features
-🤖 Notice agent auto-enable notifications
-📝 Experience the value of smart suggestions
-```
-
-**Week 2: Active Collaboration Phase**
-```bash
-# Start trusting agent suggestions
-🤖 android-kotlin-architect: "Suggest using Composable components"
-✅ Adopt: "OK, please help me refactor to Compose"
-
-# Reduce manual command frequency
-❌ Before: /check (manual execution every time)
-✅ Now: Agent auto-check + manual confirmation when necessary
-```
-
-**Week 3: Deep Integration Phase**
-```bash  
-# Build personal workflows
-🔧 Adjust agent trigger preferences
-⚡ Create exclusive command combinations
-🎯 Optimize team collaboration configuration
-```
-
-### 🔄 Command Migration Map
-
-#### Commands That Can Be Gradually Migrated
-
-| v3.3 Command | v4.0 Alternative | Migration Suggestion | Advantages |
-|--------------|------------------|---------------------|------------|
-| `/check` | `code-reviewer` agent | 🔄 Progressive migration | More professional, comprehensive |
-| `/test` | `test-automator` agent | 🔄 Progressive migration | Smart generation, auto-execution |
-| `/review` | `jenny-validator` + `karen-realist` | 🔄 Progressive migration | Multi-perspective professional review |
-| `/analyze` | `performance-optimizer` + context detection | 🔄 Progressive migration | Tech stack professional analysis |
-| `/watch` | Smart monitoring agents | 🔄 Progressive migration | Continuous monitoring, smart filtering |
-
-#### Commands That Must Be Preserved (Core Infrastructure)
-
-| v3.3 Command | v4.0 Status | Reason | Usage Suggestion |
-|--------------|-------------|--------|-----------------|
-| `/start` | ✅ Enhanced preservation | Project understanding needs human judgment | Combine with agent auto-enable |
-| `/sync` | ✅ Enhanced preservation | Core memory management function | Add agent state recovery |
-| `/context` | ✅ Enhanced preservation | Key context sync | Integrate agent coordination |
-| `/learn` | ✅ Preserved | Human-led decision recording | Unchanged, continue using |
-| `/meta` | ✅ Preserved | Spec definition needs judgment | Unchanged, continue using |
-| `/doc` | ✅ Preserved | Document maintenance precise control | Unchanged, continue using |
-| `/update-spec` | ✅ Preserved | Spec update specific | Unchanged, continue using |
-
----
-
-## 💡 Best Practices
-
-### 1. Communication Skills
-- **Clear boundaries**: Tell Claude what not to modify
-- **Provide examples**: Give expected code style
-- **Staged confirmation**: Break complex tasks into multiple checkpoints
-- **Record decisions**: Write important choices into documentation
-
-### 2. Project Organization
-```
-your-project/
-├── .claude/
-│   ├── commands/           # Project-specific commands
-│   ├── PROJECT_CONTEXT.md  # Project context
-│   ├── DECISIONS.md        # Decision records
-│   └── state/              # State files
-├── CLAUDE.md               # Project specifications
-└── ... project files
-```
-
-### 3. Efficiency Enhancement
-- **Start with sync**: Always use `/sync` to begin
-- **Record timely**: Use `/learn` to avoid knowledge loss
-- **Structured planning**: Use `/plan` instead of free discussion
-- **Automated checking**: Use agents for quality assurance
-- **Deep validation**: Use professional agents to verify intuition
-- **Spec management**: Use `/update-spec` to solidify important decisions
-
-### 4. Team Collaboration
-- Share `.claude/` directory
-- Unified use of command system
-- Regular updates to PROJECT_CONTEXT.md
-- Record all important decisions in DECISIONS.md
-
----
-
-## 📊 Version History
-
-### v4.0.0 (2025-08-14) - Current Version 🚀
-- **Revolutionary Breakthrough**: Hybrid commands + agents system
-  - Introduced 35+ professional agents covering full tech stack
-  - Smart context detectors solving multi-purpose language scenario conflicts
-  - Auto-trigger system with intelligent routing based on file types and code content
-  - Confidence scoring system (0.0-1.0) ensuring precise matching
-- **Core Innovations**:
-  - Kotlin/Java/C#/JavaScript/Python multi-scenario smart recognition
-  - Jenny validator, Karen realist assessment, professional code reviewers
-  - Hierarchical detection: annotations → imports → project structure → config files
-  - Mixed context handling: full-stack, microservices, game development and other complex project support
-- **Architecture Optimization**:
-  - Preserved core commands (8) + added agent automation
-  - Command archive system, complete v3.3 backup to `commands-legacy/`
-  - Simplified configuration: Removed non-functional trigger system
-  - Progressive migration strategy, fully backward compatible
-- **Quality Assurance Enhancement**:
-  - Multi-agent collaborative quality assurance system
-  - Continuous monitoring and smart filtering mechanisms
-  - Professional domain deep analysis capabilities
-
-### v3.1.0 (2025-01-21) - State Management Enhancement
-- **State Management Improvements**:
-  - Fixed command workflow chain breaks
-  - Activated orphaned `initial-scan.json` for progress tracking
-  - Enhanced `/plan`, `/context`, `/sync`, `/update-spec` commands
-  - Complete lifecycle management with `last-session.yml`
-- **Documentation Updates**:
-  - Created COMMAND_MATRIX.md for clear interaction reference
-  - Updated workflow examples in all documentation
-
-### v3.3.0 (2025-08-10) - Historical Version  
-- **Major Adjustments**:
-  - Removed all project-level commands, focused on global universal commands
-  - Let developers establish project-specific commands themselves
-  - Unified use of 13 global universal commands + 5 SDK-specific commands
-
----
+**Q: How to create custom commands/agents/styles?**
+A: Refer to documentation and templates in respective directories
 
 ## 🤝 Contributing
 
-Welcome contributions! Please:
-1. Fork this project
-2. Create feature branch
-3. Submit changes
-4. Create Pull Request
+This is an open-source project providing organized Claude Code development experience and tools for all developers.
 
-### Report Issues
+We welcome contributions! Please:
+1. Fork this repository
+2. Create a feature branch
+3. Submit your changes
+4. Create a Pull Request
+
+### Reporting Issues
 - Use GitHub Issues
 - Provide detailed reproduction steps
 - Explain expected behavior
 
----
+## 📚 Resources
 
-## 📚 Related Resources
+- [Command System Documentation](commands/docs/)
+- [Agent System Documentation](agents/docs/)
+- [Output Styles Documentation](output-styles/README.md)
+- [In-depth Usage Guides](guides/)
+- [Claude Code Official Docs](https://docs.anthropic.com/en/docs/claude-code)
 
-- [Claude Code Official Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Command System Documentation](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
-- [MCP Protocol](https://docs.anthropic.com/en/docs/claude-code/mcp)
+## 📄 License
 
----
+MIT License - See [LICENSE](LICENSE) file for details
 
-## 🎯 Core Values
+## 🌟 Star History
 
-1. **Simple & Efficient**: Fewer commands, higher efficiency
-2. **Smart Collaboration**: AI understands you, you guide AI
-3. **Knowledge Accumulation**: Every decision is wealth
-4. **Continuous Evolution**: Constantly optimize based on usage
-
----
-
-*This specification system is co-created by Claude and human developers, continuously evolving.*
-
-*Simple, Smart, Efficient - Let Claude Code become your best development partner!*
+If you find this project helpful, please give it a star ⭐
 
 ---
 
-## 🌐 Language Versions
-
-- **English** (Current): README.en.md
-- **中文** (Chinese): README.md
-
----
-
-## 📧 Contact & Support
-
-- **GitHub Issues**: Report bugs and feature requests
-- **Documentation**: Complete guides and API references
-- **Community**: Join our developer community for discussions
+*Let Claude Code become your best development partner!*
 
 **Made with ❤️ by the Claude Code Community**

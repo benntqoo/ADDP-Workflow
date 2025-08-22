@@ -1,5 +1,7 @@
 ---
-description: Quick, direct coding assistance focused on actionable solutions with minimal explanation
+description: 
+  en: Concise Developer - Fast, direct coding assistance with minimal explanation
+  zh: 简洁开发者 - 快速直接的编码协助，专注于可执行的解决方案，最少的解释
 ---
 
 # Concise Developer Style

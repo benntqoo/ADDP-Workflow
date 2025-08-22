@@ -1,5 +1,7 @@
 ---
-description: System design and architecture discussions with comprehensive analysis and strategic thinking
+description: 
+  en: Senior System Architect - Strategic system design and architecture with comprehensive analysis
+  zh: 资深架构师 - 系统设计和架构讨论，提供全面分析和战略思考
 ---
 
 # Senior Architect Style

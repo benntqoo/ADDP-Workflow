@@ -1,59 +1,198 @@
-# Output Styles 配置指南
+# Output Styles System
 
-## 📋 目錄
-- [什麼是 Output Styles](#什麼是-output-styles)
-- [如何配置 Output Styles](#如何配置-output-styles)
-- [文件結構說明](#文件結構說明)
-- [使用方法](#使用方法)
-- [創建自定義風格](#創建自定義風格)
-- [最佳實踐](#最佳實踐)
+## 🌍 国际化支持 (Internationalization Support)
 
-## 什麼是 Output Styles
+所有 Output Style 文件都支持多语言描述：
 
-Output Styles 是 Claude Code 的個性化系統，允許你完全自定義 Claude 的：
-- 溝通風格（簡潔/詳細/教學式）
-- 回應格式（結構化/自由式）
-- 專業領域（架構/開發/安全/運維）
-- 思考方式（戰略/戰術/分析）
-
-## 如何配置 Output Styles
-
-### 方法 1：使用命令（推薦）
-
-```bash
-# 查看可用風格
-/output-style
-
-# 設置風格
-/output-style:set senior-architect
-
-# 創建新風格
-/output-style:new
+```yaml
+---
+description: 
+  en: English description for international users
+  zh: 中文描述为中文用户
+---
 ```
 
-### 方法 2：手動配置
+## 📚 可用风格 (Available Styles)
 
-1. **項目級別配置**（影響當前項目）
-   
-   編輯 `.claude/settings.local.json`：
-   ```json
-   {
-     "outputStyle": "senior-architect"
-   }
-   ```
+### 🏛️ 架构设计类 (Architecture & Design)
 
-2. **全局配置**（影響所有項目）
-   
-   編輯 `~/.claude/settings.json`：
-   ```json
-   {
-     "defaultOutputStyle": "concise-developer"
-   }
-   ```
+1. **senior-architect** - 资深架构师
+   - 系统设计和架构讨论
+   - 全面分析和战略思考
+   - 最佳实践和风险评估
 
-### 方法 3：自動安裝（推薦）
+2. **system-architect** - 系统架构师
+   - PRD转换为技术架构
+   - 多平台解决方案设计
+   - 任务分解和团队协作
 
-使用部署腳本自動安裝命令和 Output Styles：
+### 💻 开发实施类 (Development & Implementation)
+
+3. **concise-developer** - 简洁开发者
+   - 快速直接的编码协助
+   - 最少解释，最多代码
+   - 专注可执行解决方案
+
+4. **educational-mentor** - 教育导师
+   - 详细解释和教学
+   - 循序渐进的学习路径
+   - 示例丰富，注重理解
+
+### 🔧 运维与安全类 (Operations & Security)
+
+5. **devops-engineer** - DevOps工程师
+   - 基础设施和自动化
+   - CI/CD和部署管理
+   - 监控和运维卓越
+
+6. **security-analyst** - 安全分析师
+   - 威胁建模和漏洞评估
+   - 安全开发实践
+   - 合规性和风险管理
+
+### 📈 产品与SDK类 (Product & SDK)
+
+7. **product-expert** - 产品需求专家
+   - 高质量PRD文档创建
+   - 用户故事和需求分析
+   - 产品路线图规划
+
+8. **sdk-design-expert** - SDK设计专家
+   - 开发者友好API设计
+   - 跨平台SDK架构
+   - 性能和扩展性优化
+
+9. **sdk-prd-expert** - SDK产品需求专家
+   - SDK/Library PRD文档
+   - 开发者体验设计
+   - 技术文档规划
+
+## 🚀 使用方法 (Usage)
+
+### 查看可用风格
+```bash
+/output-style
+```
+
+### 切换风格
+```bash
+# 切换到架构师风格
+/output-style:set senior-architect
+
+# 切换到简洁开发风格
+/output-style:set concise-developer
+
+# 切换到安全分析风格
+/output-style:set security-analyst
+```
+
+### 查看当前风格
+```bash
+/output-style:current
+```
+
+## 🎯 适用场景 (Use Cases)
+
+### 系统设计阶段
+```bash
+# 使用架构师风格进行系统设计
+/output-style:set senior-architect
+/plan "设计微服务架构"
+```
+
+### 快速编码
+```bash
+# 使用简洁开发风格快速实现
+/output-style:set concise-developer
+# 直接开始编码，最少解释
+```
+
+### 学习新技术
+```bash
+# 使用教育导师风格学习
+/output-style:set educational-mentor
+# 获得详细解释和示例
+```
+
+### 安全审查
+```bash
+# 使用安全分析师风格
+/output-style:set security-analyst
+/review
+```
+
+## 📁 文件结构 (File Structure)
+
+每个 Output Style 文件都遵循统一的结构：
+
+```markdown
+---
+description: 
+  en: English description
+  zh: 中文描述
+---
+
+# Style Name
+
+## Role Definition
+[Define the role and expertise]
+
+## Communication Style
+[Define how to communicate]
+
+## Response Structure
+[Define response format]
+
+## Code Generation Preferences
+[Define coding standards]
+
+## Working Principles
+[Core principles to follow]
+```
+
+## ✅ 质量标准 (Quality Standards)
+
+所有 Output Styles 必须：
+
+1. **结构完整**：包含所有必要章节
+2. **描述清晰**：明确定义角色和职责
+3. **国际化**：支持中英文描述
+4. **实用性强**：提供具体的工作模式
+5. **专业性高**：符合行业最佳实践
+
+## 🔄 更新记录 (Update History)
+
+- **2025-08-22**: 添加国际化支持，所有文件支持中英文描述
+- **2025-08-22**: 新增 4 个专业风格：product-expert, system-architect, sdk-design-expert, sdk-prd-expert
+- **2025-08-21**: 初始版本，包含 5 个核心风格
+
+## 💡 自定义风格 (Custom Styles)
+
+您可以创建自己的 Output Style：
+
+1. 在 `~/.claude/output-styles/` 目录创建新文件
+2. 使用上述标准结构
+3. 添加中英文描述
+4. 保存为 `.md` 文件
+
+示例：
+```markdown
+---
+description: 
+  en: My Custom Style - Specialized for specific domain
+  zh: 我的自定义风格 - 专门用于特定领域
+---
+
+# My Custom Style
+
+[Your style definition here]
+```
+
+## 安装方法
+
+### 自动安装（推荐）
+
+使用部署脚本自动安装：
 
 ```bash
 # Windows
@@ -65,369 +204,94 @@ cd claude/commands/deploy-package
 ./deploy.sh
 ```
 
-部署腳本會自動：
-1. 複製所有命令到 `~/.claude/commands/`
-2. 複製所有 Output Styles 到 `~/.claude/output-styles/`
-3. 驗證安裝結果
-4. 提供使用提示
+### 手动安装
 
-### 方法 4：手動安裝
-
-如果你偏好手動控制安裝過程：
-
-#### Windows 手動安裝
+#### Windows
 ```powershell
-# 1. 創建 Output Styles 目錄
+# 创建目录
 mkdir "%USERPROFILE%\.claude\output-styles"
 
-# 2. 複製所有 Output Style 文件
+# 复制文件
 xcopy /Y "claude\output-styles\*.md" "%USERPROFILE%\.claude\output-styles\"
-
-# 3. 驗證安裝
-dir "%USERPROFILE%\.claude\output-styles"
 ```
 
-#### macOS/Linux 手動安裝
+#### macOS/Linux
 ```bash
-# 1. 創建 Output Styles 目錄
+# 创建目录
 mkdir -p ~/.claude/output-styles
 
-# 2. 複製所有 Output Style 文件
+# 复制文件
 cp claude/output-styles/*.md ~/.claude/output-styles/
 
-# 3. 設置正確的權限
+# 设置权限
 chmod 644 ~/.claude/output-styles/*.md
-
-# 4. 驗證安裝
-ls -la ~/.claude/output-styles/
 ```
 
-#### 選擇性安裝
-如果只想安裝特定風格：
+## 配置方法
 
-```bash
-# 只安裝 senior-architect 風格
-cp claude/output-styles/senior-architect.md ~/.claude/output-styles/
-
-# 只安裝開發相關風格
-cp claude/output-styles/concise-developer.md ~/.claude/output-styles/
-cp claude/output-styles/security-analyst.md ~/.claude/output-styles/
-```
-
-## 文件結構說明
-
-每個 Output Style 文件都遵循以下結構：
-
-```markdown
----
-description: 風格的簡短描述（必須）
----
-
-# 風格名稱
-
-詳細的系統提示詞內容...
-```
-
-### 必要元素
-
-1. **YAML Frontmatter**（必須）
-   ```yaml
-   ---
-   description: 一句話描述這個風格的用途
-   ---
-   ```
-
-2. **標題**（建議）
-   ```markdown
-   # Senior Architect Style
-   ```
-
-3. **系統提示詞**（核心內容）
-   - 定義 Claude 的角色
-   - 設定溝通風格
-   - 規定回應格式
-   - 指定專業領域知識
-
-### 完整示例：Senior Architect Style
-
-```markdown
----
-description: Strategic system design and architecture discussions
----
-
-# Senior Architect Style
-
-You are a Senior Software Architect with 15+ years of experience in system design and architecture. Your communication style should be:
-
-## Communication Approach
-- Strategic and comprehensive
-- Focus on long-term implications
-- Consider trade-offs and alternatives
-- Provide risk assessments
-
-## Response Structure
-1. **Executive Summary** - High-level overview
-2. **Technical Analysis** - Detailed breakdown
-3. **Architecture Decisions** - Key choices and rationale
-4. **Implementation Roadmap** - Phased approach
-5. **Risk Mitigation** - Potential issues and solutions
-
-## Key Principles
-- Always consider scalability, maintainability, and security
-- Provide multiple solutions with pros/cons
-- Think in terms of patterns and anti-patterns
-- Focus on business value and ROI
-
-## Example Response Format
-```
-📊 Executive Summary
-[Brief overview of the solution]
-
-🔍 Technical Analysis
-[Detailed technical considerations]
-
-🏗️ Architecture Decisions
-[Key architectural choices]
-
-📅 Implementation Roadmap
-[Step-by-step plan]
-
-⚠️ Risk Assessment
-[Potential risks and mitigation strategies]
-```
-```
-
-## 使用方法
-
-### 1. 快速切換風格
-
-```bash
-# 開始架構設計
-/output-style:set senior-architect
-/plan 設計微服務架構
-
-# 切換到快速開發
-/output-style:set concise-developer
-# 開始編碼
-
-# 進行安全審查
-/output-style:set security-analyst
-/review
-```
-
-### 2. 項目特定風格
-
-在項目根目錄創建 `.claude/settings.local.json`：
-
+### 项目级别配置
+编辑 `.claude/settings.local.json`：
 ```json
 {
-  "outputStyle": "educational-mentor",
-  "permissions": {
-    "defaultMode": "acceptEdits"
-  }
+  "outputStyle": "senior-architect"
 }
 ```
 
-### 3. 團隊共享風格
+### 全局配置
+编辑 `~/.claude/settings.json`：
+```json
+{
+  "defaultOutputStyle": "concise-developer"
+}
+```
 
-將自定義風格文件放入項目的 `.claude/output-styles/` 目錄：
+## 团队协作
 
+将自定义风格放入项目的 `.claude/output-styles/` 目录：
 ```
 your-project/
 ├── .claude/
 │   ├── output-styles/
-│   │   ├── team-style.md      # 團隊自定義風格
-│   │   └── project-style.md   # 項目特定風格
+│   │   ├── team-style.md      # 团队自定义风格
+│   │   └── project-style.md   # 项目特定风格
 │   └── settings.local.json
 ```
 
-## 創建自定義風格
+## 最佳实践
 
-### 步驟 1：使用命令創建
+### 开发阶段与风格匹配
 
-```bash
-/output-style:new
-
-# Claude 會詢問：
-# 1. 風格名稱
-# 2. 主要用途
-# 3. 溝通偏好
-# 4. 專業領域
-```
-
-### 步驟 2：手動創建
-
-創建文件 `~/.claude/output-styles/my-custom-style.md`：
-
-```markdown
----
-description: 我的自定義開發風格
----
-
-# My Custom Style
-
-你是一位經驗豐富的全棧開發者，專注於：
-
-## 核心原則
-- 代碼簡潔性優於複雜性
-- 性能優化是關鍵
-- 安全性不可妥協
-
-## 回應風格
-- 使用中文回應
-- 代碼註釋用英文
-- 提供實際可運行的示例
-
-## 代碼偏好
-- 使用 TypeScript 而非 JavaScript
-- 偏好函數式編程
-- 遵循 Clean Code 原則
-
-## 回應格式
-每次回應包含：
-1. 問題理解
-2. 解決方案
-3. 代碼實現
-4. 測試建議
-5. 性能考量
-```
-
-### 步驟 3：驗證配置
-
-```bash
-# 測試新風格
-/output-style:set my-custom-style
-
-# 確認生效
-/output-style
-# 輸出：Set output style to my-custom-style
-```
-
-## 最佳實踐
-
-### 1. 風格命名規範
-
-```
-✅ 好的命名：
-- senior-architect
-- concise-developer
-- educational-mentor
-
-❌ 避免：
-- style1
-- my-style
-- test
-```
-
-### 2. 風格組合策略
-
-| 開發階段 | 推薦風格 | 原因 |
+| 开发阶段 | 推荐风格 | 原因 |
 |---------|---------|------|
-| 需求分析 | senior-architect | 全面的架構思考 |
-| 快速原型 | concise-developer | 高效實現 |
-| 代碼審查 | security-analyst | 安全性檢查 |
-| 文檔編寫 | educational-mentor | 清晰解釋 |
-| 部署配置 | devops-engineer | 自動化最佳實踐 |
+| 需求分析 | product-expert | 专业PRD文档 |
+| 架构设计 | senior-architect | 全面架构思考 |
+| 快速原型 | concise-developer | 高效实现 |
+| 代码审查 | security-analyst | 安全性检查 |
+| 文档编写 | educational-mentor | 清晰解释 |
+| 部署配置 | devops-engineer | 自动化最佳实践 |
+| SDK开发 | sdk-design-expert | API设计专业性 |
 
-### 3. 團隊協作建議
+## 常见问题
 
-```bash
-# 團隊標準化流程
-1. 定義團隊標準風格
-2. 放入版本控制
-3. 新成員入職時自動配置
+### Q: Output Style 没有生效？
+A: 检查以下几点：
+1. 文件是否有正确的 YAML frontmatter
+2. `description` 字段格式是否正确
+3. 文件是否在正确的目录
+4. 尝试重新设置：`/output-style:set <name>`
 
-# 項目配置示例
-git add .claude/output-styles/team-standard.md
-git commit -m "Add team standard output style"
-```
-
-### 4. 風格繼承
-
-可以基於現有風格創建變體：
-
-```markdown
----
-description: Extended senior architect with cloud focus
----
-
-# Cloud Architect Style
-
-<!-- 繼承 senior-architect 的所有設置 -->
-[包含 senior-architect 的內容]
-
-## 額外的雲架構考量
-- AWS/Azure/GCP 最佳實踐
-- 容器化和 Kubernetes
-- 無服務器架構
-- 成本優化策略
-```
-
-## 常見問題
-
-### Q: Output Style 沒有生效？
-A: 檢查以下幾點：
-1. 文件是否有正確的 YAML frontmatter
-2. `description` 字段是否存在
-3. 文件是否在正確的目錄
-4. 嘗試重新設置：`/output-style:set <name>`
-
-### Q: 可以同時使用多個風格嗎？
+### Q: 可以同时使用多个风格吗？
 A: 不可以。但你可以：
-- 快速切換風格
-- 創建組合風格（融合多個風格特點）
-- 在不同項目使用不同風格
+- 快速切换风格
+- 创建组合风格（融合多个风格特点）
+- 在不同项目使用不同风格
 
-### Q: 風格會影響工具使用嗎？
-A: 不會。Output Styles 只改變溝通風格，所有工具和功能保持不變。
-
-### Q: 如何恢復默認風格？
+### Q: 如何恢复默认风格？
 A: 使用命令：
 ```bash
 /output-style:set default
 ```
 
-## 進階配置
-
-### 條件式風格切換
-
-創建 `.claude/hooks/pre-command.sh`：
-
-```bash
-#!/bin/bash
-# 根據文件類型自動切換風格
-
-if [[ "$1" == "/plan" ]]; then
-  claude output-style:set senior-architect
-elif [[ "$1" == "/test" ]]; then
-  claude output-style:set security-analyst
-fi
-```
-
-### 風格模板變量
-
-未來版本將支持：
-
-```markdown
----
-description: Customizable template style
-variables:
-  language: ${LANGUAGE:-English}
-  detail_level: ${DETAIL:-medium}
 ---
 
-# Template Style
-
-Response language: {{language}}
-Detail level: {{detail_level}}
-```
-
-## 相關資源
-
-- [Claude Code 官方文檔](https://docs.anthropic.com/en/docs/claude-code)
-- [Output Styles 最佳實踐](https://docs.anthropic.com/en/docs/claude-code/output-styles)
-- [社區分享的風格](https://github.com/anthropics/claude-code-styles)
-
----
-
-*本指南持續更新中，歡迎提交 PR 貢獻更多風格配置！*
+*本系统持续更新中，欢迎贡献更多专业风格配置！*

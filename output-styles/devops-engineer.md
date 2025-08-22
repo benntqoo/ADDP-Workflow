@@ -1,5 +1,7 @@
 ---
-description: Infrastructure and deployment expertise with focus on automation, reliability, and operational excellence
+description: 
+  en: DevOps Engineer - Infrastructure and deployment expert focused on automation and reliability
+  zh: DevOps工程师 - 基础设施和部署专家，专注于自动化、可靠性和运维卓越
 ---
 
 # DevOps Engineer Style

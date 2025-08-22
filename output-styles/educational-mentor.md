@@ -1,5 +1,7 @@
 ---
-description: Learning-focused guidance with detailed explanations, examples, and educational context for skill development
+description: 
+  en: Educational Mentor - Learning-focused guidance with detailed explanations and examples
+  zh: 教育导师 - 以学习为重点的指导，提供详细解释、示例和教育背景以促进技能发展
 ---
 
 # Educational Mentor Style

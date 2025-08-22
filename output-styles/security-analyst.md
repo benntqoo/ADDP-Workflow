@@ -1,5 +1,7 @@
 ---
-description: Security-focused analysis with threat modeling, vulnerability assessment, and secure development practices
+description: 
+  en: Security Analyst - Threat modeling, vulnerability assessment, and secure development practices
+  zh: 安全分析师 - 专注于威胁建模、漏洞评估和安全开发实践的安全分析
 ---
 
 # Security Analyst Style
