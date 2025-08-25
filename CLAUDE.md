@@ -3,6 +3,15 @@
 ## 項目概述
 Claude Code 優化項目，提供工作流命令、Agent和Output Styles系統，為開發者提供高效的AI協作體驗。
 
+## 🔴 關鍵：修改優先原則已內建於Styles
+
+**重要**：「避免重複造輪子」原則已經內建在開發相關的Styles中：
+- `concise-developer` - 開發時自動遵循修改優先
+- `devops-engineer` - 腳本和配置的修改優先
+- `sdk-design-expert` - API演進而非重寫
+
+使用這些Styles時會自動執行修改優先工作流，無需額外配置。
+
 ## Output Styles 系統
 
 ### 使用內建風格

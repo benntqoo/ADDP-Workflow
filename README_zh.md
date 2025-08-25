@@ -12,6 +12,40 @@ Claude Code 协作框架是一套完整的 AI 辅助开发系统，提供三大�
 2. **智能代理** - 专业技术支持和质量保证  
 3. **输出风格** - 个性化沟通方式定制
 
+## 🚀 快速开始：Style + Command 组合使用
+
+### 核心概念
+- **Style定义角色性格**：AI如何思考和输出（架构师/开发者/分析师）
+- **Command定义具体动作**：执行什么任务（/plan、/sync、/learn）
+- **组合产生协同效应**：不同组合适用不同场景
+
+### 推荐组合
+
+| 场景 | Style + Command | 效果 |
+|------|----------------|------|
+| **启动新项目** | `architect` + `/start` → `/plan` | 理解项目并设计架构 |
+| **日常开发** | `concise-developer` + `/sync` → `/plan` | 恢复状态并规划任务 |
+| **功能实现** | `concise-developer` + `/context` → 编码 | 确认理解后实现 |
+| **安全审计** | `security-analyst` + `/context` → 分析 | 理解系统后审查 |
+| **学习新技术** | `educational-mentor` + `/start` → `/doc` | 学习概念并记录知识 |
+| **紧急修复** | `concise-developer` + `/sync` → 修复 → 部署 | 快速恢复、修复、部署 |
+
+### 工作流示例
+```bash
+# 早晨例行
+/output-style:set concise-developer
+/sync                          # 恢复昨天的进度
+/plan "完成用户模块"            # 规划今天的任务
+
+# 开发过程中
+"实现用户CRUD"                  # 代码实现
+/learn "使用Repository模式"     # 记录重要决策
+
+# 提交前
+/check                         # 质量检查
+/update-spec                   # 更新规范
+```
+
 ## 📚 功能清单
 
 ### 🎮 命令系统

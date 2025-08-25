@@ -12,6 +12,40 @@ Claude Code Collaboration Framework is a comprehensive AI-assisted development s
 2. **Intelligent Agents** - Professional technical support and quality assurance  
 3. **Output Styles** - Personalized communication customization
 
+## 🚀 Quick Start: Style + Command Combinations
+
+### Core Concept
+- **Styles define personality**: How AI thinks and outputs (architect/developer/analyst)
+- **Commands define actions**: What tasks to execute (/plan, /sync, /learn)
+- **Combinations create synergy**: Different combinations for different scenarios
+
+### Recommended Combinations
+
+| Scenario | Style + Command | Effect |
+|----------|----------------|--------|
+| **Starting new project** | `architect` + `/start` → `/plan` | Understand project & design architecture |
+| **Daily development** | `concise-developer` + `/sync` → `/plan` | Restore state & plan tasks |
+| **Feature implementation** | `concise-developer` + `/context` → code | Confirm understanding then implement |
+| **Security audit** | `security-analyst` + `/context` → analyze | Understand system then review |
+| **Learning new tech** | `educational-mentor` + `/start` → `/doc` | Learn concepts & document knowledge |
+| **Emergency fix** | `concise-developer` + `/sync` → fix → deploy | Quick restore, fix, and deploy |
+
+### Example Workflow
+```bash
+# Morning routine
+/output-style:set concise-developer
+/sync                          # Restore yesterday's progress
+/plan "Complete user module"  # Plan today's tasks
+
+# During development
+"Implement user CRUD"          # Code implementation
+/learn "Using Repository pattern"  # Record important decisions
+
+# Before commit
+/check                         # Quality check
+/update-spec                   # Update specifications
+```
+
 ## 📚 Feature List
 
 ### 🎮 Command System
