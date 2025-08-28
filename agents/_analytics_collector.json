@@ -1,0 +1,88 @@
+{
+  "version": "1.0",
+  "description": "Basic analytics collection system for agent usage tracking",
+  "last_updated": "2024-12-19",
+  
+  "collection_config": {
+    "enabled": true,
+    "privacy_mode": "anonymized",
+    "retention_days": 30,
+    "max_entries": 1000
+  },
+  
+  "usage_analytics": {
+    "session_tracking": {
+      "total_sessions": 0,
+      "successful_sessions": 0,
+      "failed_sessions": 0,
+      "average_session_duration": 0
+    },
+    
+    "agent_usage": {
+      "most_used_agents": {},
+      "agent_success_rates": {},
+      "agent_token_efficiency": {},
+      "agent_combinations": {}
+    },
+    
+    "task_patterns": {
+      "common_keywords": {},
+      "task_categories": {},
+      "complexity_distribution": {
+        "simple": 0,
+        "medium": 0,
+        "complex": 0
+      }
+    },
+    
+    "performance_metrics": {
+      "average_tokens_used": 0,
+      "token_waste_ratio": 0,
+      "selection_accuracy": 0,
+      "response_quality_score": 0
+    }
+  },
+  
+  "recent_sessions": [],
+  
+  "optimization_insights": {
+    "top_inefficiencies": [],
+    "suggested_improvements": [],
+    "rule_adjustment_candidates": []
+  },
+  
+  "collection_templates": {
+    "session_entry": {
+      "session_id": "string",
+      "timestamp": "ISO_datetime",
+      "user_request": "string",
+      "detected_category": "string", 
+      "selected_agents": ["array"],
+      "tokens_used": "number",
+      "execution_time_ms": "number",
+      "success": "boolean",
+      "user_satisfaction": "number_1_to_5",
+      "errors": ["array"],
+      "optimization_notes": "string"
+    },
+    
+    "agent_performance": {
+      "agent_name": "string",
+      "usage_count": "number",
+      "success_rate": "percentage",
+      "average_tokens": "number",
+      "average_execution_time": "number",
+      "user_rating": "number_1_to_5",
+      "common_tasks": ["array"],
+      "efficiency_score": "number_0_to_1"
+    },
+    
+    "optimization_candidate": {
+      "type": "rule_adjustment|new_rule|agent_replacement",
+      "description": "string",
+      "evidence": "string",
+      "potential_impact": "low|medium|high",
+      "implementation_effort": "low|medium|high"
+    }
+  }
+}

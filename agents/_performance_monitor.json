@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "description": "Real-time performance monitoring for agent system",
+  "monitoring_config": {
+    "enabled": true,
+    "alert_thresholds": {
+      "token_usage_limit": 400000,
+      "response_time_limit_ms": 30000,
+      "success_rate_minimum": 0.8,
+      "user_satisfaction_minimum": 3.5
+    },
+    "monitoring_interval": "real-time",
+    "alert_channels": ["log", "file"]
+  },
+  
+  "current_metrics": {
+    "timestamp": null,
+    "active_sessions": 0,
+    "total_tokens_today": 0,
+    "average_response_time": 0,
+    "current_success_rate": 0,
+    "system_health": "healthy"
+  },
+  
+  "daily_metrics": {
+    "date": null,
+    "sessions_count": 0,
+    "tokens_consumed": 0,
+    "average_tokens_per_session": 0,
+    "successful_requests": 0,
+    "failed_requests": 0,
+    "most_used_agent": null,
+    "peak_usage_hour": null
+  },
+  
+  "health_indicators": {
+    "token_efficiency": {
+      "status": "green",
+      "value": 0,
+      "threshold": 0.7,
+      "description": "Token usage efficiency ratio"
+    },
+    "response_time": {
+      "status": "green", 
+      "value": 0,
+      "threshold": 15000,
+      "description": "Average response time in ms"
+    },
+    "agent_selection_accuracy": {
+      "status": "green",
+      "value": 0,
+      "threshold": 0.85,
+      "description": "Accuracy of agent selection"
+    },
+    "user_satisfaction": {
+      "status": "green",
+      "value": 0,
+      "threshold": 4.0,
+      "description": "Average user satisfaction score"
+    }
+  },
+  
+  "alerts": {
+    "active_alerts": [],
+    "alert_history": [],
+    "alert_templates": {
+      "high_token_usage": {
+        "severity": "warning",
+        "message": "Token usage exceeded threshold: {tokens} > {threshold}",
+        "action": "Consider using more efficient agents"
+      },
+      "low_success_rate": {
+        "severity": "critical", 
+        "message": "Success rate dropped below threshold: {rate} < {threshold}",
+        "action": "Review agent selection rules"
+      },
+      "slow_response": {
+        "severity": "warning",
+        "message": "Response time exceeded threshold: {time}ms > {threshold}ms", 
+        "action": "Optimize agent coordination"
+      },
+      "agent_failure": {
+        "severity": "error",
+        "message": "Agent {agent_name} failed repeatedly",
+        "action": "Check agent configuration"
+      }
+    }
+  },
+  
+  "trending_data": {
+    "hourly_usage": {},
+    "daily_patterns": {},
+    "weekly_trends": {},
+    "seasonal_variations": {}
+  },
+  
+  "diagnostics": {
+    "last_health_check": null,
+    "system_status": "operational",
+    "component_status": {
+      "orchestrator": "healthy",
+      "selection_engine": "healthy", 
+      "agent_pool": "healthy",
+      "analytics": "healthy"
+    },
+    "performance_bottlenecks": [],
+    "optimization_opportunities": []
+  }
+}

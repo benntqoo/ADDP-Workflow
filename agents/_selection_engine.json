@@ -1,0 +1,117 @@
+{
+  "version": "1.0",
+  "description": "Intelligent agent selection rules for orchestrator",
+  "selection_rules": {
+    "frontend": {
+      "keywords": ["react", "vue", "angular", "css", "html", "ui", "component", "frontend"],
+      "primary_agent": "frontend-developer",
+      "avoid_agents": ["typescript-fullstack-expert"],
+      "max_agents": 1,
+      "confidence_threshold": 0.8
+    },
+    "api_development": {
+      "keywords": ["api", "rest", "graphql", "endpoint", "service"],
+      "primary_agent": "api-architect", 
+      "conditional_agents": {
+        "if_security_mentioned": "security-analyst",
+        "if_performance_mentioned": "performance-optimizer"
+      },
+      "max_agents": 2
+    },
+    "performance_optimization": {
+      "keywords": ["performance", "optimize", "slow", "bottleneck", "speed"],
+      "primary_agent": "performance-optimizer",
+      "language_specific": {
+        "python": "python-fullstack-expert",
+        "javascript": "frontend-developer", 
+        "kotlin": "kotlin-expert"
+      },
+      "max_agents": 1
+    },
+    "ml_ai": {
+      "keywords": ["ml", "ai", "model", "training", "prediction"],
+      "decision_tree": {
+        "deployment": {
+          "keywords": ["deploy", "production", "serving"],
+          "agent": "mlops-specialist"
+        },
+        "development": {
+          "keywords": ["train", "develop", "implement"],
+          "agent": "python-ml-specialist"
+        },
+        "llm": {
+          "keywords": ["llm", "rag", "prompt", "chatbot"],
+          "agent": "llm-engineer"
+        }
+      },
+      "max_agents": 1
+    },
+    "security": {
+      "keywords": ["security", "vulnerability", "auth", "encryption"],
+      "primary_agent": "security-analyst",
+      "avoid_parallel": true,
+      "max_agents": 1
+    },
+    "infrastructure": {
+      "keywords": ["deploy", "docker", "kubernetes", "ci/cd", "infrastructure"],
+      "primary_agent": "devops-engineer",
+      "conditional_agents": {
+        "if_security_mentioned": "security-analyst"
+      },
+      "max_agents": 2
+    },
+    "fullstack": {
+      "keywords": ["fullstack", "end-to-end", "complete", "entire"],
+      "complexity_based": {
+        "simple": {
+          "agent": "fullstack-architect",
+          "max_agents": 1
+        },
+        "complex": {
+          "agents": ["fullstack-architect", "frontend-developer", "api-architect"],
+          "max_agents": 3
+        }
+      }
+    },
+    "sdk_development": {
+      "keywords": ["sdk", "library", "package", "developer experience"],
+      "primary_agent": "sdk-product-owner",
+      "supporting_agents": {
+        "technical_writing": "technical-writer",
+        "api_design": "api-architect"
+      },
+      "max_agents": 2
+    },
+    "quality_review": {
+      "keywords": ["review", "check", "quality", "audit"],
+      "use_trilogy": true,
+      "agents": ["jenny-validator", "karen-realist", "senior-developer"],
+      "coordination_required": true
+    }
+  },
+  "conflict_resolution": {
+    "overlapping_capabilities": {
+      "frontend-developer_vs_typescript-fullstack-expert": {
+        "rule": "prefer_frontend-developer_for_ui_tasks",
+        "exception": "use_typescript-fullstack-expert_if_backend_also_mentioned"
+      },
+      "security-analyst_vs_devops-engineer": {
+        "rule": "security-analyst_for_security_focus",
+        "exception": "both_if_infrastructure_security"
+      }
+    }
+  },
+  "efficiency_optimizations": {
+    "single_agent_preferred": ["performance_optimization", "security", "bug_fixing"],
+    "parallel_beneficial": ["fullstack_complex", "quality_review"],
+    "avoid_parallel": ["simple_tasks", "single_file_changes"]
+  },
+  "token_usage_estimates": {
+    "frontend-developer": 150000,
+    "api-architect": 120000,
+    "performance-optimizer": 100000,
+    "security-analyst": 180000,
+    "fullstack-architect": 200000,
+    "quality_trilogy": 450000
+  }
+}

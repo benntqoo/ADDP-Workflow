@@ -1,0 +1,357 @@
+{
+  "version": "2.0",
+  "description": "Production-ready intelligent agent selection rules for orchestrator",
+  "last_updated": "2024-12-19",
+  
+  "selection_rules": {
+    "frontend": {
+      "keywords": ["react", "vue", "angular", "css", "html", "ui", "component", "frontend", "web", "browser"],
+      "primary_agent": "frontend-developer",
+      "avoid_agents": ["typescript-fullstack-expert"],
+      "max_agents": 1,
+      "confidence_threshold": 0.8,
+      "priority": "high"
+    },
+    
+    "mobile": {
+      "keywords": ["mobile", "ios", "android", "app", "react native", "flutter", "swift", "kotlin"],
+      "primary_agent": "mobile-developer",
+      "language_specific": {
+        "android": "android-kotlin-architect",
+        "kotlin": "android-kotlin-architect"
+      },
+      "max_agents": 1,
+      "priority": "high"
+    },
+    
+    "api_development": {
+      "keywords": ["api", "rest", "graphql", "endpoint", "service", "microservice"],
+      "primary_agent": "api-architect",
+      "conditional_agents": {
+        "if_security_mentioned": "security-analyst",
+        "if_performance_mentioned": "performance-optimizer",
+        "if_kotlin_backend": "ktor-backend-architect"
+      },
+      "max_agents": 2,
+      "priority": "high"
+    },
+    
+    "performance_optimization": {
+      "keywords": ["performance", "optimize", "slow", "bottleneck", "speed", "latency", "memory"],
+      "primary_agent": "performance-optimizer",
+      "language_specific": {
+        "python": "python-fullstack-expert",
+        "javascript": "frontend-developer",
+        "typescript": "typescript-fullstack-expert",
+        "kotlin": "kotlin-expert",
+        "java": "java-enterprise-architect",
+        "csharp": "csharp-dotnet-master",
+        "cpp": "cpp-modern-master",
+        "rust": "rust-zero-cost",
+        "go": "golang-systems-engineer"
+      },
+      "max_agents": 1,
+      "priority": "critical"
+    },
+    
+    "debugging": {
+      "keywords": ["bug", "debug", "error", "fix", "broken", "crash", "exception"],
+      "primary_agent": "bug-hunter",
+      "supporting_agents": {
+        "if_performance_issue": "performance-optimizer",
+        "if_security_issue": "security-analyst"
+      },
+      "max_agents": 2,
+      "priority": "critical"
+    },
+    
+    "testing": {
+      "keywords": ["test", "testing", "unit test", "integration test", "e2e", "coverage"],
+      "primary_agent": "test-automator",
+      "max_agents": 1,
+      "priority": "high"
+    },
+    
+    "ml_ai": {
+      "keywords": ["ml", "ai", "model", "training", "prediction", "machine learning"],
+      "decision_tree": {
+        "deployment": {
+          "keywords": ["deploy", "production", "serving", "inference"],
+          "agent": "mlops-specialist"
+        },
+        "development": {
+          "keywords": ["train", "develop", "implement", "data science"],
+          "agent": "python-ml-specialist"
+        },
+        "llm": {
+          "keywords": ["llm", "rag", "prompt", "chatbot", "gpt", "language model"],
+          "agent": "llm-engineer"
+        }
+      },
+      "max_agents": 1,
+      "priority": "high"
+    },
+    
+    "security": {
+      "keywords": ["security", "vulnerability", "auth", "encryption", "https", "ssl", "oauth"],
+      "primary_agent": "security-analyst",
+      "avoid_parallel": true,
+      "max_agents": 1,
+      "priority": "critical"
+    },
+    
+    "infrastructure": {
+      "keywords": ["deploy", "docker", "kubernetes", "ci/cd", "infrastructure", "devops", "cloud"],
+      "primary_agent": "devops-engineer",
+      "conditional_agents": {
+        "if_security_mentioned": "security-analyst"
+      },
+      "max_agents": 2,
+      "priority": "high"
+    },
+    
+    "fullstack": {
+      "keywords": ["fullstack", "end-to-end", "complete", "entire", "full stack"],
+      "complexity_analysis": true,
+      "simple": {
+        "agent": "fullstack-architect",
+        "max_agents": 1,
+        "indicators": ["single page", "simple", "basic", "minimal"]
+      },
+      "complex": {
+        "agents": ["fullstack-architect", "frontend-developer", "api-architect"],
+        "max_agents": 3,
+        "indicators": ["enterprise", "scalable", "microservices", "complex"]
+      },
+      "priority": "medium"
+    },
+    
+    "sdk_development": {
+      "keywords": ["sdk", "library", "package", "developer experience", "dx", "client"],
+      "primary_agent": "sdk-product-owner",
+      "supporting_agents": {
+        "technical_writing": "technical-writer",
+        "api_design": "api-architect"
+      },
+      "max_agents": 2,
+      "priority": "high"
+    },
+    
+    "architecture_design": {
+      "keywords": ["architecture", "design", "system design", "scalability", "patterns"],
+      "domain_specific": {
+        "fullstack": "fullstack-architect",
+        "backend": "api-architect",
+        "systems": "golang-systems-engineer",
+        "enterprise": "java-enterprise-architect"
+      },
+      "max_agents": 1,
+      "priority": "high"
+    },
+    
+    "code_review": {
+      "keywords": ["review", "check", "quality", "audit", "analyze"],
+      "use_trilogy": true,
+      "agents": ["jenny-validator", "karen-realist", "senior-developer"],
+      "coordination_required": true,
+      "max_agents": 3,
+      "priority": "medium"
+    },
+    
+    "language_specific": {
+      "python": {
+        "keywords": ["python", ".py", "django", "flask", "fastapi"],
+        "agents": {
+          "general": "python-fullstack-expert",
+          "ml": "python-ml-specialist"
+        },
+        "context_detector": "python-context-detector"
+      },
+      "javascript": {
+        "keywords": ["javascript", "js", "node", "npm", "yarn"],
+        "agents": {
+          "frontend": "frontend-developer",
+          "fullstack": "typescript-fullstack-expert"
+        },
+        "context_detector": "javascript-context-detector"
+      },
+      "typescript": {
+        "keywords": ["typescript", "ts", ".ts", ".tsx"],
+        "agents": {
+          "core": "typescript-expert-core",
+          "fullstack": "typescript-fullstack-expert"
+        }
+      },
+      "kotlin": {
+        "keywords": ["kotlin", ".kt", "android", "spring boot"],
+        "agents": {
+          "android": "android-kotlin-architect",
+          "backend": "ktor-backend-architect",
+          "general": "kotlin-expert",
+          "polyglot": "kotlin-polyglot-master"
+        },
+        "context_detector": "kotlin-context-detector"
+      },
+      "java": {
+        "keywords": ["java", ".java", "spring", "maven", "gradle"],
+        "agents": {
+          "enterprise": "java-enterprise-architect"
+        },
+        "context_detector": "java-context-detector"
+      },
+      "csharp": {
+        "keywords": ["c#", "csharp", ".cs", "dotnet", ".net"],
+        "agents": {
+          "dotnet": "csharp-dotnet-master"
+        },
+        "context_detector": "csharp-context-detector"
+      },
+      "cpp": {
+        "keywords": ["c++", "cpp", ".cpp", ".h", ".hpp"],
+        "agents": {
+          "modern": "cpp-modern-master"
+        }
+      },
+      "rust": {
+        "keywords": ["rust", ".rs", "cargo"],
+        "agents": {
+          "systems": "rust-zero-cost"
+        }
+      },
+      "go": {
+        "keywords": ["go", "golang", ".go"],
+        "agents": {
+          "systems": "golang-systems-engineer"
+        }
+      },
+      "c": {
+        "keywords": ["c", ".c", ".h"],
+        "agents": {
+          "systems": "c-systems-architect"
+        }
+      }
+    }
+  },
+  
+  "conflict_resolution": {
+    "overlapping_capabilities": {
+      "frontend-developer_vs_typescript-fullstack-expert": {
+        "rule": "prefer_frontend-developer_for_ui_tasks",
+        "exception": "use_typescript-fullstack-expert_if_backend_also_mentioned"
+      },
+      "security-analyst_vs_devops-engineer": {
+        "rule": "security-analyst_for_security_focus",
+        "exception": "both_if_infrastructure_security"
+      },
+      "python-ml-specialist_vs_mlops-specialist": {
+        "rule": "python-ml-specialist_for_development",
+        "exception": "mlops-specialist_for_deployment"
+      },
+      "kotlin-expert_vs_android-kotlin-architect": {
+        "rule": "android-kotlin-architect_for_android_projects",
+        "exception": "kotlin-expert_for_backend_kotlin"
+      }
+    },
+    
+    "priority_resolution": {
+      "critical_over_high": ["performance_optimization", "debugging", "security"],
+      "high_over_medium": ["frontend", "mobile", "api_development", "testing"],
+      "medium_fallback": ["fullstack", "code_review"]
+    }
+  },
+  
+  "efficiency_optimizations": {
+    "single_agent_preferred": [
+      "performance_optimization", 
+      "security", 
+      "debugging", 
+      "testing",
+      "mobile"
+    ],
+    "parallel_beneficial": [
+      "fullstack_complex", 
+      "code_review", 
+      "sdk_development"
+    ],
+    "avoid_parallel": [
+      "simple_tasks", 
+      "single_file_changes",
+      "performance_optimization",
+      "debugging"
+    ],
+    "context_detector_usage": [
+      "python",
+      "javascript", 
+      "kotlin",
+      "java",
+      "csharp"
+    ]
+  },
+  
+  "token_usage_estimates": {
+    "frontend-developer": 150000,
+    "mobile-developer": 170000,
+    "android-kotlin-architect": 160000,
+    "api-architect": 120000,
+    "ktor-backend-architect": 140000,
+    "performance-optimizer": 100000,
+    "bug-hunter": 110000,
+    "test-automator": 90000,
+    "security-analyst": 180000,
+    "devops-engineer": 160000,
+    "fullstack-architect": 200000,
+    "sdk-product-owner": 130000,
+    "technical-writer": 100000,
+    "product-manager": 110000,
+    "ux-designer": 120000,
+    "llm-engineer": 190000,
+    "mlops-specialist": 200000,
+    "python-ml-specialist": 170000,
+    "python-fullstack-expert": 160000,
+    "typescript-fullstack-expert": 170000,
+    "typescript-expert-core": 120000,
+    "kotlin-expert": 140000,
+    "kotlin-polyglot-master": 160000,
+    "java-enterprise-architect": 180000,
+    "csharp-dotnet-master": 160000,
+    "cpp-modern-master": 150000,
+    "rust-zero-cost": 140000,
+    "golang-systems-engineer": 150000,
+    "c-systems-architect": 130000,
+    "senior-developer": 140000,
+    "jenny-validator": 120000,
+    "karen-realist": 100000,
+    "code-reviewer": 110000,
+    "production-ready-coder": 150000,
+    "work-coordinator": 130000,
+    "quality_trilogy": 360000,
+    "context_detectors": 50000
+  },
+  
+  "fallback_strategies": {
+    "no_match_found": {
+      "default_agent": "production-ready-coder",
+      "reason": "General-purpose development agent"
+    },
+    "multiple_high_confidence": {
+      "strategy": "select_highest_priority",
+      "max_agents": 2
+    },
+    "context_detector_needed": {
+      "languages": ["python", "javascript", "kotlin", "java", "csharp"],
+      "strategy": "run_context_detector_first"
+    },
+    "token_budget_exceeded": {
+      "strategy": "select_most_efficient_agent",
+      "fallback_agent": "production-ready-coder"
+    }
+  },
+  
+  "validation_rules": {
+    "max_total_tokens": 500000,
+    "max_agents_per_request": 3,
+    "required_confidence": 0.7,
+    "avoid_redundant_capabilities": true,
+    "enforce_priority_system": true
+  }
+}
