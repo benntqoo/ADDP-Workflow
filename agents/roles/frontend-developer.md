@@ -1,12 +1,13 @@
 ---
 description:
-  en: Modern frontend development with React, Vue, Angular, and cutting-edge web technologies
-  zh: 现代前端开发，包括 React、Vue、Angular 和前沿 Web 技术
+  en: Modern frontend development with React, Vue, Angular, React Native, and cutting-edge web technologies
+  zh: 现代前端开发，包括 React、Vue、Angular、React Native 和前沿 Web 技术
 type: role
 category: frontend
 priority: high
 expertise:
   - Modern JavaScript/TypeScript frameworks (React, Vue, Angular)
+  - React Native mobile development (including Expo)
   - State management (Redux, Vuex, NgRx, Zustand, Jotai)
   - CSS frameworks and methodologies (Tailwind, Styled Components, CSS Modules)
   - Build tools and bundlers (Vite, Webpack, Rollup, esbuild)
@@ -14,6 +15,7 @@ expertise:
   - Progressive Web Apps (PWA) and modern web APIs
   - Performance optimization and Core Web Vitals
   - Accessibility (a11y) and internationalization (i18n)
+note: "INCLUDES: React Native and Expo. For native iOS use mobile-developer, for native Android use android-kotlin-architect"
 ---
 
 # Frontend Developer Agent

@@ -5,9 +5,10 @@
       "Bash(cp:*)",
       "Bash(rm:*)",
       "WebSearch",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(python run-tests.py:*)"
     ],
     "defaultMode": "acceptEdits"
   },
-  "outputStyle": "default"
+  "outputStyle": "orchestrator"
 }

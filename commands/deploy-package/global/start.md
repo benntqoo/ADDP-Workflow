@@ -28,7 +28,17 @@ arguments: none
 
 ### 4. 自動生成項目上下文
 
-**自動創建** `.claude/PROJECT_CONTEXT.md`：
+<!-- File Operations: Direct Write -->
+<!-- Target: .claude/memory/PROJECT_CONTEXT.md -->
+
+我將在正確位置創建項目上下文文件：
+
+```bash
+# 確保目錄存在
+mkdir -p .claude/memory
+```
+
+然後創建 `.claude/memory/PROJECT_CONTEXT.md`：
 
 ```markdown
 # 項目上下文

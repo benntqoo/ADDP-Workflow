@@ -13,10 +13,13 @@ examples:
 
 ## 🔄 週期管理
 
+<!-- File Operations: Direct Write -->
+<!-- Target: .claude/memory/last-session.yml -->
+
 ### 自動執行
 當你使用 /plan 時，我會：
 1. 標記新開發週期的開始
-2. 創建/更新 `.claude/state/last-session.yml`
+2. 直接保存會話狀態到 `.claude/memory/last-session.yml`
 3. 記錄計劃內容和開始時間
 4. 清理上個週期的遺留任務
 5. 設置工作狀態為 "planning"
@@ -74,27 +77,39 @@ examples:
 - 參考的代碼示例
 - 相關的最佳實踐
 
-### 7. 更新狀態文件
-自動更新 `.claude/state/last-session.yml`：
+### 7. 保存會話狀態
+
+直接更新會話狀態文件：
+
+```bash
+# 確保目錄存在
+mkdir -p .claude/memory
+```
+
+然後寫入 `.claude/memory/last-session.yml`：
+
 ```yaml
+# 會話狀態結構
 session:
   cycle:
     id: "[date]-[topic]"
     type: "feature|bugfix|refactor"
     description: "本次規劃的任務"
     started_at: "當前時間"
-    
   workflow_state: "planning"
-  
   current_task:
     description: "任務描述"
     plan_reference: ".claude/plans/[date]-[topic].md"
-    
   pending_todos: [生成的任務列表]
-  
   next_cycle:
     status: "planning"
 ```
+
+**文件操作流程**：
+1. 讀取現有文件（如存在）
+2. 更新會話信息
+3. 保持 YAML 格式
+4. 寫回文件
 
 ## 🎯 輸出格式
 

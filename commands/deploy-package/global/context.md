@@ -7,11 +7,18 @@ arguments: none
 我將執行以下檢查，確保我們的理解保持同步：
 
 ## 1. 🎯 項目狀態理解
-- 讀取 PROJECT_CONTEXT.md（如果存在）
-- 讀取 initial-scan.json 對比項目進展
-- 顯示我理解的當前開發重點
-- 列出最近修改的文件
-- 確認當前工作分支
+
+<!-- File Operations: Direct Read -->
+<!-- Target: .claude/memory/ directory -->
+
+直接讀取項目記憶文件（智能搜索）：
+- 項目上下文（.claude/memory/PROJECT_CONTEXT.md）
+- 技術決策（.claude/memory/DECISIONS.md）
+- 會話狀態（.claude/memory/last-session.yml）
+- 顯示當前開發重點
+- 確認工作狀態
+
+搜索優先級：`.claude/memory/` > `.claude/` > `./` > `docs/`
 
 ## 2. 📋 待辦事項檢查
 - 顯示未完成的任務

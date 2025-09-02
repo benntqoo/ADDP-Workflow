@@ -26,8 +26,10 @@ This agent system integrates the best practices from leading Claude Code agent p
 ### Key Features
 
 - 🚀 **40+ Specialized Agents** covering all major languages and frameworks
-- ⚡ **Automatic Triggering** based on file types and context
-- 🔄 **Workflow Orchestration** for complex multi-step tasks
+- ⚡ **Smart Selection via Orchestrator** - intelligent single-expert prioritization
+- 🔄 **Token-Optimized Workflows** - 60%+ efficiency improvement (800k → 300k avg)
+- 🌐 **Language Preference Memory** - persistent cross-session localization
+- 📁 **Standardized Memory System** - unified `.claude/memory/` directory structure
 - 📊 **Intelligent Coordination** with parallel execution support
 - ✅ **Quality Assurance** with dedicated validation agents
 - 🎨 **Model Optimization** using Haiku/Sonnet/Opus based on task complexity

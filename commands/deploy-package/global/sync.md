@@ -8,18 +8,60 @@ arguments: none
 
 ## 🔄 同步內容
 
-### 1. 自動讀取持久化上下文
-**核心文檔**（優雅處理缺失）：
-- `.claude/PROJECT_CONTEXT.md` - 項目基礎信息
-- `.claude/DECISIONS.md` - 技術決策記錄
-- `.claude/state/last-session.yml` - 上次會話狀態
-- `CLAUDE.md` - 項目特定規則
+<!-- File Operations: Direct Read/Write -->
+<!-- Memory Directory: .claude/memory/ -->
 
-**智能處理缺失文檔**：
-- 缺少 PROJECT_CONTEXT.md → 提示使用 `/start` 初始化
-- 缺少 CLAUDE.md → 提示使用 `/meta` 創建規範
-- 缺少 DECISIONS.md → 自動創建基礎框架
-- 缺少 last-session.yml → 從 git 歷史智能推斷
+### 1. 智能文件搜索與遷移
+
+我將執行智能搜索和遷移，確保記憶文件在正確位置：
+
+```yaml
+# 記憶文件管理策略
+target_directory: .claude/memory/
+files_to_manage:
+  - PROJECT_CONTEXT.md    # 項目上下文
+  - DECISIONS.md          # 技術決策
+  - last-session.yml      # 會話狀態
+
+search_locations:
+  priority_1: .claude/memory/    # 新標準位置
+  priority_2: .claude/           # 舊版位置
+  priority_3: ./                 # 根目錄
+  priority_4: docs/              # 文檔目錄
+
+migration_strategy:
+  - if_found_in_old: 遷移到新位置
+  - if_not_found: 在新位置創建
+  - if_multiple: 選擇最新版本
+```
+
+**執行步驟**：
+
+1. **檢查/創建目標目錄**
+   ```bash
+   mkdir -p .claude/memory
+   ```
+
+2. **智能文件搜索**（對每個文件）：
+   - 檢查 `.claude/memory/{file}` 是否存在
+   - 如不存在，搜索舊位置：
+     - `.claude/{file}`
+     - `./{file}`
+     - `docs/{file}`
+   
+3. **文件遷移**（如需要）：
+   - 找到舊文件 → 複製到新位置
+   - 驗證遷移成功 → 刪除舊文件
+   - 生成遷移報告
+
+4. **缺失文件處理**：
+   - PROJECT_CONTEXT.md → 創建基礎模板
+   - DECISIONS.md → 創建空框架
+   - last-session.yml → 從 git 歷史推斷
+
+5. **語言偏好檢查**：
+   - 讀取 `.claude/CLAUDE.md` 的 `preferred_language`
+   - 如未設置，詢問用戶偏好
 
 ### 2. 檢查項目狀態
 ```bash
@@ -42,10 +84,22 @@ arguments: none
 - 識別潛在問題和風險
 - 提供具體的命令建議
 
-### 4. 生成狀態報告
+### 4. 檢查語言偏好
+**自動語言設置**：
+- 從 `.claude/CLAUDE.md` 讀取 `preferred_language` 設置
+- 如果文件不存在或未設置，詢問用戶：「您希望我使用什麼語言回應？(zh-TW/zh-CN/en/ja/ko/其他)」
+- 記錄用戶選擇到 `.claude/CLAUDE.md` 的語言偏好部分
+- 根據設置調整回應語言（技術術語保持英文）
+- 智能適應：根據用戶輸入語言動態調整
+
+### 5. 生成狀態報告
 
 ```markdown
 📊 工作狀態同步報告
+
+## 🌐 語言設置
+- 當前語言：[從 .claude/CLAUDE.md 的 preferred_language 讀取]
+- 自動適應：根據用戶輸入動態調整
 
 ## 🔄 會話恢復
 - 上次工作：[從 last-session.yml 讀取]

@@ -42,11 +42,41 @@ achievements:
 ```
 
 ### 3. 更新項目文檔
-自動更新四個核心文檔：
-- **CLAUDE.md** - 添加新規範和最佳實踐
-- **PROJECT_CONTEXT.md** - 更新項目狀態和進度
-- **DECISIONS.md** - 記錄本週期的技術決策
-- **last-session.yml** - 保存完整的週期狀態
+
+<!-- File Operations: Direct Read/Write -->
+<!-- Target: .claude/memory/ directory -->
+
+#### 直接批量更新記憶文件
+
+```bash
+# 確保目錄存在
+mkdir -p .claude/memory
+```
+
+**更新流程**：
+
+1. **PROJECT_CONTEXT.md 更新**
+   - 讀取現有文件（智能搜索）
+   - 更新版本號、進度狀態
+   - 添加新增功能
+   - 寫回 `.claude/memory/PROJECT_CONTEXT.md`
+
+2. **DECISIONS.md 更新**
+   - 讀取現有決策
+   - 添加本週期新決策
+   - 保持時間順序
+   - 寫回 `.claude/memory/DECISIONS.md`
+
+3. **last-session.yml 更新**
+   - 記錄週期完成狀態
+   - 總結成就和下一步
+   - 寫回 `.claude/memory/last-session.yml`
+
+**文件操作保證**：
+- ✅ 按順序更新，確保一致性
+- ✅ 每個文件先讀後寫
+- ✅ 保持格式一致
+- ✅ 智能搜索舊位置
 
 ### 4. 生成週期報告
 創建 `.claude/reports/[date]-[summary].md` 包含：
