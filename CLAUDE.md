@@ -1,102 +1,120 @@
-# CLAUDE.md - 項目協作規範
+# CLAUDE.md - AI Coding 統一協作框架
 
 ## 項目概述
-Claude Code 優化項目，提供工作流命令、Agent和Output Styles系統，為開發者提供高效的AI協作體驗。
 
-## 🚀 最新更新：Phase 1 生產就緒系統 (2025-01-26)
+**Universal AI Coding Framework** - 基於 MCP + Ollama 的新一代 AI 編程協作解決方案
 
-### 關鍵改進
-- **智能Agent選擇**：嵌入式邏輯，自動選擇最適合的單一專家
-- **Token效率提升**：從平均800k降至300k（60%+改善）
-- **生產部署簡化**：5分鐘快速部署，說明已整合到README
+本項目旨在解決當前 AI coding 工具的核心痛點：
+- 🔄 **多工具同步問題** - 不同 AI coding 工具間無法共享上下文和工作狀態
+- 🎯 **提問精準度低** - 用戶模糊輸入導致 AI 回應發散，浪費 token
+- 🏗️ **缺乏標準化工作流程** - 無紀律性開發導致反覆修改和低效率
+- 🔒 **隱私和廠商綁定** - 敏感項目信息外洩風險，被特定工具綁定
 
-### 使用生產系統
+## 🎯 核心理念
+
+### ADDP 框架 (AI-Driven Disciplined Programming)
+- **A**nalysis - 需求分析階段
+- **D**esign - 架構設計階段
+- **D**evelopment - 開發實施階段
+- **P**ersistence - 持久化驗證階段
+
+### MCP + Ollama 雙層架構
+```
+用戶輸入 → Ollama優化層 → MCP統一服務層 → AI工具執行層 → 統一回饋
+```
+
+## 🏗️ 技術架構
+
+### 第一層：Ollama 本地優化器
+- **功能**：將用戶模糊輸入轉換為精準技術指令
+- **模型**：Qwen2.5:14b 或其他適合的本地模型
+- **優勢**：100% 隱私保護，3秒內響應，300% 精準度提升
+
+### 第二層：MCP 統一服務層
+- **功能**：標準化工作流程，跨工具記憶同步
+- **協議**：Model Context Protocol (MCP)
+- **覆蓋**：Claude Code, Gemini CLI, Codex, Cursor 等
+
+### 第三層：AI 工具執行層
+- **支援工具**：所有主流 AI coding CLI 和 GUI 工具
+- **統一體驗**：相同的命令、記憶、工作流程
+- **無縫切換**：項目狀態完全同步
+
+## 📁 項目結構
+
+```
+claude/
+├── .claude/                    # Claude Code 配置目錄
+├── workflow-legacy/            # 舊版本工作流程系統存檔
+├── CLAUDE.md                   # 項目協作規範（本文件）
+├── README.md                   # 項目說明文檔
+└── TARGET.md                   # MCP架構規劃和目標
+```
+
+## 🚀 預期效果
+
+### 解決多工具同步
+- ✅ 統一記憶系統，所有工具共享項目上下文
+- ✅ MCP 協議確保跨工具兼容性
+- ✅ 實時狀態同步，無縫工具切換
+
+### 提高提問精準度
+- ✅ 本地 Ollama 智能優化用戶輸入
+- ✅ 40-60% 精準度提升
+- ✅ 30-50% token 節省
+
+### 標準化工作流程
+- ✅ 強制性 TDD 約束機制
+- ✅ ADDP 四階段標準流程
+- ✅ 智能質量守護者
+
+## 🎯 開發優先級
+
+### Phase 1：核心 MVP（1-2個月）
+1. 實現 Ollama 查詢優化器
+2. 建立基礎 MCP 服務
+3. 支援 Claude Code + Gemini CLI
+4. 驗證架構可行性
+
+### Phase 2：完整功能（2-4個月）
+1. 完善 ADDP 工作流程
+2. 實現統一記憶系統
+3. 支援更多 AI 工具
+4. 建立質量保證機制
+
+### Phase 3：生態建設（4-6個月）
+1. 開源社群推廣
+2. 建立最佳實踐庫
+3. 與工具廠商合作
+4. 推動行業標準化
+
+## 💡 關鍵創新點
+
+1. **本地隱私優化** - Ollama 確保敏感信息不外洩
+2. **零廠商綁定** - MCP 開放標準支援所有工具
+3. **智能查詢優化** - 本地 AI 預處理提高執行精準度
+4. **統一工作流程** - 跨工具一致的開發體驗
+5. **標準化記憶** - 項目知識永久積累和重用
+
+## 🔄 使用工作流程
+
 ```bash
-# 啟用智能編排器（最重要的一步！）
-/output-style:set orchestrator
+# 1. 啟動本地優化器
+ollama serve
 
-# 系統將自動：
-# - 分析你的請求
-# - 選擇最合適的agent（優先單一專家）
-# - 顯示token預估
-# - 執行任務
+# 2. 啟動 MCP 統一服務
+mcp-server --config unified-coding-config.json
+
+# 3. 配置 AI 工具
+claude config mcp-servers add unified-coding-assistant
+
+# 4. 開始協作
+claude "我想實現用戶登錄功能"
+# → Ollama 優化 → MCP 處理 → 精準執行 → 統一記憶
 ```
 
-### 實際效果示例
-```
-用戶："優化React應用性能"
-✓ 系統選擇：performance-optimizer（單一agent，~100k tokens）
-✗ 避免：啟動3-5個通用agents（會浪費800k+ tokens）
-```
-
-## Output Styles 系統
-
-### 使用內建風格
-項目提供了5種專業的Output Styles，可通過以下方式使用：
-
-```bash
-# 查看可用風格
-/output-style
-
-# 切換到架構師風格進行系統設計
-/output-style:set senior-architect
-/plan 設計微服務架構
-
-# 切換到簡潔開發風格進行編碼
-/output-style:set concise-developer
-
-# 進行安全審查
-/output-style:set security-analyst
-/review
-```
-
-### 內建風格說明
-- **senior-architect**: 戰略系統設計和架構討論
-- **concise-developer**: 簡潔高效的編碼風格
-- **educational-mentor**: 詳細解釋的教學風格
-- **devops-engineer**: 基礎設施自動化專注
-- **security-analyst**: 安全分析和威脅建模
-
-### 自定義風格
-創建文件 `~/.claude/output-styles/my-style.md`：
-```markdown
 ---
-description: 我的自定義風格
----
 
-# My Custom Style
+**這是一個重新定義 AI coding 工具使用方式的革命性框架！**
 
-[風格定義內容]
-```
-
-## 開發工作流
-
-### 1. 開始新週期
-```bash
-/sync                    # 恢復上次狀態
-/plan "feature name"     # 開始新功能開發
-```
-
-### 2. 開發過程
-```bash
-/context                 # 確認上下文理解
-# 進行開發工作...
-/learn "重要決策"        # 記錄關鍵決策
-```
-
-### 3. 結束週期
-```bash
-/update-spec            # 更新規範和文檔
-git commit              # 提交變更
-```
-
-## 測試規範
-- 始終運行lint和typecheck
-- 測試失敗前不提交代碼
-- 使用項目定義的測試命令
-
-## 代碼規範
-- 遵循現有代碼風格
-- 不添加不必要的註釋
-- 優先修改現有文件而非創建新文件
-- 永不主動創建文檔除非明確要求
+*最後更新：2025-09-18*
