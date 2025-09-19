@@ -59,11 +59,15 @@
 				
 				<option value="file1">claude-proxy/internal/ollama/client.go (45.2%)</option>
 				
-				<option value="file2">claude-proxy/internal/terminal/manager.go (77.2%)</option>
+				<option value="file2">claude-proxy/internal/template/manager.go (87.0%)</option>
 				
-				<option value="file3">claude-proxy/internal/terminal/platform.go (55.9%)</option>
+				<option value="file3">claude-proxy/internal/template/types.go (0.0%)</option>
 				
-				<option value="file4">claude-proxy/internal/terminal/types.go (100.0%)</option>
+				<option value="file4">claude-proxy/internal/terminal/manager.go (77.2%)</option>
+				
+				<option value="file5">claude-proxy/internal/terminal/platform.go (55.9%)</option>
+				
+				<option value="file6">claude-proxy/internal/terminal/types.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -333,7 +337,546 @@ func (c *OllamaClient) sendGenerateRequest(ctx context.Context, prompt string) (
         <span class="cov0" title="0">return &amp;generateResp, nil</span>
 }</pre>
 		
-		<pre class="file" id="file2" style="display: none">package terminal
+		<pre class="file" id="file2" style="display: none">package template
+
+import (
+        "fmt"
+        "regexp"
+        "strings"
+        "text/template"
+        "time"
+)
+
+// NewTemplateManager 創建新的模板管理器
+func NewTemplateManager() *TemplateManager <span class="cov8" title="1">{
+        manager := &amp;TemplateManager{
+                templates:     make(map[string]*QueryTemplate),
+                templateCache: make(map[string]*template.Template),
+                stats:         make(map[string]*TemplateStats),
+                config: &amp;TemplateConfig{
+                        EnableStats:    true,
+                        MaxCustom:     50,
+                        CacheSize:     100,
+                        ValidateStrict: false,
+                },
+        }
+
+        // 初始化內建模板
+        manager.initBuiltInTemplates()
+
+        return manager
+}</span>
+
+// GetAvailableTemplates 獲取所有可用模板
+func (tm *TemplateManager) GetAvailableTemplates() []*QueryTemplate <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        templates := make([]*QueryTemplate, 0, len(tm.templates))
+        for _, tmpl := range tm.templates </span><span class="cov8" title="1">{
+                templates = append(templates, tmpl)
+        }</span>
+
+        <span class="cov8" title="1">return templates</span>
+}
+
+// GetTemplate 根據 ID 獲取模板
+func (tm *TemplateManager) GetTemplate(templateID string) (*QueryTemplate, bool) <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        template, exists := tm.templates[templateID]
+        return template, exists
+}</span>
+
+// ApplyTemplate 應用模板到用戶查詢
+func (tm *TemplateManager) ApplyTemplate(templateID, userQuery string, context map[string]string) (*ApplyResult, error) <span class="cov8" title="1">{
+        if strings.TrimSpace(userQuery) == "" </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("user query cannot be empty")
+        }</span>
+
+        <span class="cov8" title="1">template, exists := tm.GetTemplate(templateID)
+        if !exists </span><span class="cov8" title="1">{
+                return nil, fmt.Errorf("template not found: %s", templateID)
+        }</span>
+
+        // 準備模板數據
+        <span class="cov8" title="1">data := make(map[string]string)
+        data["query"] = userQuery
+
+        // 添加用戶提供的上下文
+        if context != nil </span><span class="cov8" title="1">{
+                for key, value := range context </span><span class="cov8" title="1">{
+                        data[key] = value
+                }</span>
+        }
+
+        // 渲染模板
+        <span class="cov8" title="1">optimizedPrompt, err := tm.renderTemplate(template.Prompt, data)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("failed to render template: %w", err)
+        }</span>
+
+        // 計算 token 估算
+        <span class="cov8" title="1">tokensEstimate := tm.estimateTokens(optimizedPrompt)
+
+        // 更新統計
+        tm.updateStats(templateID, tokensEstimate)
+
+        return &amp;ApplyResult{
+                TemplateID:      templateID,
+                OriginalQuery:   userQuery,
+                OptimizedPrompt: optimizedPrompt,
+                Context:         context,
+                AppliedAt:       time.Now(),
+                TokensEstimate:  tokensEstimate,
+        }, nil</span>
+}
+
+// GetTemplatesByCategory 根據分類獲取模板
+func (tm *TemplateManager) GetTemplatesByCategory(category string) []*QueryTemplate <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        var templates []*QueryTemplate
+        for _, tmpl := range tm.templates </span><span class="cov8" title="1">{
+                if tmpl.Category == category </span><span class="cov8" title="1">{
+                        templates = append(templates, tmpl)
+                }</span>
+        }
+
+        <span class="cov8" title="1">return templates</span>
+}
+
+// ValidateTemplate 驗證模板
+func (tm *TemplateManager) ValidateTemplate(tmpl *QueryTemplate) bool <span class="cov8" title="1">{
+        if tmpl == nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+
+        // 檢查必需字段
+        <span class="cov8" title="1">if strings.TrimSpace(tmpl.ID) == "" </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        <span class="cov8" title="1">if strings.TrimSpace(tmpl.Prompt) == "" </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        // 驗證模板語法
+        <span class="cov8" title="1">_, err := template.New("test").Parse(tmpl.Prompt)
+        if err != nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+
+        // 檢查變量一致性
+        <span class="cov8" title="1">return tm.validateTemplateVariables(tmpl)</span>
+}
+
+// AddCustomTemplate 添加自定義模板
+func (tm *TemplateManager) AddCustomTemplate(tmpl *QueryTemplate) error <span class="cov8" title="1">{
+        if !tm.ValidateTemplate(tmpl) </span><span class="cov0" title="0">{
+                return fmt.Errorf("invalid template")
+        }</span>
+
+        <span class="cov8" title="1">tm.mu.Lock()
+        defer tm.mu.Unlock()
+
+        // 檢查是否已存在
+        if _, exists := tm.templates[tmpl.ID]; exists </span><span class="cov0" title="0">{
+                return fmt.Errorf("template already exists: %s", tmpl.ID)
+        }</span>
+
+        // 設置創建時間
+        <span class="cov8" title="1">if tmpl.CreatedAt.IsZero() </span><span class="cov0" title="0">{
+                tmpl.CreatedAt = time.Now()
+        }</span>
+        <span class="cov8" title="1">tmpl.UpdatedAt = time.Now()
+        tmpl.IsBuiltIn = false
+
+        tm.templates[tmpl.ID] = tmpl
+        return nil</span>
+}
+
+// initBuiltInTemplates 初始化內建模板
+func (tm *TemplateManager) initBuiltInTemplates() <span class="cov8" title="1">{
+        builtInTemplates := []*QueryTemplate{
+                {
+                        ID:          TemplateCoding,
+                        Name:        "編碼模板",
+                        Description: "用於代碼開發和實現的優化模板",
+                        Category:    CategoryDevelopment,
+                        Prompt: `作為一名資深{{.language}}開發者，請幫助我{{.query}}。
+
+請考慮以下要求：
+- 使用最佳實踐和編碼規範
+- 提供清晰的代碼註釋
+- 考慮錯誤處理和邊界情況
+- 複雜度：{{.complexity}}
+{{if .framework}}
+- 使用框架：{{.framework}}
+{{end}}
+
+請提供詳細的實現方案和代碼示例。`,
+                        Variables: []string{"query", "language", "complexity", "framework"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+                {
+                        ID:          TemplateDebug,
+                        Name:        "調試模板",
+                        Description: "用於問題診斷和錯誤修復的優化模板",
+                        Category:    CategoryMaintenance,
+                        Prompt: `作為調試專家，請幫助我分析和解決以下問題：
+
+問題描述：{{.query}}
+
+相關信息：
+- 程式語言：{{.language}}
+- 錯誤類型：{{.error_type}}
+{{if .stack_trace}}
+- 堆疊追蹤：{{.stack_trace}}
+{{end}}
+
+請提供：
+1. 問題根因分析
+2. 具體的解決方案
+3. 預防措施建議`,
+                        Variables: []string{"query", "language", "error_type", "stack_trace"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+                {
+                        ID:          TemplateRefactor,
+                        Name:        "重構模板",
+                        Description: "用於代碼重構和優化的模板",
+                        Category:    CategoryMaintenance,
+                        Prompt: `作為代碼重構專家，請幫助我{{.query}}。
+
+重構目標：
+- 提高代碼可讀性和可維護性
+- 優化性能
+- 遵循 SOLID 原則
+- 改善代碼結構
+
+{{if .focus_area}}
+重點關注：{{.focus_area}}
+{{end}}
+
+請提供重構前後的對比和詳細的改進建議。`,
+                        Variables: []string{"query", "focus_area"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+                {
+                        ID:          TemplateDocumentation,
+                        Name:        "文檔模板",
+                        Description: "用於生成和改進文檔的模板",
+                        Category:    CategoryDevelopment,
+                        Prompt: `作為技術文檔專家，請幫助我{{.query}}。
+
+文檔要求：
+- 清晰簡潔的語言
+- 結構化的內容組織
+- 包含實際使用示例
+- 面向{{.target_audience}}
+
+{{if .doc_type}}
+文檔類型：{{.doc_type}}
+{{end}}
+
+請確保文檔易於理解和實用。`,
+                        Variables: []string{"query", "target_audience", "doc_type"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+                {
+                        ID:          TemplateTesting,
+                        Name:        "測試模板",
+                        Description: "用於編寫和改進測試的模板",
+                        Category:    CategoryDevelopment,
+                        Prompt: `作為測試專家，請幫助我{{.query}}。
+
+測試要求：
+- 完整的測試覆蓋
+- 包含正面和負面測試案例
+- 使用適當的測試框架
+- 清晰的測試意圖
+
+{{if .test_type}}
+測試類型：{{.test_type}}
+{{end}}
+{{if .coverage_target}}
+覆蓋率目標：{{.coverage_target}}
+{{end}}
+
+請提供詳細的測試策略和實現代碼。`,
+                        Variables: []string{"query", "test_type", "coverage_target"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+                {
+                        ID:          TemplatePerformance,
+                        Name:        "性能優化模板",
+                        Description: "用於性能分析和優化的模板",
+                        Category:    CategoryAnalysis,
+                        Prompt: `作為性能優化專家，請幫助我{{.query}}。
+
+性能分析重點：
+- 識別性能瓶頸
+- 提供具體的優化方案
+- 考慮內存和 CPU 使用
+- 提供性能測試建議
+
+{{if .performance_metric}}
+關注指標：{{.performance_metric}}
+{{end}}
+{{if .current_performance}}
+當前性能：{{.current_performance}}
+{{end}}
+
+請提供詳細的分析和優化建議。`,
+                        Variables: []string{"query", "performance_metric", "current_performance"},
+                        CreatedAt: time.Now(),
+                        IsBuiltIn: true,
+                },
+        }
+
+        for _, tmpl := range builtInTemplates </span><span class="cov8" title="1">{
+                tm.templates[tmpl.ID] = tmpl
+        }</span>
+}
+
+// renderTemplate 渲染模板
+func (tm *TemplateManager) renderTemplate(promptTemplate string, data map[string]string) (string, error) <span class="cov8" title="1">{
+        // 計算模板哈希作為緩存鍵
+        cacheKey := tm.getTemplateHash(promptTemplate)
+
+        // 嘗試從緩存獲取
+        tm.mu.RLock()
+        cachedTemplate, exists := tm.templateCache[cacheKey]
+        tm.mu.RUnlock()
+
+        var tmpl *template.Template
+        var err error
+
+        if exists </span><span class="cov0" title="0">{
+                tmpl = cachedTemplate
+        }</span> else<span class="cov8" title="1"> {
+                // 編譯新模板
+                tmpl, err = template.New("prompt").Parse(promptTemplate)
+                if err != nil </span><span class="cov0" title="0">{
+                        return "", err
+                }</span>
+
+                // 添加到緩存
+                <span class="cov8" title="1">tm.mu.Lock()
+                if len(tm.templateCache) &lt; tm.config.CacheSize </span><span class="cov8" title="1">{
+                        tm.templateCache[cacheKey] = tmpl
+                }</span>
+                <span class="cov8" title="1">tm.mu.Unlock()</span>
+        }
+
+        <span class="cov8" title="1">var result strings.Builder
+        if err := tmpl.Execute(&amp;result, data); err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+
+        <span class="cov8" title="1">return result.String(), nil</span>
+}
+
+// validateTemplateVariables 驗證模板變量
+func (tm *TemplateManager) validateTemplateVariables(tmpl *QueryTemplate) bool <span class="cov8" title="1">{
+        // 從模板中提取變量
+        re := regexp.MustCompile(`\{\{\.(\w+)\}\}`)
+        matches := re.FindAllStringSubmatch(tmpl.Prompt, -1)
+
+        templateVars := make(map[string]bool)
+        for _, match := range matches </span><span class="cov8" title="1">{
+                if len(match) &gt; 1 </span><span class="cov8" title="1">{
+                        templateVars[match[1]] = true
+                }</span>
+        }
+
+        // 檢查聲明的變量是否都在模板中使用
+        <span class="cov8" title="1">declaredVars := make(map[string]bool)
+        for _, variable := range tmpl.Variables </span><span class="cov8" title="1">{
+                declaredVars[variable] = true
+        }</span>
+
+        // 模板中的變量都應該在聲明列表中
+        <span class="cov8" title="1">for variable := range templateVars </span><span class="cov8" title="1">{
+                if !declaredVars[variable] </span><span class="cov8" title="1">{
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">return true</span>
+}
+
+// estimateTokens 估算 token 數量
+func (tm *TemplateManager) estimateTokens(text string) int <span class="cov8" title="1">{
+        // 簡單估算：中文字符 1 token，英文字符 0.25 token
+        tokens := 0
+        for _, r := range text </span><span class="cov8" title="1">{
+                if r &gt; 127 </span><span class="cov8" title="1">{ // 非 ASCII 字符（主要是中文）
+                        tokens++
+                }</span> else<span class="cov8" title="1"> {
+                        tokens += 1 // 英文字符
+                }</span>
+        }
+        <span class="cov8" title="1">return tokens / 3</span> // 平均化處理
+}
+
+// getTemplateHash 生成模板哈希值（簡單實現）
+func (tm *TemplateManager) getTemplateHash(template string) string <span class="cov8" title="1">{
+        // 簡單的哈希實現：使用字符串長度和前後字符
+        length := len(template)
+        if length == 0 </span><span class="cov0" title="0">{
+                return "empty"
+        }</span>
+
+        <span class="cov8" title="1">first := template[0]
+        last := template[length-1]
+
+        return fmt.Sprintf("%d_%c_%c", length, first, last)</span>
+}
+
+// updateStats 更新模板使用統計
+func (tm *TemplateManager) updateStats(templateID string, tokens int) <span class="cov8" title="1">{
+        if !tm.config.EnableStats </span><span class="cov0" title="0">{
+                return
+        }</span>
+
+        <span class="cov8" title="1">tm.mu.Lock()
+        defer tm.mu.Unlock()
+
+        stats, exists := tm.stats[templateID]
+        if !exists </span><span class="cov8" title="1">{
+                stats = &amp;TemplateStats{
+                        TemplateID: templateID,
+                }
+                tm.stats[templateID] = stats
+        }</span>
+
+        <span class="cov8" title="1">stats.UsageCount++
+        stats.LastUsed = time.Now()
+
+        // 更新平均 token 數
+        if stats.UsageCount == 1 </span><span class="cov8" title="1">{
+                stats.AvgTokens = float64(tokens)
+        }</span> else<span class="cov0" title="0"> {
+                stats.AvgTokens = (stats.AvgTokens*float64(stats.UsageCount-1) + float64(tokens)) / float64(stats.UsageCount)
+        }</span>
+
+        // 假設所有應用都成功（實際實現中可能需要追蹤失敗）
+        <span class="cov8" title="1">stats.SuccessRate = 1.0</span>
+}
+
+// GetStats 獲取模板使用統計
+func (tm *TemplateManager) GetStats(templateID string) (*TemplateStats, bool) <span class="cov0" title="0">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        stats, exists := tm.stats[templateID]
+        return stats, exists
+}</pre>
+		
+		<pre class="file" id="file3" style="display: none">package template
+
+import (
+        "sync"
+        "text/template"
+        "time"
+)
+
+// 預定義模板 ID
+const (
+        TemplateCoding        = "coding"
+        TemplateDebug         = "debug"
+        TemplateRefactor      = "refactor"
+        TemplateDocumentation = "documentation"
+        TemplateTesting       = "testing"
+        TemplatePerformance   = "performance"
+)
+
+// 模板分類
+const (
+        CategoryDevelopment = "development"
+        CategoryMaintenance = "maintenance"
+        CategoryAnalysis    = "analysis"
+)
+
+// QueryTemplate 查詢優化模板
+type QueryTemplate struct {
+        ID          string            `json:"id"`
+        Name        string            `json:"name"`
+        Description string            `json:"description"`
+        Category    string            `json:"category"`
+        Prompt      string            `json:"prompt"`       // 模板提示詞，支持變量替換
+        Variables   []string          `json:"variables"`    // 模板中的變量列表
+        Metadata    map[string]string `json:"metadata"`     // 額外的元數據
+        CreatedAt   time.Time         `json:"created_at"`
+        UpdatedAt   time.Time         `json:"updated_at"`
+        IsBuiltIn   bool              `json:"is_built_in"`  // 是否為內建模板
+}
+
+// ApplyResult 模板應用結果
+type ApplyResult struct {
+        TemplateID      string            `json:"template_id"`
+        OriginalQuery   string            `json:"original_query"`
+        OptimizedPrompt string            `json:"optimized_prompt"`
+        Context         map[string]string `json:"context"`
+        AppliedAt       time.Time         `json:"applied_at"`
+        TokensEstimate  int               `json:"tokens_estimate"`
+}
+
+// TemplateManager 模板管理器
+type TemplateManager struct {
+        templates    map[string]*QueryTemplate
+        templateCache map[string]*template.Template // 已編譯的模板緩存
+        stats        map[string]*TemplateStats     // 使用統計
+        config       *TemplateConfig               // 配置
+        mu           sync.RWMutex
+}
+
+// TemplateStats 模板使用統計
+type TemplateStats struct {
+        TemplateID  string    `json:"template_id"`
+        UsageCount  int       `json:"usage_count"`
+        LastUsed    time.Time `json:"last_used"`
+        AvgTokens   float64   `json:"avg_tokens"`
+        SuccessRate float64   `json:"success_rate"`
+}
+
+// TemplateConfig 模板配置
+type TemplateConfig struct {
+        EnableStats     bool `json:"enable_stats"`
+        MaxCustom       int  `json:"max_custom"`        // 最大自定義模板數量
+        CacheSize       int  `json:"cache_size"`        // 緩存大小
+        ValidateStrict  bool `json:"validate_strict"`   // 嚴格驗證模式
+}
+
+// VariableInfo 變量信息
+type VariableInfo struct {
+        Name        string `json:"name"`
+        Type        string `json:"type"`
+        Required    bool   `json:"required"`
+        Default     string `json:"default"`
+        Description string `json:"description"`
+}
+
+// TemplateValidationError 模板驗證錯誤
+type TemplateValidationError struct {
+        Field   string `json:"field"`
+        Message string `json:"message"`
+}
+
+func (e *TemplateValidationError) Error() string <span class="cov0" title="0">{
+        return e.Message
+}</pre>
+		
+		<pre class="file" id="file4" style="display: none">package terminal
 
 import (
         "bufio"
@@ -589,7 +1132,7 @@ func (tm *TerminalManager) startProcess(ctx context.Context, terminal *Terminal)
         }
 }</pre>
 		
-		<pre class="file" id="file3" style="display: none">package terminal
+		<pre class="file" id="file5" style="display: none">package terminal
 
 import (
         "fmt"
@@ -897,7 +1440,7 @@ type ProcessInfo struct {
         Status         string // 進程狀態
 }</pre>
 		
-		<pre class="file" id="file4" style="display: none">package terminal
+		<pre class="file" id="file6" style="display: none">package terminal
 
 import (
         "bufio"
