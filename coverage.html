@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>terminal: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">claude-proxy/internal/terminal/manager.go (77.2%)</option>
+				
+				<option value="file1">claude-proxy/internal/terminal/types.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package terminal
+
+import (
+        "bufio"
+        "context"
+        "fmt"
+        "os/exec"
+        "sync"
+        "time"
+)
+
+// TerminalManager 實現 Manager 接口
+type TerminalManager struct {
+        terminals map[string]*Terminal
+        mu        sync.RWMutex
+        healthy   bool
+}
+
+// NewTerminalManager 創建一個新的終端管理器
+func NewTerminalManager() *TerminalManager <span class="cov8" title="1">{
+        return &amp;TerminalManager{
+                terminals: make(map[string]*Terminal),
+                healthy:   true,
+        }
+}</span>
+
+// StartTerminal 啟動指定的終端
+func (tm *TerminalManager) StartTerminal(config TerminalConfig) error <span class="cov8" title="1">{
+        return tm.StartTerminalWithContext(context.Background(), config)
+}</span>
+
+// StartTerminalWithContext 使用上下文啟動指定的終端
+func (tm *TerminalManager) StartTerminalWithContext(ctx context.Context, config TerminalConfig) error <span class="cov8" title="1">{
+        tm.mu.Lock()
+        defer tm.mu.Unlock()
+
+        // 檢查終端是否已存在
+        if _, exists := tm.terminals[config.Name]; exists </span><span class="cov8" title="1">{
+                return fmt.Errorf("terminal '%s' already exists", config.Name)
+        }</span>
+
+        // 創建新的終端實例
+        <span class="cov8" title="1">terminal := &amp;Terminal{
+                Name:     config.Name,
+                Type:     config.Type,
+                Status:   StatusStarting,
+                LastUsed: time.Now().Unix(),
+        }
+
+        // 創建命令
+        cmd := tm.createCommand(config)
+        if cmd == nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create command for terminal type %s", config.Type.String())
+        }</span>
+
+        <span class="cov8" title="1">terminal.Process = cmd
+
+        // 設置輸入輸出管道
+        if err := tm.setupPipes(terminal); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to setup pipes: %w", err)
+        }</span>
+
+        // 在後台啟動進程
+        <span class="cov8" title="1">if err := tm.startProcess(ctx, terminal); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to start process: %w", err)
+        }</span>
+
+        // 添加到管理器
+        <span class="cov8" title="1">tm.terminals[config.Name] = terminal
+        terminal.SetStatus(StatusRunning)
+
+        return nil</span>
+}
+
+// StopTerminal 停止指定名稱的終端
+func (tm *TerminalManager) StopTerminal(name string) error <span class="cov8" title="1">{
+        tm.mu.Lock()
+        defer tm.mu.Unlock()
+
+        terminal, exists := tm.terminals[name]
+        if !exists </span><span class="cov8" title="1">{
+                return fmt.Errorf("terminal '%s' not found", name)
+        }</span>
+
+        // 設置停止狀態
+        <span class="cov8" title="1">terminal.SetStatus(StatusStopping)
+
+        // 停止進程
+        if terminal.Process != nil &amp;&amp; terminal.Process.Process != nil </span><span class="cov8" title="1">{
+                if err := terminal.Process.Process.Kill(); err != nil </span><span class="cov0" title="0">{
+                        terminal.SetStatus(StatusError)
+                        return fmt.Errorf("failed to kill process: %w", err)
+                }</span>
+        }
+
+        // 等待進程結束
+        <span class="cov8" title="1">if terminal.Process != nil </span><span class="cov8" title="1">{
+                _ = terminal.Process.Wait()
+        }</span>
+
+        <span class="cov8" title="1">terminal.SetStatus(StatusStopped)
+        return nil</span>
+}
+
+// SendCommand 向指定終端發送命令
+func (tm *TerminalManager) SendCommand(name string, command string) error <span class="cov8" title="1">{
+        tm.mu.RLock()
+        terminal, exists := tm.terminals[name]
+        tm.mu.RUnlock()
+
+        if !exists </span><span class="cov8" title="1">{
+                return fmt.Errorf("terminal '%s' not found", name)
+        }</span>
+
+        <span class="cov8" title="1">if !terminal.IsRunning() </span><span class="cov8" title="1">{
+                return fmt.Errorf("terminal '%s' is not running", name)
+        }</span>
+
+        // 更新最後使用時間
+        <span class="cov8" title="1">terminal.mu.Lock()
+        terminal.LastUsed = time.Now().Unix()
+        terminal.mu.Unlock()
+
+        // 發送命令
+        if terminal.Stdin == nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("terminal '%s' stdin not available", name)
+        }</span>
+
+        <span class="cov8" title="1">if _, err := terminal.Stdin.WriteString(command + "\n"); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to write command: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">if err := terminal.Stdin.Flush(); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to flush command: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+
+// GetTerminal 獲取指定名稱的終端
+func (tm *TerminalManager) GetTerminal(name string) (*Terminal, bool) <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        terminal, exists := tm.terminals[name]
+        return terminal, exists
+}</span>
+
+// ListTerminals 列出所有終端
+func (tm *TerminalManager) ListTerminals() []*Terminal <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+
+        terminals := make([]*Terminal, 0, len(tm.terminals))
+        for _, terminal := range tm.terminals </span><span class="cov8" title="1">{
+                terminals = append(terminals, terminal)
+        }</span>
+
+        <span class="cov8" title="1">return terminals</span>
+}
+
+// IsHealthy 檢查終端管理器是否健康
+func (tm *TerminalManager) IsHealthy() bool <span class="cov8" title="1">{
+        tm.mu.RLock()
+        defer tm.mu.RUnlock()
+        return tm.healthy
+}</span>
+
+// createCommand 創建對應類型的命令
+func (tm *TerminalManager) createCommand(config TerminalConfig) *exec.Cmd <span class="cov8" title="1">{
+        var cmd *exec.Cmd
+
+        switch config.Type </span>{
+        case TypeClaudeCode:<span class="cov8" title="1">
+                cmd = exec.Command("claude")</span>
+        case TypeGeminiCLI:<span class="cov0" title="0">
+                cmd = exec.Command("gemini")</span>
+        case TypeCursor:<span class="cov0" title="0">
+                cmd = exec.Command("cursor", "--cli")</span>
+        case TypeAider:<span class="cov0" title="0">
+                cmd = exec.Command("aider")</span>
+        case TypeCustom:<span class="cov8" title="1">
+                // 對於測試，使用一個簡單的命令
+                cmd = exec.Command("echo", "test")</span>
+        default:<span class="cov0" title="0">
+                return nil</span>
+        }
+
+        // 設置工作目錄
+        <span class="cov8" title="1">if config.WorkingDir != "" </span><span class="cov8" title="1">{
+                cmd.Dir = config.WorkingDir
+        }</span>
+
+        // 設置環境變量
+        <span class="cov8" title="1">if config.Environment != nil </span><span class="cov0" title="0">{
+                for key, value := range config.Environment </span><span class="cov0" title="0">{
+                        cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", key, value))
+                }</span>
+        }
+
+        // 添加額外參數
+        <span class="cov8" title="1">if config.Args != nil </span><span class="cov0" title="0">{
+                cmd.Args = append(cmd.Args, config.Args...)
+        }</span>
+
+        <span class="cov8" title="1">return cmd</span>
+}
+
+// setupPipes 設置進程的輸入輸出管道
+func (tm *TerminalManager) setupPipes(terminal *Terminal) error <span class="cov8" title="1">{
+        // 設置標準輸入管道
+        stdin, err := terminal.Process.StdinPipe()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create stdin pipe: %w", err)
+        }</span>
+        <span class="cov8" title="1">terminal.Stdin = bufio.NewWriter(stdin)
+
+        // 設置標準輸出管道
+        stdout, err := terminal.Process.StdoutPipe()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("failed to create stdout pipe: %w", err)
+        }</span>
+        <span class="cov8" title="1">terminal.Stdout = bufio.NewScanner(stdout)
+
+        return nil</span>
+}
+
+// startProcess 在後台啟動進程
+func (tm *TerminalManager) startProcess(ctx context.Context, terminal *Terminal) error <span class="cov8" title="1">{
+        // 創建一個帶取消功能的上下文
+        processCtx, cancel := context.WithCancel(ctx)
+        defer cancel()
+
+        // 設置超時
+        done := make(chan error, 1)
+
+        go func() </span><span class="cov8" title="1">{
+                done &lt;- terminal.Process.Start()
+        }</span>()
+
+        <span class="cov8" title="1">select </span>{
+        case err := &lt;-done:<span class="cov8" title="1">
+                if err != nil </span><span class="cov0" title="0">{
+                        terminal.SetStatus(StatusError)
+                        return err
+                }</span>
+                <span class="cov8" title="1">return nil</span>
+        case &lt;-processCtx.Done():<span class="cov0" title="0">
+                terminal.SetStatus(StatusError)
+                return processCtx.Err()</span>
+        case &lt;-time.After(5 * time.Second):<span class="cov0" title="0"> // 5秒超時
+                terminal.SetStatus(StatusError)
+                return fmt.Errorf("timeout starting process")</span>
+        }
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package terminal
+
+import (
+        "bufio"
+        "os/exec"
+        "sync"
+)
+
+// TerminalType 表示支援的 AI 終端類型
+type TerminalType int
+
+const (
+        TypeClaudeCode TerminalType = iota // Claude Code CLI
+        TypeGeminiCLI                      // Gemini CLI
+        TypeCursor                         // Cursor CLI
+        TypeAider                          // Aider CLI
+        TypeCustom                         // 自定義終端
+)
+
+// String 返回終端類型的字符串表示
+func (t TerminalType) String() string <span class="cov8" title="1">{
+        switch t </span>{
+        case TypeClaudeCode:<span class="cov8" title="1">
+                return "claude"</span>
+        case TypeGeminiCLI:<span class="cov8" title="1">
+                return "gemini"</span>
+        case TypeCursor:<span class="cov8" title="1">
+                return "cursor"</span>
+        case TypeAider:<span class="cov8" title="1">
+                return "aider"</span>
+        case TypeCustom:<span class="cov8" title="1">
+                return "custom"</span>
+        default:<span class="cov8" title="1">
+                return "unknown"</span>
+        }
+}
+
+// CommandName 返回終端類型對應的命令名
+func (t TerminalType) CommandName() string <span class="cov8" title="1">{
+        switch t </span>{
+        case TypeClaudeCode:<span class="cov8" title="1">
+                return "claude"</span>
+        case TypeGeminiCLI:<span class="cov8" title="1">
+                return "gemini"</span>
+        case TypeCursor:<span class="cov8" title="1">
+                return "cursor"</span>
+        case TypeAider:<span class="cov8" title="1">
+                return "aider"</span>
+        default:<span class="cov8" title="1">
+                return "bash"</span>
+        }
+}
+
+// TerminalStatus 表示終端狀態
+type TerminalStatus int
+
+const (
+        StatusStopped TerminalStatus = iota // 已停止
+        StatusStarting                      // 啟動中
+        StatusRunning                       // 運行中
+        StatusStopping                      // 停止中
+        StatusError                         // 錯誤狀態
+)
+
+// String 返回終端狀態的字符串表示
+func (s TerminalStatus) String() string <span class="cov8" title="1">{
+        switch s </span>{
+        case StatusStopped:<span class="cov8" title="1">
+                return "stopped"</span>
+        case StatusStarting:<span class="cov8" title="1">
+                return "starting"</span>
+        case StatusRunning:<span class="cov8" title="1">
+                return "running"</span>
+        case StatusStopping:<span class="cov8" title="1">
+                return "stopping"</span>
+        case StatusError:<span class="cov8" title="1">
+                return "error"</span>
+        default:<span class="cov8" title="1">
+                return "unknown"</span>
+        }
+}
+
+// Terminal 表示一個 AI 終端實例
+type Terminal struct {
+        Name     string         // 終端名稱
+        Type     TerminalType   // 終端類型
+        Status   TerminalStatus // 終端狀態
+        Process  *exec.Cmd      // 底層進程
+        Stdin    *bufio.Writer  // 標準輸入寫入器
+        Stdout   *bufio.Scanner // 標準輸出掃描器
+        LastUsed int64          // 最後使用時間戳
+        mu       sync.RWMutex   // 保護並發訪問的鎖
+}
+
+// GetStatus 安全地獲取終端狀態
+func (t *Terminal) GetStatus() TerminalStatus <span class="cov8" title="1">{
+        t.mu.RLock()
+        defer t.mu.RUnlock()
+        return t.Status
+}</span>
+
+// SetStatus 安全地設置終端狀態
+func (t *Terminal) SetStatus(status TerminalStatus) <span class="cov8" title="1">{
+        t.mu.Lock()
+        defer t.mu.Unlock()
+        t.Status = status
+}</span>
+
+// IsRunning 檢查終端是否正在運行
+func (t *Terminal) IsRunning() bool <span class="cov8" title="1">{
+        return t.GetStatus() == StatusRunning
+}</span>
+
+// TerminalConfig 終端配置
+type TerminalConfig struct {
+        Type        TerminalType          // 終端類型
+        Name        string                // 終端名稱
+        WorkingDir  string                // 工作目錄
+        Environment map[string]string     // 環境變量
+        Args        []string              // 額外參數
+}
+
+// Manager 介面定義終端管理器的行為
+type Manager interface {
+        // StartTerminal 啟動指定的終端
+        StartTerminal(config TerminalConfig) error
+
+        // StopTerminal 停止指定名稱的終端
+        StopTerminal(name string) error
+
+        // SendCommand 向指定終端發送命令
+        SendCommand(name string, command string) error
+
+        // GetTerminal 獲取指定名稱的終端
+        GetTerminal(name string) (*Terminal, bool)
+
+        // ListTerminals 列出所有終端
+        ListTerminals() []*Terminal
+
+        // IsHealthy 檢查終端管理器是否健康
+        IsHealthy() bool
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
