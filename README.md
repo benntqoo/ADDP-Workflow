@@ -83,6 +83,8 @@ cd ai-launcher
 # 直接双击 ai-launcher.exe 即可使用
 ```
 
+> 💡 **中文用户注意**：如果批处理文件出现乱码，请查看 [WINDOWS_中文支持.md](WINDOWS_中文支持.md) 解决方案，或直接双击 `ai-launcher.exe` 避免编码问题。
+
 #### 手动构建（所有平台）
 ```bash
 # 确保安装了Go 1.24+

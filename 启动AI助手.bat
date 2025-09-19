@@ -1,19 +1,21 @@
 @echo off
-title AI启动器
+chcp 65001 >nul 2>&1
+title AI Launcher
 
-REM 检查ai-launcher.exe是否存在
+REM Check if ai-launcher.exe exists
 if not exist ai-launcher.exe (
-    echo 错误：找不到 ai-launcher.exe 文件
-    echo 请先运行 build.bat 构建程序
+    echo ERROR: ai-launcher.exe not found
+    echo Please run build.bat first to build the program
     echo.
-    pause
+    echo Press any key to continue...
+    pause >nul
     exit /b 1
 )
 
-REM 启动GUI程序
-echo 正在启动AI启动器...
+REM Start GUI program
+echo Starting AI Launcher...
 start "" ai-launcher.exe
 
-REM 等待一秒后关闭命令行窗口
+REM Wait 1 second then close command window
 timeout /t 1 /nobreak > nul
 exit

@@ -1,38 +1,51 @@
 @echo off
-echo 构建AI启动器...
+chcp 65001 >nul 2>&1
+title AI Launcher Builder
 
-echo 正在清理旧的构建文件...
+echo Building AI Launcher...
+echo.
+
+echo [1/4] Cleaning old build files...
 if exist ai-launcher.exe del ai-launcher.exe
 
-echo 正在下载依赖...
+echo [2/4] Downloading dependencies...
 go mod download
 
-echo 正在编译程序...
+echo [3/4] Compiling program...
 set GOOS=windows
 set GOARCH=amd64
 set CGO_ENABLED=1
 go build -o ai-launcher.exe ./cmd/launcher
 
+echo [4/4] Checking build result...
 if exist ai-launcher.exe (
     echo.
-    echo ✅ 构建成功！
-    echo 可执行文件：ai-launcher.exe
+    echo ================================
+    echo BUILD SUCCESSFUL!
+    echo ================================
+    echo Executable: ai-launcher.exe
     echo.
-    echo 使用方法：
-    echo   双击 ai-launcher.exe 启动GUI界面
-    echo   或在命令行运行：
-    echo     ai-launcher.exe          启动GUI界面
-    echo     ai-launcher.exe version  显示版本信息
-    echo     ai-launcher.exe list-models  列出支持的AI模型
+    echo Usage Instructions:
+    echo   1. Double-click ai-launcher.exe to start GUI
+    echo   2. Or run from command line:
+    echo      ai-launcher.exe          ^(Start GUI^)
+    echo      ai-launcher.exe version  ^(Show version^)
+    echo      ai-launcher.exe list-models  ^(List AI models^)
     echo.
-    echo 💡 提示：直接双击exe文件即可使用，无需命令行操作！
+    echo TIP: Just double-click the exe file - no command line needed!
+    echo ================================
     echo.
 ) else (
     echo.
-    echo ❌ 构建失败！
-    echo 请检查依赖是否正确安装。
-    echo 注意：Fyne GUI需要CGO支持，请确保安装了C编译器（如TDM-GCC）。
+    echo ================================
+    echo BUILD FAILED!
+    echo ================================
+    echo Please check if dependencies are properly installed.
+    echo NOTE: Fyne GUI requires CGO support.
+    echo Install a C compiler like TDM-GCC or Visual Studio Build Tools.
+    echo ================================
     echo.
 )
 
-pause
+echo Press any key to continue...
+pause >nul
