@@ -5,29 +5,24 @@ import (
 	"log"
 	"os"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
-
-	"ai-launcher/internal/tui"
+	"ai-launcher/internal/gui"
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "ai-launcher",
-	Short: "AI启动器 - 快速启动各种AI编程助手",
+	Short: "AI启动器 - 智能多AI工具启动器",
 	Long: `AI启动器是一个智能的多AI工具启动器，提供：
-• 项目目录快速选择
+• 直观的图形用户界面
+• 项目管理和快速切换
 • 多种AI模型支持 (Claude Code, Gemini CLI, Codex)
 • YOLO模式支持，跳过安全确认
 • 配置自动保存和最近项目记录
-• 一键启动新终端窗口`,
+• 一键启动AI工具`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// 启动新的UI界面
-		model := tui.NewNewUIModel()
-		p := tea.NewProgram(model, tea.WithAltScreen())
-
-		if _, err := p.Run(); err != nil {
-			log.Fatal("启动UI失败:", err)
-		}
+		// 直接启动GUI界面
+		app := gui.NewApp()
+		app.Run()
 	},
 }
 
@@ -59,7 +54,6 @@ var listCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(listCmd)
-	rootCmd.AddCommand(guiCmd)
 }
 
 func main() {

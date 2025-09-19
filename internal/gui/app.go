@@ -45,6 +45,10 @@ func NewApp() *App {
 	myApp := app.NewWithID("ai.launcher.app")
 	myApp.SetIcon(resourceAppIconPng) // 需要创建图标资源
 
+	// 设置应用元数据
+	myApp.Metadata().Name = "AI启动器"
+	myApp.Metadata().Icon = resourceAppIconPng
+
 	return &App{
 		fyneApp:         myApp,
 		configManager:   project.NewConfigManager(),
@@ -65,7 +69,13 @@ func (a *App) Run() {
 	a.window = a.fyneApp.NewWindow("AI启动器 - 智能多AI工具启动器")
 	a.window.SetIcon(resourceAppIconPng)
 	a.window.Resize(fyne.NewSize(800, 600))
+	a.window.SetFixedSize(false) // 允许调整大小
 	a.window.CenterOnScreen()
+
+	// 设置窗口关闭时的行为
+	a.window.SetCloseIntercept(func() {
+		a.fyneApp.Quit()
+	})
 
 	// 应用主题
 	a.fyneApp.Settings().SetTheme(&customTheme{})

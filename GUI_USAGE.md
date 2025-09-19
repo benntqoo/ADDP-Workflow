@@ -2,14 +2,12 @@
 
 ## 📦 构建与安装
 
-### Windows
+### Windows（推荐）
 ```bash
 # 运行构建脚本
-./build-gui.bat
+./build.bat
 
-# 或手动构建
-go mod download
-go build -o ai-launcher-gui.exe ./cmd/launcher
+# 构建后直接双击 ai-launcher.exe 即可使用
 ```
 
 ### Linux/macOS
@@ -18,21 +16,32 @@ go build -o ai-launcher-gui.exe ./cmd/launcher
 go mod download
 
 # 构建
-go build -o ai-launcher-gui ./cmd/launcher
+go build -o ai-launcher ./cmd/launcher
+
+# 运行
+./ai-launcher
 ```
 
-## 🚀 启动GUI
+## 🚀 启动方式
 
+### 方式一：双击启动（最简单）
+1. 双击 `ai-launcher.exe`
+2. GUI界面自动打开
+
+### 方式二：命令行启动
 ```bash
-# 启动GUI界面
-./ai-launcher-gui.exe gui
-
-# 启动传统TUI界面
-./ai-launcher-gui.exe
+# 启动GUI界面（默认）
+./ai-launcher.exe
 
 # 查看版本信息
-./ai-launcher-gui.exe version
+./ai-launcher.exe version
+
+# 列出支持的AI模型
+./ai-launcher.exe list-models
 ```
+
+### 方式三：使用便捷启动脚本
+双击 `启动AI助手.bat` 文件即可
 
 ## 📋 GUI界面说明
 
