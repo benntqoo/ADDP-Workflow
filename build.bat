@@ -14,8 +14,7 @@ go mod download
 echo [3/4] Compiling program...
 set GOOS=windows
 set GOARCH=amd64
-set CGO_ENABLED=1
-go build -o ai-launcher.exe ./cmd/launcher
+go build -o ai-launcher.exe ./cmd/simple
 
 echo [4/4] Checking build result...
 if exist ai-launcher.exe (
@@ -26,13 +25,13 @@ if exist ai-launcher.exe (
     echo Executable: ai-launcher.exe
     echo.
     echo Usage Instructions:
-    echo   1. Double-click ai-launcher.exe to start GUI
+    echo   1. Double-click ai-launcher.exe to start Web GUI
     echo   2. Or run from command line:
-    echo      ai-launcher.exe          ^(Start GUI^)
+    echo      ai-launcher.exe          ^(Start Web GUI^)
     echo      ai-launcher.exe version  ^(Show version^)
-    echo      ai-launcher.exe list-models  ^(List AI models^)
+    echo      ai-launcher.exe help     ^(Show help^)
     echo.
-    echo TIP: Just double-click the exe file - no command line needed!
+    echo TIP: Web interface will open in your browser automatically!
     echo ================================
     echo.
 ) else (
@@ -40,9 +39,9 @@ if exist ai-launcher.exe (
     echo ================================
     echo BUILD FAILED!
     echo ================================
-    echo Please check if dependencies are properly installed.
-    echo NOTE: Fyne GUI requires CGO support.
-    echo Install a C compiler like TDM-GCC or Visual Studio Build Tools.
+    echo Please check if Go is properly installed and accessible.
+    echo This version uses only Go standard library - no external dependencies.
+    echo Try: go version
     echo ================================
     echo.
 )

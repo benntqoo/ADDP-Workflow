@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"ai-launcher/internal/gui"
 )
 
 var rootCmd = &cobra.Command{
@@ -20,9 +19,9 @@ var rootCmd = &cobra.Command{
 • 配置自动保存和最近项目记录
 • 一键启动AI工具`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// 直接启动GUI界面
-		app := gui.NewApp()
-		app.Run()
+		// 启动Web GUI界面（临时解决方案）
+		webGUI := NewWebGUI()
+		webGUI.Run()
 	},
 }
 
