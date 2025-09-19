@@ -57,7 +57,7 @@
 				
 				<option value="file0">claude-proxy/cmd/proxy/main.go (0.0%)</option>
 				
-				<option value="file1">claude-proxy/internal/ollama/client.go (45.2%)</option>
+				<option value="file1">claude-proxy/internal/ollama/client.go (64.4%)</option>
 				
 				<option value="file2">claude-proxy/internal/template/manager.go (87.0%)</option>
 				
@@ -68,6 +68,12 @@
 				<option value="file5">claude-proxy/internal/terminal/platform.go (55.9%)</option>
 				
 				<option value="file6">claude-proxy/internal/terminal/types.go (100.0%)</option>
+				
+				<option value="file7">claude-proxy/internal/tui/model.go (63.7%)</option>
+				
+				<option value="file8">claude-proxy/internal/tui/styles.go (1.4%)</option>
+				
+				<option value="file9">claude-proxy/internal/tui/types.go (66.7%)</option>
 				
 				</select>
 			</div>
@@ -174,7 +180,7 @@ func (c *OllamaClient) IsHealthy(ctx context.Context) bool <span class="cov8" ti
         if err != nil </span><span class="cov8" title="1">{
                 return false
         }</span>
-        <span class="cov0" title="0">defer resp.Body.Close()
+        <span class="cov8" title="1">defer resp.Body.Close()
 
         return resp.StatusCode == http.StatusOK</span>
 }
@@ -222,28 +228,28 @@ func (c *OllamaClient) GetAvailableModels(ctx context.Context) ([]ModelInfo, err
         if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("failed to send request: %w", err)
         }</span>
-        <span class="cov0" title="0">defer resp.Body.Close()
+        <span class="cov8" title="1">defer resp.Body.Close()
 
         if resp.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("ollama returned status %d", resp.StatusCode)
         }</span>
 
-        <span class="cov0" title="0">body, err := io.ReadAll(resp.Body)
+        <span class="cov8" title="1">body, err := io.ReadAll(resp.Body)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to read response: %w", err)
         }</span>
 
-        <span class="cov0" title="0">var listResp ListModelsResponse
+        <span class="cov8" title="1">var listResp ListModelsResponse
         if err := json.Unmarshal(body, &amp;listResp); err != nil </span><span class="cov0" title="0">{
                 return nil, fmt.Errorf("failed to decode response: %w", err)
         }</span>
 
         // 標記所有模型為可用
-        <span class="cov0" title="0">for i := range listResp.Models </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for i := range listResp.Models </span><span class="cov0" title="0">{
                 listResp.Models[i].Available = true
         }</span>
 
-        <span class="cov0" title="0">return listResp.Models, nil</span>
+        <span class="cov8" title="1">return listResp.Models, nil</span>
 }
 
 // ValidateModel 驗證模型是否可用
@@ -253,17 +259,17 @@ func (c *OllamaClient) ValidateModel(ctx context.Context, modelName string) bool
         }</span>
 
         <span class="cov8" title="1">models, err := c.GetAvailableModels(ctx)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov0" title="0">{
                 return false
         }</span>
 
-        <span class="cov0" title="0">for _, model := range models </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">for _, model := range models </span><span class="cov0" title="0">{
                 if model.Name == modelName </span><span class="cov0" title="0">{
                         return model.Available
                 }</span>
         }
 
-        <span class="cov0" title="0">return false</span>
+        <span class="cov8" title="1">return false</span>
 }
 
 // SetModel 設置默認模型
@@ -323,9 +329,9 @@ func (c *OllamaClient) sendGenerateRequest(ctx context.Context, prompt string) (
         if err != nil </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("failed to send request: %w", err)
         }</span>
-        <span class="cov0" title="0">defer resp.Body.Close()
+        <span class="cov8" title="1">defer resp.Body.Close()
 
-        if resp.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+        if resp.StatusCode != http.StatusOK </span><span class="cov8" title="1">{
                 return nil, fmt.Errorf("ollama returned status %d", resp.StatusCode)
         }</span>
 
@@ -1581,6 +1587,981 @@ type Manager interface {
 
         // IsHealthy 檢查終端管理器是否健康
         IsHealthy() bool
+}</pre>
+		
+		<pre class="file" id="file7" style="display: none">package tui
+
+import (
+        "context"
+        "fmt"
+        "strings"
+        "time"
+
+        tea "github.com/charmbracelet/bubbletea"
+        "claude-proxy/internal/ollama"
+        "claude-proxy/internal/template"
+        "claude-proxy/internal/terminal"
+)
+
+// NewModel 創建新的 TUI 模型
+func NewModel() Model <span class="cov8" title="1">{
+        return Model{
+                terminalManager: terminal.NewTerminalManager(),
+                ollamaClient:    ollama.NewOllamaClient("http://localhost:11434"),
+                templateManager: template.NewTemplateManager(),
+                currentView:     ViewMain,
+                status:          "準備就緒",
+                lastUpdate:      time.Now(),
+                terminals:       make([]TerminalInfo, 0),
+                selectedIndex:   0,
+                maxItems:        10,
+                styles:          NewStyles(),
+        }
+}</span>
+
+// Init 初始化模型
+func (m Model) Init() tea.Cmd <span class="cov8" title="1">{
+        return tea.Batch(
+                tickCmd(),
+                m.updateTerminalsCmd(),
+        )
+}</span>
+
+// Update 更新模型
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        switch msg := msg.(type) </span>{
+        case tea.KeyMsg:<span class="cov8" title="1">
+                return m.handleKeyMsg(msg)</span>
+
+        case TickMsg:<span class="cov8" title="1">
+                m.lastUpdate = msg.Time
+                m.updateStatus()
+                return m, tickCmd()</span>
+
+        case TerminalStatusMsg:<span class="cov8" title="1">
+                m.updateTerminalStatus(msg.Name, msg.Status)
+                return m, nil</span>
+
+        case QueryResultMsg:<span class="cov0" title="0">
+                m.handleQueryResult(msg)
+                return m, nil</span>
+
+        case ErrorMsg:<span class="cov0" title="0">
+                m.handleError(msg.Err.Error())
+                return m, nil</span>
+
+        case tea.WindowSizeMsg:<span class="cov0" title="0">
+                m.width = msg.Width
+                m.height = msg.Height
+                return m, nil</span>
+
+        default:<span class="cov0" title="0">
+                return m, nil</span>
+        }
+}
+
+// View 渲染視圖
+func (m Model) View() string <span class="cov8" title="1">{
+        var content strings.Builder
+
+        // 標題
+        content.WriteString(m.renderHeader())
+        content.WriteString("\n\n")
+
+        // 主內容區域
+        switch m.currentView </span>{
+        case ViewMain:<span class="cov8" title="1">
+                content.WriteString(m.renderMainView())</span>
+        case ViewTerminals:<span class="cov8" title="1">
+                content.WriteString(m.renderTerminalsView())</span>
+        case ViewTemplates:<span class="cov8" title="1">
+                content.WriteString(m.renderTemplatesView())</span>
+        case ViewSettings:<span class="cov8" title="1">
+                content.WriteString(m.renderSettingsView())</span>
+        }
+
+        <span class="cov8" title="1">content.WriteString("\n\n")
+
+        // 狀態欄
+        content.WriteString(m.renderStatusBar())
+
+        // 幫助信息
+        content.WriteString("\n")
+        content.WriteString(m.renderHelp())
+
+        return content.String()</span>
+}
+
+// handleKeyMsg 處理按鍵消息
+func (m Model) handleKeyMsg(msg tea.KeyMsg) (tea.Model, tea.Cmd) <span class="cov8" title="1">{
+        switch msg.String() </span>{
+        case "q", "ctrl+c":<span class="cov8" title="1">
+                return m, tea.Quit</span>
+
+        case "1":<span class="cov8" title="1">
+                m.switchView(ViewTerminals)
+                return m, m.updateTerminalsCmd()</span>
+
+        case "2":<span class="cov8" title="1">
+                m.switchView(ViewTemplates)
+                return m, nil</span>
+
+        case "3":<span class="cov8" title="1">
+                m.switchView(ViewSettings)
+                return m, nil</span>
+
+        case "up", "k":<span class="cov0" title="0">
+                if m.selectedIndex &gt; 0 </span><span class="cov0" title="0">{
+                        m.selectedIndex--
+                }</span>
+                <span class="cov0" title="0">return m, nil</span>
+
+        case "down", "j":<span class="cov0" title="0">
+                if m.selectedIndex &lt; m.maxItems-1 </span><span class="cov0" title="0">{
+                        m.selectedIndex++
+                }</span>
+                <span class="cov0" title="0">return m, nil</span>
+
+        case "enter":<span class="cov0" title="0">
+                return m.handleEnterKey()</span>
+
+        case "esc":<span class="cov0" title="0">
+                m.switchView(ViewMain)
+                return m, nil</span>
+
+        default:<span class="cov0" title="0">
+                return m, nil</span>
+        }
+}
+
+// handleEnterKey 處理回車鍵
+func (m Model) handleEnterKey() (tea.Model, tea.Cmd) <span class="cov0" title="0">{
+        switch m.currentView </span>{
+        case ViewTerminals:<span class="cov0" title="0">
+                // 在終端視圖中，回車可以啟動/停止終端
+                if len(m.terminals) &gt; m.selectedIndex </span><span class="cov0" title="0">{
+                        terminal := m.terminals[m.selectedIndex]
+                        if terminal.Status == "stopped" </span><span class="cov0" title="0">{
+                                err := m.startTerminal(terminal.Name, terminal.Type)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        m.handleError(fmt.Sprintf("啟動終端失敗: %v", err))
+                                }</span>
+                        } else<span class="cov0" title="0"> {
+                                err := m.stopTerminal(terminal.Name)
+                                if err != nil </span><span class="cov0" title="0">{
+                                        m.handleError(fmt.Sprintf("停止終端失敗: %v", err))
+                                }</span>
+                        }
+                }
+                <span class="cov0" title="0">return m, m.updateTerminalsCmd()</span>
+
+        case ViewTemplates:<span class="cov0" title="0">
+                // 在模板視圖中，回車可以應用模板
+                return m, nil</span>
+
+        default:<span class="cov0" title="0">
+                return m, nil</span>
+        }
+}
+
+// switchView 切換視圖
+func (m *Model) switchView(view ViewType) <span class="cov8" title="1">{
+        m.currentView = view
+        m.selectedIndex = 0
+        m.status = fmt.Sprintf("切換到 %s", view.String())
+}</span>
+
+// renderHeader 渲染標題
+func (m Model) renderHeader() string <span class="cov8" title="1">{
+        return fmt.Sprintf("🤖 AI 終端代理 - %s", m.currentView.String())
+}</span>
+
+// renderMainView 渲染主視圖
+func (m Model) renderMainView() string <span class="cov8" title="1">{
+        var content strings.Builder
+
+        content.WriteString("歡迎使用 AI 終端代理系統\n\n")
+        content.WriteString("功能概覽:\n")
+        content.WriteString("• 多終端管理 (Claude Code, Gemini CLI, Cursor, Aider)\n")
+        content.WriteString("• Ollama 本地 LLM 查詢優化\n")
+        content.WriteString("• 智能模板系統\n")
+        content.WriteString("• 跨平台支持\n\n")
+
+        content.WriteString("快速操作:\n")
+        content.WriteString("1️⃣  終端管理  2️⃣  模板管理  3️⃣  系統設置\n")
+
+        return content.String()
+}</span>
+
+// renderTerminalsView 渲染終端視圖
+func (m Model) renderTerminalsView() string <span class="cov8" title="1">{
+        var content strings.Builder
+
+        // 標題
+        content.WriteString(m.styles.TitleStyle.Render("📺 終端管理"))
+        content.WriteString("\n\n")
+
+        if len(m.terminals) == 0 </span><span class="cov8" title="1">{
+                emptyMsg := m.styles.DescriptionStyle.Render("暫無活動終端")
+                helpMsg := m.styles.InfoStyle.Render("使用 Enter 鍵創建新終端")
+                content.WriteString(emptyMsg + "\n" + helpMsg)
+                return content.String()
+        }</span>
+
+        <span class="cov0" title="0">content.WriteString(m.styles.SubtitleStyle.Render("活動終端列表:"))
+        content.WriteString("\n\n")
+
+        // 渲染終端列表
+        for i, term := range m.terminals </span><span class="cov0" title="0">{
+                style := m.styles.MenuItemStyle
+                prefix := "  "
+                if i == m.selectedIndex </span><span class="cov0" title="0">{
+                        style = m.styles.SelectedItemStyle
+                        prefix = "▶ "
+                }</span>
+
+                <span class="cov0" title="0">statusIcon := GetStatusIcon(term.Status)
+                line := fmt.Sprintf("%s%s %s (%s) %s",
+                        prefix, statusIcon, term.Name, term.Type, term.Status)
+
+                content.WriteString(style.Render(line))
+                content.WriteString("\n")</span>
+        }
+
+        <span class="cov0" title="0">content.WriteString("\n")
+        content.WriteString(m.styles.HelpStyle.Render("💡 按 Enter 啟動/停止選中的終端"))
+
+        return content.String()</span>
+}
+
+// renderTemplatesView 渲染模板視圖
+func (m Model) renderTemplatesView() string <span class="cov8" title="1">{
+        var content strings.Builder
+
+        content.WriteString("📝 模板管理\n\n")
+
+        templates := m.templateManager.GetAvailableTemplates()
+
+        if len(templates) == 0 </span><span class="cov0" title="0">{
+                content.WriteString("暫無可用模板")
+                return content.String()
+        }</span>
+
+        <span class="cov8" title="1">content.WriteString("可用模板:\n\n")
+
+        for i, tmpl := range templates </span><span class="cov8" title="1">{
+                if i &gt;= m.maxItems </span><span class="cov0" title="0">{
+                        break</span>
+                }
+
+                <span class="cov8" title="1">prefix := "  "
+                if i == m.selectedIndex </span><span class="cov8" title="1">{
+                        prefix = "▶ "
+                }</span>
+
+                <span class="cov8" title="1">categoryIcon := "📂"
+                switch tmpl.Category </span>{
+                case "development":<span class="cov8" title="1">
+                        categoryIcon = "💻"</span>
+                case "maintenance":<span class="cov8" title="1">
+                        categoryIcon = "🔧"</span>
+                case "analysis":<span class="cov8" title="1">
+                        categoryIcon = "📊"</span>
+                }
+
+                <span class="cov8" title="1">content.WriteString(fmt.Sprintf("%s%s %s - %s\n",
+                        prefix, categoryIcon, tmpl.Name, tmpl.Description))</span>
+        }
+
+        <span class="cov8" title="1">content.WriteString("\n💡 按 Enter 使用選中的模板")
+
+        return content.String()</span>
+}
+
+// renderSettingsView 渲染設置視圖
+func (m Model) renderSettingsView() string <span class="cov8" title="1">{
+        var content strings.Builder
+
+        content.WriteString("⚙️ 系統設置\n\n")
+
+        // Ollama 連接狀態
+        ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+        defer cancel()
+
+        ollamaHealthy := m.ollamaClient.IsHealthy(ctx)
+        ollamaStatus := "🔴 離線"
+        if ollamaHealthy </span><span class="cov8" title="1">{
+                ollamaStatus = "🟢 在線"
+        }</span>
+
+        <span class="cov8" title="1">content.WriteString(fmt.Sprintf("Ollama 狀態: %s\n", ollamaStatus))
+        content.WriteString(fmt.Sprintf("終端管理器: 🟢 就緒\n"))
+        content.WriteString(fmt.Sprintf("模板系統: 🟢 已載入 %d 個模板\n",
+                len(m.templateManager.GetAvailableTemplates())))
+
+        content.WriteString("\n系統信息:\n")
+        content.WriteString(fmt.Sprintf("• 運行時間: %v\n",
+                time.Since(m.lastUpdate).Truncate(time.Second)))
+        content.WriteString(fmt.Sprintf("• 活動終端: %d\n", len(m.terminals)))
+
+        return content.String()</span>
+}
+
+// renderStatusBar 渲染狀態欄
+func (m Model) renderStatusBar() string <span class="cov8" title="1">{
+        return fmt.Sprintf("狀態: %s | 更新時間: %s",
+                m.status, m.lastUpdate.Format("15:04:05"))
+}</span>
+
+// renderHelp 渲染幫助信息
+func (m Model) renderHelp() string <span class="cov8" title="1">{
+        return "按鍵: ↑/k ↓/j 選擇 | Enter 確認 | 1-3 切換視圖 | q/Ctrl+C 退出"
+}</span>
+
+// updateStatus 更新狀態
+func (m *Model) updateStatus() <span class="cov8" title="1">{
+        m.status = "系統運行中"
+}</span>
+
+// updateTerminalStatus 更新終端狀態
+func (m *Model) updateTerminalStatus(name, status string) <span class="cov8" title="1">{
+        for i := range m.terminals </span><span class="cov0" title="0">{
+                if m.terminals[i].Name == name </span><span class="cov0" title="0">{
+                        m.terminals[i].Status = status
+                        break</span>
+                }
+        }
+}
+
+// handleQueryResult 處理查詢結果
+func (m *Model) handleQueryResult(msg QueryResultMsg) <span class="cov0" title="0">{
+        if msg.Success </span><span class="cov0" title="0">{
+                m.status = fmt.Sprintf("查詢完成: %s", msg.TemplateID)
+        }</span> else<span class="cov0" title="0"> {
+                m.status = "查詢失敗"
+        }</span>
+}
+
+// handleError 處理錯誤
+func (m *Model) handleError(err string) <span class="cov8" title="1">{
+        m.status = fmt.Sprintf("錯誤: %s", err)
+}</span>
+
+// startTerminal 啟動終端
+func (m *Model) startTerminal(name, termType string) error <span class="cov8" title="1">{
+        config := terminal.TerminalConfig{
+                Type: m.getTerminalType(termType),
+                Name: name,
+        }
+
+        return m.terminalManager.StartTerminal(config)
+}</span>
+
+// stopTerminal 停止終端
+func (m *Model) stopTerminal(name string) error <span class="cov8" title="1">{
+        return m.terminalManager.StopTerminal(name)
+}</span>
+
+// listTerminals 列出終端
+func (m *Model) listTerminals() []TerminalInfo <span class="cov8" title="1">{
+        terminals := m.terminalManager.ListTerminals()
+        result := make([]TerminalInfo, len(terminals))
+
+        for i, term := range terminals </span><span class="cov8" title="1">{
+                result[i] = TerminalInfo{
+                        Name:     term.Name,
+                        Type:     term.Type.String(),
+                        Status:   term.GetStatus().String(),
+                        LastUsed: time.Unix(term.LastUsed, 0),
+                }
+        }</span>
+
+        <span class="cov8" title="1">return result</span>
+}
+
+// optimizeQuery 優化查詢
+func (m *Model) optimizeQuery(query, templateID string) (*template.ApplyResult, error) <span class="cov8" title="1">{
+        context := make(map[string]string)
+        context["language"] = "Go"
+        context["complexity"] = "中等"
+
+        return m.templateManager.ApplyTemplate(templateID, query, context)
+}</span>
+
+// getTerminalType 獲取終端類型
+func (m *Model) getTerminalType(typeStr string) terminal.TerminalType <span class="cov8" title="1">{
+        switch typeStr </span>{
+        case "claude":<span class="cov8" title="1">
+                return terminal.TypeClaudeCode</span>
+        case "gemini":<span class="cov0" title="0">
+                return terminal.TypeGeminiCLI</span>
+        case "cursor":<span class="cov0" title="0">
+                return terminal.TypeCursor</span>
+        case "aider":<span class="cov0" title="0">
+                return terminal.TypeAider</span>
+        default:<span class="cov0" title="0">
+                return terminal.TypeCustom</span>
+        }
+}
+
+// updateTerminalsCmd 更新終端列表命令
+func (m *Model) updateTerminalsCmd() tea.Cmd <span class="cov8" title="1">{
+        return func() tea.Msg </span><span class="cov0" title="0">{
+                // 更新終端列表
+                _ = m.listTerminals()
+
+                // 創建一個模擬的終端狀態更新
+                return TerminalStatusMsg{
+                        Name:   "system",
+                        Status: "updated",
+                }
+        }</span>
+}
+
+// tickCmd 創建定時器命令
+func tickCmd() tea.Cmd <span class="cov8" title="1">{
+        return tea.Tick(time.Second, func(t time.Time) tea.Msg </span><span class="cov8" title="1">{
+                return TickMsg{Time: t}
+        }</span>)
+}</pre>
+		
+		<pre class="file" id="file8" style="display: none">package tui
+
+import (
+        "github.com/charmbracelet/lipgloss"
+)
+
+// 顏色定義
+var (
+        Primary   = lipgloss.Color("#007ACC")
+        Secondary = lipgloss.Color("#6C7B7F")
+        Success   = lipgloss.Color("#28A745")
+        Warning   = lipgloss.Color("#FFC107")
+        Error     = lipgloss.Color("#DC3545")
+        Muted     = lipgloss.Color("#6C757D")
+        Border    = lipgloss.Color("#E9ECEF")
+        Highlight = lipgloss.Color("#FFF3CD")
+)
+
+// Styles TUI 樣式集合
+type Styles struct {
+        // 容器樣式
+        AppStyle    lipgloss.Style
+        HeaderStyle lipgloss.Style
+        ContentStyle lipgloss.Style
+        StatusStyle lipgloss.Style
+        HelpStyle   lipgloss.Style
+
+        // 組件樣式
+        MenuStyle         lipgloss.Style
+        MenuItemStyle     lipgloss.Style
+        SelectedItemStyle lipgloss.Style
+        DisabledItemStyle lipgloss.Style
+
+        // 狀態樣式
+        SuccessStyle lipgloss.Style
+        WarningStyle lipgloss.Style
+        ErrorStyle   lipgloss.Style
+        InfoStyle    lipgloss.Style
+
+        // 特殊樣式
+        TitleStyle      lipgloss.Style
+        SubtitleStyle   lipgloss.Style
+        DescriptionStyle lipgloss.Style
+        KeyStyle        lipgloss.Style
+        ValueStyle      lipgloss.Style
+}
+
+// NewStyles 創建新的樣式集合
+func NewStyles() *Styles <span class="cov8" title="1">{
+        return &amp;Styles{
+                // 容器樣式
+                AppStyle: lipgloss.NewStyle().
+                        Padding(1, 2),
+
+                HeaderStyle: lipgloss.NewStyle().
+                        Foreground(Primary).
+                        Bold(true).
+                        Padding(0, 1).
+                        MarginBottom(1),
+
+                ContentStyle: lipgloss.NewStyle().
+                        Padding(0, 1).
+                        MarginBottom(1),
+
+                StatusStyle: lipgloss.NewStyle().
+                        Foreground(Muted).
+                        Padding(0, 1).
+                        Border(lipgloss.NormalBorder(), true, false, false, false).
+                        BorderForeground(Border),
+
+                HelpStyle: lipgloss.NewStyle().
+                        Foreground(Muted).
+                        Italic(true).
+                        Padding(0, 1),
+
+                // 組件樣式
+                MenuStyle: lipgloss.NewStyle().
+                        Padding(0, 1),
+
+                MenuItemStyle: lipgloss.NewStyle().
+                        Padding(0, 1),
+
+                SelectedItemStyle: lipgloss.NewStyle().
+                        Foreground(Primary).
+                        Bold(true).
+                        Padding(0, 1).
+                        Background(Highlight),
+
+                DisabledItemStyle: lipgloss.NewStyle().
+                        Foreground(Muted).
+                        Padding(0, 1),
+
+                // 狀態樣式
+                SuccessStyle: lipgloss.NewStyle().
+                        Foreground(Success).
+                        Bold(true),
+
+                WarningStyle: lipgloss.NewStyle().
+                        Foreground(Warning).
+                        Bold(true),
+
+                ErrorStyle: lipgloss.NewStyle().
+                        Foreground(Error).
+                        Bold(true),
+
+                InfoStyle: lipgloss.NewStyle().
+                        Foreground(Primary),
+
+                // 特殊樣式
+                TitleStyle: lipgloss.NewStyle().
+                        Foreground(Primary).
+                        Bold(true).
+                        Underline(true),
+
+                SubtitleStyle: lipgloss.NewStyle().
+                        Foreground(Secondary).
+                        Bold(true),
+
+                DescriptionStyle: lipgloss.NewStyle().
+                        Foreground(Muted),
+
+                KeyStyle: lipgloss.NewStyle().
+                        Foreground(Primary).
+                        Bold(true),
+
+                ValueStyle: lipgloss.NewStyle().
+                        Foreground(Secondary),
+        }
+}</span>
+
+// RenderBox 渲染帶邊框的盒子
+func (s *Styles) RenderBox(title, content string, width int) string <span class="cov0" title="0">{
+        boxStyle := lipgloss.NewStyle().
+                Border(lipgloss.RoundedBorder()).
+                BorderForeground(Border).
+                Padding(1).
+                Width(width)
+
+        if title != "" </span><span class="cov0" title="0">{
+                titleStyle := lipgloss.NewStyle().
+                        Foreground(Primary).
+                        Bold(true).
+                        Padding(0, 1)
+
+                return boxStyle.Render(
+                        titleStyle.Render(title) + "\n\n" + content,
+                )
+        }</span>
+
+        <span class="cov0" title="0">return boxStyle.Render(content)</span>
+}
+
+// RenderList 渲染列表
+func (s *Styles) RenderList(items []string, selectedIndex int) string <span class="cov0" title="0">{
+        var result string
+
+        for i, item := range items </span><span class="cov0" title="0">{
+                style := s.MenuItemStyle
+                prefix := "  "
+
+                if i == selectedIndex </span><span class="cov0" title="0">{
+                        style = s.SelectedItemStyle
+                        prefix = "▶ "
+                }</span>
+
+                <span class="cov0" title="0">result += style.Render(prefix + item) + "\n"</span>
+        }
+
+        <span class="cov0" title="0">return result</span>
+}
+
+// RenderStatus 渲染狀態信息
+func (s *Styles) RenderStatus(status, statusType string) string <span class="cov0" title="0">{
+        var style lipgloss.Style
+
+        switch statusType </span>{
+        case "success":<span class="cov0" title="0">
+                style = s.SuccessStyle</span>
+        case "warning":<span class="cov0" title="0">
+                style = s.WarningStyle</span>
+        case "error":<span class="cov0" title="0">
+                style = s.ErrorStyle</span>
+        default:<span class="cov0" title="0">
+                style = s.InfoStyle</span>
+        }
+
+        <span class="cov0" title="0">return style.Render(status)</span>
+}
+
+// RenderKeyValue 渲染鍵值對
+func (s *Styles) RenderKeyValue(key, value string) string <span class="cov0" title="0">{
+        return s.KeyStyle.Render(key) + ": " + s.ValueStyle.Render(value)
+}</span>
+
+// RenderProgress 渲染進度條
+func (s *Styles) RenderProgress(current, total int, width int) string <span class="cov0" title="0">{
+        if total == 0 </span><span class="cov0" title="0">{
+                return ""
+        }</span>
+
+        <span class="cov0" title="0">progress := float64(current) / float64(total)
+        filledWidth := int(progress * float64(width))
+
+        filled := lipgloss.NewStyle().
+                Background(Success).
+                Render(lipgloss.PlaceHorizontal(filledWidth, lipgloss.Left, ""))
+
+        empty := lipgloss.NewStyle().
+                Background(Muted).
+                Render(lipgloss.PlaceHorizontal(width-filledWidth, lipgloss.Left, ""))
+
+        return lipgloss.JoinHorizontal(lipgloss.Left, filled, empty)</span>
+}
+
+// RenderTable 渲染簡單表格
+func (s *Styles) RenderTable(headers []string, rows [][]string) string <span class="cov0" title="0">{
+        if len(headers) == 0 || len(rows) == 0 </span><span class="cov0" title="0">{
+                return ""
+        }</span>
+
+        // 計算列寬
+        <span class="cov0" title="0">colWidths := make([]int, len(headers))
+        for i, header := range headers </span><span class="cov0" title="0">{
+                colWidths[i] = len(header)
+        }</span>
+
+        <span class="cov0" title="0">for _, row := range rows </span><span class="cov0" title="0">{
+                for i, cell := range row </span><span class="cov0" title="0">{
+                        if i &lt; len(colWidths) &amp;&amp; len(cell) &gt; colWidths[i] </span><span class="cov0" title="0">{
+                                colWidths[i] = len(cell)
+                        }</span>
+                }
+        }
+
+        <span class="cov0" title="0">var result string
+
+        // 渲染標題
+        headerRow := ""
+        for i, header := range headers </span><span class="cov0" title="0">{
+                cellStyle := s.KeyStyle.Copy().
+                        Width(colWidths[i]).
+                        Align(lipgloss.Left)
+                headerRow += cellStyle.Render(header) + " "
+        }</span>
+        <span class="cov0" title="0">result += headerRow + "\n"
+
+        // 渲染分隔線
+        separator := ""
+        for _, width := range colWidths </span><span class="cov0" title="0">{
+                separator += lipgloss.NewStyle().
+                        Width(width).
+                        Render(lipgloss.PlaceHorizontal(width, lipgloss.Left, "─")) + " "
+        }</span>
+        <span class="cov0" title="0">result += separator + "\n"
+
+        // 渲染數據行
+        for _, row := range rows </span><span class="cov0" title="0">{
+                dataRow := ""
+                for i, cell := range row </span><span class="cov0" title="0">{
+                        if i &lt; len(colWidths) </span><span class="cov0" title="0">{
+                                cellStyle := s.ValueStyle.Copy().
+                                        Width(colWidths[i]).
+                                        Align(lipgloss.Left)
+                                dataRow += cellStyle.Render(cell) + " "
+                        }</span>
+                }
+                <span class="cov0" title="0">result += dataRow + "\n"</span>
+        }
+
+        <span class="cov0" title="0">return result</span>
+}
+
+// GetStatusIcon 獲取狀態圖標
+func GetStatusIcon(status string) string <span class="cov0" title="0">{
+        switch status </span>{
+        case "running":<span class="cov0" title="0">
+                return "🟢"</span>
+        case "starting":<span class="cov0" title="0">
+                return "🟡"</span>
+        case "stopping":<span class="cov0" title="0">
+                return "🟠"</span>
+        case "stopped":<span class="cov0" title="0">
+                return "🔴"</span>
+        case "error":<span class="cov0" title="0">
+                return "❌"</span>
+        default:<span class="cov0" title="0">
+                return "⚪"</span>
+        }
+}
+
+// GetCategoryIcon 獲取分類圖標
+func GetCategoryIcon(category string) string <span class="cov0" title="0">{
+        switch category </span>{
+        case "development":<span class="cov0" title="0">
+                return "💻"</span>
+        case "maintenance":<span class="cov0" title="0">
+                return "🔧"</span>
+        case "analysis":<span class="cov0" title="0">
+                return "📊"</span>
+        case "testing":<span class="cov0" title="0">
+                return "🧪"</span>
+        case "documentation":<span class="cov0" title="0">
+                return "📝"</span>
+        default:<span class="cov0" title="0">
+                return "📂"</span>
+        }
+}</pre>
+		
+		<pre class="file" id="file9" style="display: none">package tui
+
+import (
+        "time"
+
+        tea "github.com/charmbracelet/bubbletea"
+        "claude-proxy/internal/ollama"
+        "claude-proxy/internal/template"
+        "claude-proxy/internal/terminal"
+)
+
+// ViewType 視圖類型
+type ViewType int
+
+const (
+        ViewMain ViewType = iota
+        ViewTerminals
+        ViewTemplates
+        ViewSettings
+)
+
+// String 返回視圖類型的字符串表示
+func (v ViewType) String() string <span class="cov8" title="1">{
+        switch v </span>{
+        case ViewMain:<span class="cov8" title="1">
+                return "主畫面"</span>
+        case ViewTerminals:<span class="cov8" title="1">
+                return "終端管理"</span>
+        case ViewTemplates:<span class="cov8" title="1">
+                return "模板管理"</span>
+        case ViewSettings:<span class="cov8" title="1">
+                return "設置"</span>
+        default:<span class="cov8" title="1">
+                return "未知視圖"</span>
+        }
+}
+
+// Model TUI 主模型
+type Model struct {
+        // 核心組件
+        terminalManager *terminal.TerminalManager
+        ollamaClient    *ollama.OllamaClient
+        templateManager *template.TemplateManager
+
+        // UI 狀態
+        currentView ViewType
+        width       int
+        height      int
+        styles      *Styles
+
+        // 應用狀態
+        status     string
+        lastUpdate time.Time
+        terminals  []TerminalInfo
+
+        // 輸入狀態
+        inputMode   bool
+        inputBuffer string
+        inputPrompt string
+
+        // 選擇狀態
+        selectedIndex int
+        maxItems      int
+}
+
+// TerminalInfo 終端信息顯示結構
+type TerminalInfo struct {
+        Name     string
+        Type     string
+        Status   string
+        LastUsed time.Time
+        PID      int
+}
+
+// TemplateInfo 模板信息顯示結構
+type TemplateInfo struct {
+        ID          string
+        Name        string
+        Category    string
+        Description string
+        UsageCount  int
+}
+
+// TickMsg 定時更新消息
+type TickMsg struct {
+        Time time.Time
+}
+
+// TerminalStatusMsg 終端狀態更新消息
+type TerminalStatusMsg struct {
+        Name   string
+        Status string
+}
+
+// QueryResultMsg 查詢結果消息
+type QueryResultMsg struct {
+        Query      string
+        Result     string
+        TemplateID string
+        Success    bool
+}
+
+// ErrorMsg 錯誤消息
+type ErrorMsg struct {
+        Err error
+}
+
+// InputCompleteMsg 輸入完成消息
+type InputCompleteMsg struct {
+        Input string
+        Mode  string
+}
+
+// WindowSizeMsg 窗口大小變化消息
+type WindowSizeMsg struct {
+        Width  int
+        Height int
+}
+
+// Config TUI 配置
+type Config struct {
+        // 外觀設置
+        ShowBorder    bool `json:"show_border"`
+        ShowStatus    bool `json:"show_status"`
+        ShowHelp      bool `json:"show_help"`
+
+        // 更新間隔
+        UpdateInterval time.Duration `json:"update_interval"`
+
+        // 顏色主題
+        Theme string `json:"theme"`
+
+        // 快捷鍵設置
+        KeyBindings map[string]string `json:"key_bindings"`
+}
+
+// DefaultConfig 返回默認配置
+func DefaultConfig() *Config <span class="cov0" title="0">{
+        return &amp;Config{
+                ShowBorder:     true,
+                ShowStatus:     true,
+                ShowHelp:       true,
+                UpdateInterval: 1 * time.Second,
+                Theme:          "default",
+                KeyBindings: map[string]string{
+                        "quit":         "q",
+                        "terminals":    "1",
+                        "templates":    "2",
+                        "settings":     "3",
+                        "up":           "k",
+                        "down":         "j",
+                        "enter":        "enter",
+                        "escape":       "esc",
+                },
+        }
+}</span>
+
+// AppState 應用狀態
+type AppState struct {
+        Running        bool
+        TerminalCount  int
+        ActiveTerminal string
+        LastQuery      string
+        SystemHealth   string
+}
+
+// KeyMap 按鍵映射
+type KeyMap struct {
+        Up     tea.KeyMsg
+        Down   tea.KeyMsg
+        Enter  tea.KeyMsg
+        Escape tea.KeyMsg
+        Quit   tea.KeyMsg
+        Help   tea.KeyMsg
+}
+
+// DefaultKeyMap 返回默認按鍵映射
+func DefaultKeyMap() KeyMap <span class="cov0" title="0">{
+        return KeyMap{
+                Up:     tea.KeyMsg{Type: tea.KeyUp},
+                Down:   tea.KeyMsg{Type: tea.KeyDown},
+                Enter:  tea.KeyMsg{Type: tea.KeyEnter},
+                Escape: tea.KeyMsg{Type: tea.KeyEsc},
+                Quit:   tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'q'}},
+                Help:   tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'?'}},
+        }
+}</span>
+
+// MenuItem 菜單項
+type MenuItem struct {
+        Title       string
+        Description string
+        Action      string
+        Shortcut    string
+        Enabled     bool
+}
+
+// Menu 菜單結構
+type Menu struct {
+        Title        string
+        Items        []MenuItem
+        SelectedItem int
+        MaxDisplay   int
+}
+
+// Theme 主題配置
+type Theme struct {
+        Primary   string
+        Secondary string
+        Success   string
+        Warning   string
+        Error     string
+        Muted     string
+        Border    string
+        Highlight string
+}
+
+// DefaultTheme 返回默認主題
+func DefaultTheme() Theme <span class="cov0" title="0">{
+        return Theme{
+                Primary:   "#007ACC",
+                Secondary: "#6C7B7F",
+                Success:   "#28A745",
+                Warning:   "#FFC107",
+                Error:     "#DC3545",
+                Muted:     "#6C757D",
+                Border:    "#E9ECEF",
+                Highlight: "#FFF3CD",
+        }
 }</pre>
 		
 		</div>
