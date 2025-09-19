@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"claude-proxy/internal/ollama"
-	"claude-proxy/internal/template"
-	"claude-proxy/internal/terminal"
-	"claude-proxy/internal/tui"
+	"ai-launcher/internal/ollama"
+	"ai-launcher/internal/template"
+	"ai-launcher/internal/terminal"
+	"ai-launcher/internal/tui"
 )
 
 // TestSystemIntegration 测试系统集成

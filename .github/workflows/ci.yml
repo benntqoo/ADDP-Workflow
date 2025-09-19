@@ -111,19 +111,19 @@ jobs:
     - name: Build for Linux
       if: matrix.os == 'ubuntu-latest'
       run: |
-        GOOS=linux GOARCH=amd64 go build -v -o bin/claude-proxy-linux-amd64 ./cmd/proxy
-        GOOS=linux GOARCH=arm64 go build -v -o bin/claude-proxy-linux-arm64 ./cmd/proxy
+        GOOS=linux GOARCH=amd64 go build -v -o bin/ai-launcher-linux-amd64 ./cmd/launcher
+        GOOS=linux GOARCH=arm64 go build -v -o bin/ai-launcher-linux-arm64 ./cmd/launcher
 
     - name: Build for Windows
       if: matrix.os == 'windows-latest'
       run: |
-        go build -v -o bin/claude-proxy-windows-amd64.exe ./cmd/proxy
+        go build -v -o bin/ai-launcher-windows-amd64.exe ./cmd/launcher
 
     - name: Build for macOS
       if: matrix.os == 'macos-latest'
       run: |
-        GOOS=darwin GOARCH=amd64 go build -v -o bin/claude-proxy-darwin-amd64 ./cmd/proxy
-        GOOS=darwin GOARCH=arm64 go build -v -o bin/claude-proxy-darwin-arm64 ./cmd/proxy
+        GOOS=darwin GOARCH=amd64 go build -v -o bin/ai-launcher-darwin-amd64 ./cmd/launcher
+        GOOS=darwin GOARCH=arm64 go build -v -o bin/ai-launcher-darwin-arm64 ./cmd/launcher
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
@@ -149,11 +149,11 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          binaries-ubuntu-latest/claude-proxy-linux-amd64
-          binaries-ubuntu-latest/claude-proxy-linux-arm64
-          binaries-windows-latest/claude-proxy-windows-amd64.exe
-          binaries-macos-latest/claude-proxy-darwin-amd64
-          binaries-macos-latest/claude-proxy-darwin-arm64
+          binaries-ubuntu-latest/ai-launcher-linux-amd64
+          binaries-ubuntu-latest/ai-launcher-linux-arm64
+          binaries-windows-latest/ai-launcher-windows-amd64.exe
+          binaries-macos-latest/ai-launcher-darwin-amd64
+          binaries-macos-latest/ai-launcher-darwin-arm64
         draft: false
         prerelease: false
         generate_release_notes: true
@@ -186,7 +186,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
         tags: |
-          claude-proxy:latest
-          claude-proxy:${{ github.sha }}
+          ai-launcher:latest
+          ai-launcher:${{ github.sha }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

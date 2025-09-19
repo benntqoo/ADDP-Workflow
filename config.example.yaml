@@ -1,0 +1,265 @@
+# AI启动器配置文件示例
+# 複製此文件為 config.yaml 並根據您的環境調整
+
+# 全局設置
+global:
+  # 日誌級別: debug, info, warn, error
+  log_level: "info"
+
+  # 日誌文件路徑
+  log_file: "~/.ai-launcher/logs/app.log"
+
+  # TUI 主題設置
+  theme:
+    primary_color: "#007ACC"
+    secondary_color: "#6C7B7F"
+    success_color: "#28A745"
+    error_color: "#DC3545"
+    warning_color: "#FFC107"
+
+# Ollama 配置
+ollama:
+  # Ollama 服務地址
+  host: "http://localhost:11434"
+
+  # 預設模型
+  default_model: "qwen2.5:14b"
+
+  # 生成參數
+  generation:
+    temperature: 0.7
+    max_tokens: 2048
+    top_p: 0.9
+
+  # 連接超時設置（秒）
+  timeout: 30
+
+  # 重試設置
+  retry:
+    max_attempts: 3
+    delay_seconds: 1
+
+# 終端配置
+terminals:
+  # Claude Code 配置
+  claude_code:
+    # 啟動命令
+    command: "claude"
+
+    # 命令參數
+    args: ["--interactive"]
+
+    # 工作目錄
+    working_dir: "."
+
+    # 環境變量
+    env:
+      CLAUDE_API_KEY: "${CLAUDE_API_KEY}"
+      CLAUDE_PROJECT_PATH: "${PWD}"
+
+    # 啟動檢查（檢查這些字符串確認啟動成功）
+    startup_indicators:
+      - "Claude Code is ready"
+      - "Welcome to Claude"
+
+    # 啟動超時（秒）
+    startup_timeout: 10
+
+  # Gemini CLI 配置
+  gemini_cli:
+    command: "gemini"
+    args: ["--interactive"]
+    working_dir: "."
+    env:
+      GEMINI_API_KEY: "${GEMINI_API_KEY}"
+    startup_indicators:
+      - "Gemini CLI ready"
+    startup_timeout: 10
+
+  # Cursor 配置
+  cursor:
+    command: "cursor"
+    args: ["."]
+    working_dir: "."
+    env: {}
+    startup_indicators:
+      - "Cursor started"
+    startup_timeout: 15
+
+  # Aider 配置
+  aider:
+    command: "aider"
+    args: ["--yes"]
+    working_dir: "."
+    env:
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+    startup_indicators:
+      - "Aider is ready"
+    startup_timeout: 10
+
+  # 自定義終端示例
+  custom_terminal:
+    command: "your-custom-command"
+    args: ["--option1", "value1"]
+    working_dir: "/custom/path"
+    env:
+      CUSTOM_VAR: "custom_value"
+    startup_indicators:
+      - "Ready"
+    startup_timeout: 5
+
+# 模板配置
+templates:
+  # 模板緩存設置
+  cache:
+    enabled: true
+    max_size: 100
+    ttl_minutes: 30
+
+  # 自定義模板目錄
+  custom_templates_dir: "~/.ai-launcher/templates"
+
+  # 模板變量全局預設值
+  global_variables:
+    author: "Your Name"
+    project: "Current Project"
+    date: "{{.Today}}"
+
+# 鍵盤快捷鍵配置
+keybindings:
+  # 主選單快捷鍵
+  main_menu:
+    claude_code: "1"
+    gemini_cli: "2"
+    cursor: "3"
+    aider: "4"
+    query_optimize: "5"
+    terminal_manager: "6"
+    quit: "q"
+
+  # 通用快捷鍵
+  general:
+    back: "esc"
+    confirm: "enter"
+    up: "up"
+    down: "down"
+    left: "left"
+    right: "right"
+
+# 性能設置
+performance:
+  # 最大同時運行的終端數量
+  max_concurrent_terminals: 5
+
+  # 命令執行超時（秒）
+  command_timeout: 30
+
+  # 記憶體限制（MB）
+  memory_limit: 1024
+
+  # CPU 使用限制（百分比）
+  cpu_limit: 80
+
+# 安全設置
+security:
+  # 允許執行的命令白名單
+  allowed_commands:
+    - "claude"
+    - "gemini"
+    - "cursor"
+    - "aider"
+    - "code"
+    - "vim"
+    - "nano"
+
+  # 禁止執行的命令黑名單
+  blocked_commands:
+    - "rm"
+    - "del"
+    - "format"
+    - "mkfs"
+
+  # 敏感環境變量過濾
+  sensitive_env_vars:
+    - "*_API_KEY"
+    - "*_SECRET"
+    - "*_PASSWORD"
+    - "*_TOKEN"
+
+# 網絡設置
+network:
+  # HTTP 代理設置
+  proxy:
+    http: "${HTTP_PROXY}"
+    https: "${HTTPS_PROXY}"
+    no_proxy: "localhost,127.0.0.1"
+
+  # 連接超時設置
+  timeout:
+    connect: 10
+    read: 30
+    write: 10
+
+# 備份和恢復設置
+backup:
+  # 自動備份配置
+  auto_backup: true
+
+  # 備份目錄
+  backup_dir: "~/.ai-launcher/backups"
+
+  # 保留備份數量
+  max_backups: 10
+
+  # 備份間隔（小時）
+  backup_interval: 24
+
+# 插件系統（未來擴展）
+plugins:
+  # 插件目錄
+  plugin_dir: "~/.ai-launcher/plugins"
+
+  # 啟用的插件
+  enabled:
+    - "git_integration"
+    - "project_manager"
+
+  # 插件配置
+  config:
+    git_integration:
+      auto_commit: false
+      commit_template: "feat: {{.description}}"
+
+    project_manager:
+      default_template: "golang"
+      auto_detect: true
+
+# 實驗性功能
+experimental:
+  # 啟用實驗性功能
+  enabled: false
+
+  # 功能列表
+  features:
+    - "ai_suggestions"
+    - "smart_completion"
+    - "context_awareness"
+
+# 統計和分析
+analytics:
+  # 啟用使用統計
+  enabled: true
+
+  # 統計數據存儲路徑
+  data_dir: "~/.ai-launcher/analytics"
+
+  # 隱私設置
+  privacy:
+    # 不收集的數據類型
+    exclude:
+      - "user_input"
+      - "api_keys"
+      - "file_contents"
+
+    # 匿名化設置
+    anonymize: true

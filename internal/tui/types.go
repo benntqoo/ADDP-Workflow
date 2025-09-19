@@ -4,9 +4,9 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"claude-proxy/internal/ollama"
-	"claude-proxy/internal/template"
-	"claude-proxy/internal/terminal"
+	"ai-launcher/internal/ollama"
+	"ai-launcher/internal/template"
+	"ai-launcher/internal/terminal"
 )
 
 // ViewType 視圖類型

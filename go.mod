@@ -1,8 +1,9 @@
-module claude-proxy
+module ai-launcher
 
 go 1.24.0
 
 require (
+	fyne.io/fyne/v2 v2.4.5
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
 )

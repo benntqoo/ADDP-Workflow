@@ -53,6 +53,18 @@ func (tm *TerminalManager) StartTerminalWithContext(ctx context.Context, config 
 		return fmt.Errorf("failed to create command for terminal type %s", config.Type.String())
 	}
 
+	// 設置工作目錄
+	if config.WorkingDir != "" {
+		cmd.Dir = config.WorkingDir
+	}
+
+	// 設置環境變量
+	if config.Environment != nil {
+		for key, value := range config.Environment {
+			cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", key, value))
+		}
+	}
+
 	terminal.Process = cmd
 
 	// 設置輸入輸出管道
@@ -170,20 +182,47 @@ func (tm *TerminalManager) IsHealthy() bool {
 func (tm *TerminalManager) createCommand(config TerminalConfig) *exec.Cmd {
 	var cmd *exec.Cmd
 
-	switch config.Type {
-	case TypeClaudeCode:
-		cmd = exec.Command("claude")
-	case TypeGeminiCLI:
-		cmd = exec.Command("gemini")
-	case TypeCursor:
-		cmd = exec.Command("cursor", "--cli")
-	case TypeAider:
-		cmd = exec.Command("aider")
-	case TypeCustom:
-		// 對於測試，使用一個簡單的命令
-		cmd = exec.Command("echo", "test")
-	default:
-		return nil
+	// 如果配置中提供了完整命令，直接使用
+	if len(config.Command) > 0 {
+		if len(config.Command) == 1 {
+			cmd = exec.Command(config.Command[0])
+		} else {
+			cmd = exec.Command(config.Command[0], config.Command[1:]...)
+		}
+	} else {
+		// 否則根據類型創建默認命令
+		switch config.Type {
+		case TypeClaudeCode:
+			if config.YoloMode {
+				cmd = exec.Command("claude", "--dangerously-skip-permissions")
+			} else {
+				cmd = exec.Command("claude")
+			}
+		case TypeGeminiCLI:
+			if config.YoloMode {
+				cmd = exec.Command("gemini", "--yolo")
+			} else {
+				cmd = exec.Command("gemini")
+			}
+		case TypeCursor:
+			cmd = exec.Command("cursor", "--cli")
+		case TypeAider:
+			cmd = exec.Command("aider")
+		case TypeCustom:
+			// 對於測試或自定義命令
+			if config.YoloMode {
+				cmd = exec.Command("codex", "--dangerously-bypass-approvals-and-sandbox")
+			} else {
+				cmd = exec.Command("echo", "custom-terminal")
+			}
+		default:
+			return nil
+		}
+	}
+
+	// 添加額外參數
+	if len(config.Args) > 0 {
+		cmd.Args = append(cmd.Args, config.Args...)
 	}
 
 	// 設置工作目錄

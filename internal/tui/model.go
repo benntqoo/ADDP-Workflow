@@ -7,9 +7,9 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"claude-proxy/internal/ollama"
-	"claude-proxy/internal/template"
-	"claude-proxy/internal/terminal"
+	"ai-launcher/internal/ollama"
+	"ai-launcher/internal/template"
+	"ai-launcher/internal/terminal"
 )
 
 // NewModel 創建新的 TUI 模型

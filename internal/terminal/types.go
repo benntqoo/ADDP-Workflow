@@ -118,6 +118,8 @@ type TerminalConfig struct {
 	WorkingDir  string                // 工作目錄
 	Environment map[string]string     // 環境變量
 	Args        []string              // 額外參數
+	Command     []string              // 完整的啟動命令
+	YoloMode    bool                  // YOLO模式標誌
 }
 
 // Manager 介面定義終端管理器的行為
