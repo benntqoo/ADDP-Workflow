@@ -1,0 +1,100 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs:
+    - vendor
+    - test/testdata
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  gocyclo:
+    min-complexity: 15
+
+  govet:
+    check-shadowing: true
+
+  golint:
+    min-confidence: 0.8
+
+  gofmt:
+    simplify: true
+
+  goimports:
+    local-prefixes: claude-proxy
+
+  misspell:
+    locale: US
+
+  unparam:
+    check-exported: false
+
+  nakedret:
+    max-func-lines: 30
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: false
+
+  gocritic:
+    enabled-tags:
+      - performance
+      - style
+      - experimental
+    disabled-checks:
+      - wrapperFunc
+      - dupImport
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - varcheck
+    - structcheck
+    - maligned
+    - prealloc
+    - misspell
+    - unconvert
+    - gofmt
+    - goimports
+    - gocritic
+    - gocyclo
+    - nakedret
+    - unparam
+    - deadcode
+
+issues:
+  exclude-use-default: false
+  exclude:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+    # Exclude known linters from partially hard-to-fix issues
+    - linters:
+        - gosec
+      text: "weak cryptographic primitive"
+    - linters:
+        - govet
+      text: "declaration of \"err\" shadows declaration at"
+
+  max-issues-per-linter: 0
+  max-same-issues: 0

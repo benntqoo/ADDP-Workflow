@@ -69,7 +69,7 @@
 				
 				<option value="file6">claude-proxy/internal/terminal/types.go (100.0%)</option>
 				
-				<option value="file7">claude-proxy/internal/tui/model.go (63.7%)</option>
+				<option value="file7">claude-proxy/internal/tui/model.go (61.1%)</option>
 				
 				<option value="file8">claude-proxy/internal/tui/styles.go (1.4%)</option>
 				
@@ -2023,6 +2023,43 @@ func tickCmd() tea.Cmd <span class="cov8" title="1">{
         return tea.Tick(time.Second, func(t time.Time) tea.Msg </span><span class="cov8" title="1">{
                 return TickMsg{Time: t}
         }</span>)
+}
+
+// Getter 方法用於測試和集成
+
+// GetCurrentView 獲取當前視圖
+func (m Model) GetCurrentView() ViewType <span class="cov0" title="0">{
+        return m.currentView
+}</span>
+
+// GetTerminalManager 獲取終端管理器
+func (m Model) GetTerminalManager() *terminal.TerminalManager <span class="cov0" title="0">{
+        return m.terminalManager
+}</span>
+
+// GetOllamaClient 獲取 Ollama 客戶端
+func (m Model) GetOllamaClient() *ollama.OllamaClient <span class="cov0" title="0">{
+        return m.ollamaClient
+}</span>
+
+// GetTemplateManager 獲取模板管理器
+func (m Model) GetTemplateManager() *template.TemplateManager <span class="cov0" title="0">{
+        return m.templateManager
+}</span>
+
+// SwitchView 公開的視圖切換方法
+func (m *Model) SwitchView(view ViewType) <span class="cov0" title="0">{
+        m.switchView(view)
+}</span>
+
+// OptimizeQuery 公開的查詢優化方法
+func (m *Model) OptimizeQuery(query, templateID string) (*template.ApplyResult, error) <span class="cov0" title="0">{
+        return m.optimizeQuery(query, templateID)
+}</span>
+
+// ListTerminals 公開的終端列表方法
+func (m *Model) ListTerminals() []TerminalInfo <span class="cov0" title="0">{
+        return m.listTerminals()
 }</pre>
 		
 		<pre class="file" id="file8" style="display: none">package tui

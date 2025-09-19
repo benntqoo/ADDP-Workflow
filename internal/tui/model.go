@@ -433,3 +433,40 @@ func tickCmd() tea.Cmd {
 		return TickMsg{Time: t}
 	})
 }
+
+// Getter 方法用於測試和集成
+
+// GetCurrentView 獲取當前視圖
+func (m Model) GetCurrentView() ViewType {
+	return m.currentView
+}
+
+// GetTerminalManager 獲取終端管理器
+func (m Model) GetTerminalManager() *terminal.TerminalManager {
+	return m.terminalManager
+}
+
+// GetOllamaClient 獲取 Ollama 客戶端
+func (m Model) GetOllamaClient() *ollama.OllamaClient {
+	return m.ollamaClient
+}
+
+// GetTemplateManager 獲取模板管理器
+func (m Model) GetTemplateManager() *template.TemplateManager {
+	return m.templateManager
+}
+
+// SwitchView 公開的視圖切換方法
+func (m *Model) SwitchView(view ViewType) {
+	m.switchView(view)
+}
+
+// OptimizeQuery 公開的查詢優化方法
+func (m *Model) OptimizeQuery(query, templateID string) (*template.ApplyResult, error) {
+	return m.optimizeQuery(query, templateID)
+}
+
+// ListTerminals 公開的終端列表方法
+func (m *Model) ListTerminals() []TerminalInfo {
+	return m.listTerminals()
+}
