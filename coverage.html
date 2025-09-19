@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>terminal: Go Coverage Report</title>
+		<title>proxy: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,9 +55,13 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">claude-proxy/internal/terminal/manager.go (77.2%)</option>
+				<option value="file0">claude-proxy/cmd/proxy/main.go (0.0%)</option>
 				
-				<option value="file1">claude-proxy/internal/terminal/types.go (100.0%)</option>
+				<option value="file1">claude-proxy/internal/terminal/manager.go (77.2%)</option>
+				
+				<option value="file2">claude-proxy/internal/terminal/platform.go (55.9%)</option>
+				
+				<option value="file3">claude-proxy/internal/terminal/types.go (100.0%)</option>
 				
 				</select>
 			</div>
@@ -71,7 +75,65 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package terminal
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "fmt"
+        "log"
+        "os"
+
+        "github.com/spf13/cobra"
+)
+
+var rootCmd = &amp;cobra.Command{
+        Use:   "claude-proxy",
+        Short: "AI Terminal Proxy - 統一所有 AI CLI 工具的終端界面",
+        Long: `AI Terminal Proxy 是一個智能終端代理，提供：
+• 統一的 GUI 界面管理多個 AI 終端
+• Ollama 本地查詢優化，節省 30-50% token
+• 1-4 數字鍵快速在不同 AI 工具間切換
+• 支援 Claude Code、Gemini CLI、Cursor、Aider`,
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                fmt.Println("🤖 AI Terminal Proxy v1.0")
+                fmt.Println("啟動 TUI 界面...")
+                // TODO: 啟動 Bubble Tea TUI 界面
+        }</span>,
+}
+
+var versionCmd = &amp;cobra.Command{
+        Use:   "version",
+        Short: "顯示版本信息",
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                fmt.Println("claude-proxy v1.0.0")
+                fmt.Println("基於雙軌架構：Golang 終端代理 + Python MCP 工具")
+        }</span>,
+}
+
+var listCmd = &amp;cobra.Command{
+        Use:   "list-terminals",
+        Short: "列出可用的終端類型",
+        Run: func(cmd *cobra.Command, args []string) <span class="cov0" title="0">{
+                fmt.Println("可用終端類型：")
+                fmt.Println("  1. claude     - Claude Code CLI")
+                fmt.Println("  2. gemini     - Gemini CLI")
+                fmt.Println("  3. cursor     - Cursor CLI")
+                fmt.Println("  4. aider      - Aider CLI")
+        }</span>,
+}
+
+func init() <span class="cov0" title="0">{
+        rootCmd.AddCommand(versionCmd)
+        rootCmd.AddCommand(listCmd)
+}</span>
+
+func main() <span class="cov0" title="0">{
+        if err := rootCmd.Execute(); err != nil </span><span class="cov0" title="0">{
+                log.Fatal(err)
+                os.Exit(1)
+        }</span>
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package terminal
 
 import (
         "bufio"
@@ -327,7 +389,315 @@ func (tm *TerminalManager) startProcess(ctx context.Context, terminal *Terminal)
         }
 }</pre>
 		
-		<pre class="file" id="file1" style="display: none">package terminal
+		<pre class="file" id="file2" style="display: none">package terminal
+
+import (
+        "fmt"
+        "os"
+        "os/exec"
+        "path/filepath"
+        "runtime"
+        "strings"
+)
+
+// PlatformAdapter 提供跨平台的終端管理功能
+type PlatformAdapter struct {
+        os string
+}
+
+// NewPlatformAdapter 創建新的平台適配器
+func NewPlatformAdapter() *PlatformAdapter <span class="cov8" title="1">{
+        return &amp;PlatformAdapter{
+                os: runtime.GOOS,
+        }
+}</span>
+
+// GetDefaultShell 獲取當前平台的默認 shell
+func (pa *PlatformAdapter) GetDefaultShell() string <span class="cov8" title="1">{
+        switch pa.os </span>{
+        case "windows":<span class="cov8" title="1">
+                // Windows 優先使用 PowerShell，備選 cmd
+                if pa.ValidateCommand("powershell.exe") </span><span class="cov8" title="1">{
+                        return "powershell.exe"
+                }</span>
+                <span class="cov0" title="0">return "cmd.exe"</span>
+        case "darwin", "linux":<span class="cov0" title="0">
+                // Unix-like 系統優先使用 bash，備選 sh
+                if pa.ValidateCommand("/bin/bash") </span><span class="cov0" title="0">{
+                        return "/bin/bash"
+                }</span>
+                <span class="cov0" title="0">return "/bin/sh"</span>
+        default:<span class="cov0" title="0">
+                // 其他系統使用通用 shell
+                return "/bin/sh"</span>
+        }
+}
+
+// GetExecutablePath 獲取命令的完整可執行路徑
+func (pa *PlatformAdapter) GetExecutablePath(command string) string <span class="cov8" title="1">{
+        switch pa.os </span>{
+        case "windows":<span class="cov8" title="1">
+                // Windows 系統處理
+                extensions := []string{"", ".exe", ".cmd", ".bat", ".com"}
+
+                for _, ext := range extensions </span><span class="cov8" title="1">{
+                        fullCommand := command + ext
+                        if path, err := exec.LookPath(fullCommand); err == nil </span><span class="cov8" title="1">{
+                                return path
+                        }</span>
+                }
+
+                // 如果沒找到，返回帶 .exe 的版本
+                <span class="cov8" title="1">return command + ".exe"</span>
+
+        default:<span class="cov0" title="0">
+                // Unix-like 系統
+                if path, err := exec.LookPath(command); err == nil </span><span class="cov0" title="0">{
+                        return path
+                }</span>
+
+                // 如果沒找到，返回原命令（可能在 PATH 中）
+                <span class="cov0" title="0">return command</span>
+        }
+}
+
+// CreateCommand 創建適合當前平台的命令
+func (pa *PlatformAdapter) CreateCommand(config TerminalConfig) *exec.Cmd <span class="cov8" title="1">{
+        var cmdPath string
+        var args []string
+
+        switch config.Type </span>{
+        case TypeClaudeCode:<span class="cov8" title="1">
+                cmdPath = pa.GetExecutablePath("claude")
+                args = []string{cmdPath}</span>
+
+        case TypeGeminiCLI:<span class="cov8" title="1">
+                cmdPath = pa.GetExecutablePath("gemini")
+                args = []string{cmdPath}</span>
+
+        case TypeCursor:<span class="cov8" title="1">
+                cmdPath = pa.GetExecutablePath("cursor")
+                args = []string{cmdPath, "--cli"}</span>
+
+        case TypeAider:<span class="cov8" title="1">
+                cmdPath = pa.GetExecutablePath("aider")
+                args = []string{cmdPath}</span>
+
+        case TypeCustom:<span class="cov8" title="1">
+                // 對於測試，使用平台適當的測試命令
+                if pa.os == "windows" </span><span class="cov8" title="1">{
+                        cmdPath = pa.GetExecutablePath("cmd")
+                        args = []string{cmdPath, "/c", "echo", "test"}
+                }</span> else<span class="cov0" title="0"> {
+                        cmdPath = "/bin/echo"
+                        args = []string{cmdPath, "test"}
+                }</span>
+
+        default:<span class="cov0" title="0">
+                // 默認使用 shell
+                cmdPath = pa.GetDefaultShell()
+                args = []string{cmdPath}</span>
+        }
+
+        // 創建命令
+        <span class="cov8" title="1">cmd := &amp;exec.Cmd{
+                Path: cmdPath,
+                Args: args,
+        }
+
+        // 設置工作目錄
+        if config.WorkingDir != "" </span><span class="cov0" title="0">{
+                cmd.Dir = config.WorkingDir
+        }</span>
+
+        // 添加額外參數
+        <span class="cov8" title="1">if config.Args != nil </span><span class="cov0" title="0">{
+                cmd.Args = append(cmd.Args, config.Args...)
+        }</span>
+
+        <span class="cov8" title="1">return cmd</span>
+}
+
+// SetupEnvironment 設置命令的環境變量
+func (pa *PlatformAdapter) SetupEnvironment(cmd *exec.Cmd, config TerminalConfig) <span class="cov8" title="1">{
+        // 獲取當前環境變量
+        env := os.Environ()
+
+        // 添加自定義環境變量
+        if config.Environment != nil </span><span class="cov8" title="1">{
+                for key, value := range config.Environment </span><span class="cov8" title="1">{
+                        env = append(env, fmt.Sprintf("%s=%s", key, value))
+                }</span>
+        }
+
+        // 添加平台特定的環境變量
+        <span class="cov8" title="1">switch pa.os </span>{
+        case "windows":<span class="cov8" title="1">
+                // Windows 特定環境設置
+                env = append(env, "AI_TERMINAL_PLATFORM=windows")
+
+                // 確保 PATH 包含必要的目錄
+                pathEnvVar := pa.findPathVariable(env)
+                if pathEnvVar == "" </span><span class="cov0" title="0">{
+                        env = append(env, "PATH=C:\\Windows\\System32")
+                }</span>
+
+        default:<span class="cov0" title="0">
+                // Unix-like 系統特定環境設置
+                env = append(env, "AI_TERMINAL_PLATFORM=unix")
+
+                // 確保基本的 PATH
+                pathEnvVar := pa.findPathVariable(env)
+                if pathEnvVar == "" </span><span class="cov0" title="0">{
+                        env = append(env, "PATH=/usr/local/bin:/usr/bin:/bin")
+                }</span>
+        }
+
+        <span class="cov8" title="1">cmd.Env = env</span>
+}
+
+// ValidateCommand 檢查命令是否存在
+func (pa *PlatformAdapter) ValidateCommand(command string) bool <span class="cov8" title="1">{
+        // 如果是絕對路徑，直接檢查文件是否存在
+        if filepath.IsAbs(command) </span><span class="cov0" title="0">{
+                _, err := os.Stat(command)
+                return err == nil
+        }</span>
+
+        // 使用 exec.LookPath 在 PATH 中查找
+        <span class="cov8" title="1">_, err := exec.LookPath(command)
+        return err == nil</span>
+}
+
+// GetProcessInfo 獲取進程信息
+func (pa *PlatformAdapter) GetProcessInfo(pid int) *ProcessInfo <span class="cov8" title="1">{
+        info := &amp;ProcessInfo{
+                PID: pid,
+        }
+
+        switch pa.os </span>{
+        case "windows":<span class="cov8" title="1">
+                // Windows 使用 WMI 或 tasklist 獲取進程信息
+                info.Command = pa.getWindowsProcessInfo(pid)
+                info.ExecutablePath = pa.getWindowsExecutablePath(pid)
+                info.Status = "running"</span>
+
+        default:<span class="cov0" title="0">
+                // Unix-like 系統使用 /proc 或 ps
+                info.Command = pa.getUnixProcessInfo(pid)
+                info.CommandLine = pa.getUnixCommandLine(pid)
+                info.Status = "running"</span>
+        }
+
+        <span class="cov8" title="1">return info</span>
+}
+
+// KillProcess 跨平台殺死進程
+func (pa *PlatformAdapter) KillProcess(pid int) error <span class="cov8" title="1">{
+        switch pa.os </span>{
+        case "windows":<span class="cov8" title="1">
+                // Windows 使用 taskkill
+                cmd := exec.Command("taskkill", "/F", "/PID", fmt.Sprintf("%d", pid))
+                return cmd.Run()</span>
+
+        default:<span class="cov0" title="0">
+                // Unix-like 系統使用 kill
+                cmd := exec.Command("kill", "-TERM", fmt.Sprintf("%d", pid))
+                if err := cmd.Run(); err != nil </span><span class="cov0" title="0">{
+                        // 如果 TERM 失敗，嘗試 KILL
+                        cmd = exec.Command("kill", "-KILL", fmt.Sprintf("%d", pid))
+                        return cmd.Run()
+                }</span>
+                <span class="cov0" title="0">return nil</span>
+        }
+}
+
+// 輔助方法：查找 PATH 環境變量
+func (pa *PlatformAdapter) findPathVariable(env []string) string <span class="cov8" title="1">{
+        for _, envVar := range env </span><span class="cov8" title="1">{
+                if strings.HasPrefix(strings.ToUpper(envVar), "PATH=") </span><span class="cov8" title="1">{
+                        return envVar
+                }</span>
+        }
+        <span class="cov0" title="0">return ""</span>
+}
+
+// Windows 特定的進程信息獲取
+func (pa *PlatformAdapter) getWindowsProcessInfo(pid int) string <span class="cov8" title="1">{
+        // 簡化實現：在實際項目中可能需要使用 WMI
+        cmd := exec.Command("tasklist", "/FI", fmt.Sprintf("PID eq %d", pid), "/FO", "CSV", "/NH")
+        output, err := cmd.Output()
+        if err != nil </span><span class="cov0" title="0">{
+                return "unknown"
+        }</span>
+
+        // 解析 CSV 輸出獲取進程名
+        <span class="cov8" title="1">lines := strings.Split(string(output), "\n")
+        if len(lines) &gt; 0 &amp;&amp; lines[0] != "" </span><span class="cov8" title="1">{
+                fields := strings.Split(lines[0], ",")
+                if len(fields) &gt; 0 </span><span class="cov8" title="1">{
+                        // 移除引號
+                        return strings.Trim(fields[0], "\"")
+                }</span>
+        }
+
+        <span class="cov0" title="0">return "unknown"</span>
+}
+
+// Windows 獲取可執行文件路徑
+func (pa *PlatformAdapter) getWindowsExecutablePath(pid int) string <span class="cov8" title="1">{
+        // 簡化實現：實際項目中可能需要使用 Windows API
+        return "unknown"
+}</span>
+
+// Unix 特定的進程信息獲取
+func (pa *PlatformAdapter) getUnixProcessInfo(pid int) string <span class="cov0" title="0">{
+        // 嘗試從 /proc/PID/comm 讀取進程名
+        commPath := fmt.Sprintf("/proc/%d/comm", pid)
+        if data, err := os.ReadFile(commPath); err == nil </span><span class="cov0" title="0">{
+                return strings.TrimSpace(string(data))
+        }</span>
+
+        // 備選：使用 ps 命令
+        <span class="cov0" title="0">cmd := exec.Command("ps", "-p", fmt.Sprintf("%d", pid), "-o", "comm=")
+        output, err := cmd.Output()
+        if err != nil </span><span class="cov0" title="0">{
+                return "unknown"
+        }</span>
+
+        <span class="cov0" title="0">return strings.TrimSpace(string(output))</span>
+}
+
+// Unix 獲取命令行
+func (pa *PlatformAdapter) getUnixCommandLine(pid int) string <span class="cov0" title="0">{
+        // 嘗試從 /proc/PID/cmdline 讀取命令行
+        cmdlinePath := fmt.Sprintf("/proc/%d/cmdline", pid)
+        if data, err := os.ReadFile(cmdlinePath); err == nil </span><span class="cov0" title="0">{
+                // /proc/PID/cmdline 使用 null 字符分隔參數
+                cmdline := strings.ReplaceAll(string(data), "\x00", " ")
+                return strings.TrimSpace(cmdline)
+        }</span>
+
+        // 備選：使用 ps 命令
+        <span class="cov0" title="0">cmd := exec.Command("ps", "-p", fmt.Sprintf("%d", pid), "-o", "args=")
+        output, err := cmd.Output()
+        if err != nil </span><span class="cov0" title="0">{
+                return "unknown"
+        }</span>
+
+        <span class="cov0" title="0">return strings.TrimSpace(string(output))</span>
+}
+
+// ProcessInfo 跨平台進程信息結構
+type ProcessInfo struct {
+        PID            int    // 進程 ID
+        Command        string // 進程命令名
+        CommandLine    string // 完整命令行
+        ExecutablePath string // 可執行文件路徑
+        Status         string // 進程狀態
+}</pre>
+		
+		<pre class="file" id="file3" style="display: none">package terminal
 
 import (
         "bufio"
