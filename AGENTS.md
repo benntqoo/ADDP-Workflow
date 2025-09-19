@@ -1,39 +1,38 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-- Root: `README.md` (overview), `TARGET.md`/`TARGET_IMPROVED.md`/`CLAUDE.md` (specs).
-- `workflow-legacy/`: legacy-but-authoritative docs and assets:
-  - `agents/`: role/language/framework profiles, e.g. `workflow-legacy/agents/languages/python-ml-specialist.md`.
-  - `commands/`: `deploy-package/` specs and global command docs.
-  - `guides/`, `docs/`, `templates/`, `config/`, `constitution/`, `output-styles/`, `monitoring/`.
-  - `scripts/`: maintenance utilities (e.g., `workflow-legacy/scripts/check-file-consistency.sh`).
+## Project Structure & Modules
+- Root docs: `README.md` (overview), `ARCHITECTURE.md` (design & interfaces), `DEVELOPMENT_PLAN.md`, `CLAUDE.md`, `TECH_STACK.md`.
+- Source: `src/mcp_server/` (MCP server, tools, config), `main.py` (entry), `scripts/` (quick start, tests).
+- State: `.addp/` for specs, workflows, memory, queries, gates, sync, configs.
+- Legacy references: `workflow-legacy/` holds historical templates/commands for prompt rendering.
 
-## Build, Test, and Development Commands
-- No build step; this repo is documentation-first.
-- Validate references: `bash workflow-legacy/scripts/check-file-consistency.sh`
-  - Windows: run via Git Bash or WSL.
-- Fast search: `rg "<term>" -n` to locate examples/specs.
-- Preview Markdown with VS Code or GitHub to verify anchors and tables.
+## Build, Test, Dev Commands
+- Initialize `.addp`: `python main.py --init`
+- Save default config: `python main.py --save-config`
+- Run dev server (stdio wiring WIP): `python main.py --dev`
+- Tool tests: `python scripts/test_mcp_tools.py`
+- Search docs/specs: `rg "<term>" -n`
+- Ollama: ensure local service and model (e.g., `qwen2.5:14b`) are available.
 
-## Coding Style & Naming Conventions
-- Filenames: `lowercase-hyphen.md` inside subfolders; top-level meta docs may be `UPPERCASE.md`.
-- Headings: H1 in Title Case; concise H2/H3; keep sections focused.
-- Links: use relative paths; update anchors when files or titles change.
-- Code blocks: fenced with language tags (`bash`, `json`, `yaml`); keep commands copy‑pastable.
-- Agent profiles: include YAML frontmatter fields (`name`, `model`, `description`, `trigger`, `tools`).
+## Architecture & MCP Tools
+- Local‑first: terminal代理先做模板渲染与本地优化，再按需 handoff 到 AI CLI。
+- Implemented tools: `initialize_addp_structure`, `optimize_query`, `start_addp_workflow`, `sync_project_state`。
+- Planned minimal set (aliases incoming): `query.optimize`, `plan.update`, `fs.apply_patch`(allowlist+dry‑run), `test.run`, `guard.validate_flow`, `mem.save_phase`, `prompt.render`, `context.pack`。
+
+## Coding Style & Naming
+- Python: format with Black (line length 100); add types where practical; prefer descriptive names.
+- Markdown: `lowercase-hyphen.md`; H1 Title Case; relative links; fenced code blocks with language tags.
+- Keep changes minimal and focused; avoid unrelated refactors in a single PR.
 
 ## Testing Guidelines
-- Run the consistency script before committing.
-- Check internal links, images, and Mermaid diagrams render correctly.
-- Keep paired docs in sync (e.g., `agents/*` profiles and related `guides/` or `commands/` summaries).
+- TDD 优先：新增/变更 MCP 工具前先补测试；目标覆盖率≥80%（新代码）。
+- 运行 `scripts/test_mcp_tools.py` 做最小端到端验证；后续以 `test.run` + `guard.validate_flow` 作为门禁。
 
-## Commit & Pull Request Guidelines
-- Prefer Conventional Commits (seen in history): `feat|fix|docs|refactor|chore(scope): summary`.
-- Examples: `docs(agents): add rust profile`; `fix(docs): correct link in commands/deploy-package/global/check.md`.
-- PRs include: clear summary, rationale, impacted paths, linked issues, and updated cross‑references; add screenshots for visual changes.
+## Commit & PR Guidelines
+- Conventional Commits：`feat|fix|docs|refactor|chore(scope): summary`。
+- PR 应包含：变更摘要、影响范围、运行命令与关键输出（DoD 证据）、相关文档更新链接。
 
-## Security & Configuration Tips
-- Do not commit secrets or private data; sanitize examples.
-- Avoid large binaries; store heavy media externally if needed.
-- Use LF line endings and UTF‑8 encoding.
-
+## Security & Configuration
+- 禁止提交密钥/敏感数据；审慎处理日志与示例。
+- `fs.apply_patch` 仅允许白名单目录；避免路径遍历与越权写入。
+- Windows 建议用 Python 命令替代 bash；必要时用 Git Bash/WSL 运行脚本。
