@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  ai-launcher-build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-launcher:latest
+    container_name: ai-launcher-gui
+
+    # GUI应用需要X11转发 (Linux环境)
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_QPA_PLATFORM=minimal
+
+    # 挂载X11套接字 (Linux环境下启用)
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/home/appuser/.Xauthority:ro
+
+    # 网络模式
+    network_mode: host
+
+    # 权限设置
+    privileged: false
+
+    # 重启策略
+    restart: unless-stopped
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # 开发模式服务 (仅构建，不运行)
+  ai-launcher-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: ai-launcher:dev
+    container_name: ai-launcher-dev
+    volumes:
+      - .:/app
+      - go-cache:/go/pkg/mod
+    working_dir: /app
+    command: /bin/sh
+    stdin_open: true
+    tty: true
+
+volumes:
+  go-cache:

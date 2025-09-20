@@ -1,0 +1,35 @@
+# Windows Cross-Compilation Dockerfile for AI Launcher GUI
+FROM golang:1.23-bullseye AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install build dependencies for Windows cross-compilation
+# Note: For Fyne GUI on Windows, we need different dependencies
+RUN apt-get update && apt-get install -y \
+    gcc-mingw-w64 \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the Windows GUI application with cross-compilation
+# CGO is required for Fyne, using mingw for Windows
+RUN CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc \
+    go build -v -o ai-launcher.exe ./cmd/gui
+
+# Final stage - use scratch for minimal image
+FROM scratch
+
+# Copy binary from builder stage
+COPY --from=builder /app/ai-launcher.exe /ai-launcher.exe
+
+# Entry point (for reference, won't run in scratch)
+ENTRYPOINT ["/ai-launcher.exe"]

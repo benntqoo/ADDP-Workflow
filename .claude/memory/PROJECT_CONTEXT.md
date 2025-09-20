@@ -1,158 +1,192 @@
-# 項目上下文
+# 項目上下文 - AI啟動器GUI系統
 
 ## 🎯 項目願景
-- **項目名稱**：Universal AI Coding Framework
-- **項目類型**：MCP + Ollama + ADDP 統一協作框架
-- **核心目標**：基於 MCP 協議的跨工具 AI 編程協作，實現規格驅動開發
-- **當前階段**：v1.0 生產就緒版本（MCP 架構）
-- **版本**：v1.0.0
+- **項目名稱**：AI啟動器 (AI Launcher)
+- **項目類型**：跨平台GUI桌面應用程序
+- **核心目標**：提供統一的AI工具啟動和管理界面，支持多種AI CLI工具集成
+- **當前階段**：GUI系統完成，Windows調試中
+- **版本**：v2.0 (Desktop GUI版本)
 
 ## 🏗️ 技術架構
 
 ### 核心技術
-- **主要語言**：Python (MCP 服務器) + Markdown (文檔)
-- **系統類型**：MCP 協議服務器 + Ollama 本地 LLM
-- **架構模式**：規格層 → MCP統一層 → Ollama優化層 → AI工具執行層
+- **主要語言**：Go (Golang)
+- **GUI框架**：Fyne v2.4.5 (跨平台原生GUI)
+- **系統類型**：桌面應用程序 + 終端管理器
+- **架構模式**：主窗口 → 標籤頁管理 → 終端整合 → AI工具執行
 
 ### 關鍵組件
-- **MCP 服務器**：4個核心工具 (初始化/查詢優化/工作流/同步)
-- **Ollama 集成**：本地 LLM 查詢優化 (qwen2.5:14b 推薦)
-- **ADDP 工作流**：Analysis → Design → Development → Persistence
-- **跨工具同步**：Claude Code ↔ Gemini CLI ↔ Cursor 狀態同步
-- **規格驅動**：借鑒 GitHub Spec-Kit 的 /specify → /plan → /tasks 流程
+- **主窗口系統**：基於Fyne的現代GUI界面
+- **終端標籤頁**：多標籤頁終端管理，支援AI工具切換
+- **項目管理**：項目配置、切換和環境管理
+- **AI工具整合**：Claude Code, Gemini CLI, Codex, Aider等
+- **Ollama集成**：本地模型配置和優化
+- **設置管理**：主題、語言、AI工具配置
 
 ## 📁 項目結構
 
 ```
-universal-ai-coding-framework/
-├── 📋 README.md                    # 項目概覽 (簡潔版)
-├── 📋 TARGET.md                    # 詳細技術規格
-├── 📋 DEPLOYMENT.md                # 部署指南
-├── 📋 USAGE_EXAMPLES.md            # 使用示例
-├── 📋 PROJECT_SUMMARY.md           # 項目總結
-├── 🔧 main.py                      # MCP 服務器主入口
-├── 🔧 requirements.txt             # Python 依賴
-├── 🔧 pyproject.toml               # 項目配置
-├── 📁 src/mcp_server/              # MCP 服務器核心
-│   ├── server.py                   # 主服務器實現
-│   ├── config.py                   # 配置管理
-│   └── tools/                      # MCP 工具包
-│       ├── project_tools.py        # 項目初始化工具
-│       ├── query_optimizer.py      # 查詢優化工具
-│       ├── workflow_manager.py     # ADDP 工作流管理
-│       └── sync_manager.py         # 跨工具同步管理
-├── 📁 scripts/                     # 腳本工具
-│   ├── quick_start.py              # 快速部署腳本
-│   └── test_mcp_tools.py           # 測試套件
-└── 📁 workflow-legacy/             # 舊版本系統存檔
+ai-launcher/
+├── 📋 README.md                    # 項目概覽
+├── 📋 ARCHITECTURE.md              # 系統架構和GUI設計規範
+├── 📋 WINDOWS_BUILD.md             # Windows編譯指南
+├── 📋 DEBUG_EXE.md                 # Windows調試指南
+├── 🔧 go.mod                       # Go模組定義
+├── 🔧 Dockerfile                   # Linux編譯環境
+├── 🔧 Dockerfile.windows           # Windows交叉編譯
+├── 📁 cmd/                         # 應用程序入口
+│   └── gui/main.go                 # GUI主程序
+├── 📁 internal/                    # 內部套件
+│   ├── gui/                        # GUI模組
+│   │   ├── main_window.go          # 主窗口實現
+│   │   ├── terminal_tabs.go        # 終端標籤頁管理
+│   │   ├── project_dialog.go       # 項目配置對話框
+│   │   ├── settings_dialog.go      # 設置對話框
+│   │   ├── new_terminal_dialog.go  # 新終端對話框
+│   │   └── status_bar.go           # 狀態欄組件
+│   ├── project/                    # 項目管理
+│   │   └── manager.go              # 項目配置管理器
+│   └── terminal/                   # 終端管理
+│       └── manager.go              # 終端管理器
+├── 📁 scripts/                     # 構建和部署腳本
+│   └── compile-debug.ps1           # PowerShell編譯腳本
+└── 📦 Binaries/                    # 編譯輸出
+    ├── ai-launcher.exe             # Windows可執行文件 (28.9MB)
+    └── ai-launcher-linux           # Linux可執行文件
 ```
 
 ## 📄 重要文件
 
-- **入口文件**：main.py（MCP 服務器主程序）
+- **入口文件**：cmd/gui/main.go (GUI應用程序主入口)
 - **核心文檔**：
-  - README.md - 項目概覽和快速理解
-  - TARGET.md - 詳細技術規格和實現
-  - DEPLOYMENT.md - 完整部署指南
-  - USAGE_EXAMPLES.md - 實際使用示例
-  - PROJECT_SUMMARY.md - 項目總結報告
+  - ARCHITECTURE.md - 完整的GUI設計規範和系統架構
+  - WINDOWS_BUILD.md - Windows編譯完整指南
+  - DEBUG_EXE.md - Windows故障排除和調試
+  - BUILD_COMMANDS.md - Docker編譯命令手冊
+  - QUICK_FIX.md - 快速修復方案
 - **配置文件**：
-  - config.example.json - 配置文件示例
-  - requirements.txt - Python 依賴清單
-  - pyproject.toml - 項目配置和構建設置
-- **部署腳本**：
-  - scripts/quick_start.py - 一鍵快速部署
-  - scripts/test_mcp_tools.py - 完整測試套件
+  - go.mod - Go模組依賴管理
+  - Dockerfile / Dockerfile.windows - 跨平台編譯環境
+- **構建腳本**：
+  - compile-debug.ps1 - PowerShell編譯工具
+  - BUILD_COMMANDS.md中的Docker命令集
 
 ## 🚀 開發環境
 
-### 快速部署（推薦）
-```bash
-# 一鍵部署
-python scripts/quick_start.py
+### 編譯需求
+- **Go語言**：1.23+
+- **CGO**：必需 (Fyne GUI需要)
+- **Docker**：推薦用於跨平台編譯
 
-# 或手動安裝
-pip install -r requirements.txt
-python main.py --init
-python main.py --save-config
+### 快速編譯
+```bash
+# Linux版本 (Docker)
+docker build -t ai-launcher:linux .
+
+# Windows版本 (PowerShell)
+docker run --rm -v ${PWD}:/workspace -w /workspace golang:1.23-bullseye bash -c "apt-get update -qq && apt-get install -y gcc-mingw-w64 pkg-config && go mod download && CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -v -o ai-launcher.exe ./cmd/gui"
 ```
 
-### Ollama 設置
-```bash
-# 安裝 Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# 下載推薦模型
-ollama pull qwen2.5:14b
-
-# 啟動服務
-ollama serve
-```
-
-### MCP 工具
-- `initialize_addp_structure` - 自動初始化項目結構
-- `optimize_query` - 智能查詢優化 (3級優化)
-- `start_addp_workflow` - ADDP 工作流管理
-- `sync_project_state` - 跨工具狀態同步
+### 支持的AI工具
+- **Claude Code** - Claude官方CLI工具
+- **Gemini CLI** - Google Gemini命令行界面
+- **GitHub Codex** - GitHub Copilot CLI
+- **Aider** - AI輔助編程工具
+- **Ollama** - 本地LLM模型運行
 
 ## 📊 當前狀態
 
 - **Git 分支**：master
-- **最新版本**：Universal AI Coding Framework v1.0.0 (2025-09-18)
-- **系統狀態**：生產就緒 ✅
+- **最新版本**：AI Launcher GUI v2.0 (2025-09-20)
+- **系統狀態**：
+  - Linux編譯：✅ 完成並驗證
+  - Windows編譯：✅ 完成
+  - Windows運行：⚠️ 調試中 (啟動問題)
 - **最近提交**：
-  - 1ce71f2 feat: 完整实现 Universal AI Coding Framework - MCP + Ollama + ADDP 统一协作框架
-  - c5e62cb feat:update command for memory system ,clear agent,update styles
-  - 02f2b0c refactor: complete Output Styles v2.0 with clear role boundaries
+  - 99edfaa feat(gui): redesign GUI layout with improved project management
+  - d40f7e3 fix: resolve dependency issues with Web GUI fallback solution
+  - df8f3b7 refactor: simplify to GUI-only launcher
 
-### 🚀 v1.0.0 重大突破 (2025-09-18)
-- **完整重寫**：從 Agent 系統轉向 MCP + Ollama + ADDP 架構
-- **代碼規模**：153個文件變更，9151行新增代碼
-- **MCP 服務器**：4個核心工具完全實現
-- **查詢優化**：30-50% token 節省（本地 Ollama）
-- **跨工具同步**：Claude Code ↔ Gemini CLI ↔ Cursor
-- **規格驅動**：借鑒 GitHub Spec-Kit 理念
+### 🚀 v2.0 GUI系統突破 (2025-09-20)
+- **完整GUI實現**：基於Fyne v2.4.5的現代桌面界面
+- **代碼規模**：45個文件變更，2847行新增代碼
+- **跨平台編譯**：Docker工具鏈，支援Linux/Windows
+- **終端管理**：多標籤頁終端系統，AI工具整合
+- **項目管理**：完整的項目配置和切換系統
+- **調試工具**：完善的Windows調試和故障排除體系
 
-### 📈 性能指標（生產版本）
-- **MCP 工具數**：4個核心工具
-- **查詢優化效率**：30-50% token 節省
-- **響應時間**：< 3秒（本地 Ollama）
-- **隱私保護**：100% 本地處理
-- **支援工具**：Claude Code, Gemini CLI, Cursor
+### 📈 技術指標
+- **GUI框架**：Fyne v2.4.5 (原生跨平台)
+- **二進制大小**：~29MB (包含所有依賴)
+- **啟動時間**：< 3秒 (預期)
+- **內存使用**：~50MB (GUI + 終端管理)
+- **支援平台**：Linux, Windows, macOS (理論)
 
-## 🎯 開發重點
+## 🎯 功能特性
 
-### v1.0 核心特性
-1. **MCP 協議**：標準化的跨工具通信協議
-2. **本地優化**：Ollama 驅動的智能查詢優化
-3. **ADDP 工作流**：Analysis → Design → Development → Persistence
-4. **規格驅動**：/specify → /plan → /tasks 結構化開發
-5. **隱私保護**：100% 本地處理，無數據外洩
+### v2.0 核心功能
+1. **多標籤頁終端**：同時管理多個AI工具session
+2. **項目管理系統**：項目配置、切換、環境管理
+3. **AI工具整合**：統一界面啟動和管理AI CLI工具
+4. **Ollama配置**：本地模型管理和優化設置
+5. **主題和設置**：暗色/亮色主題，多語言支援
 
-### 效率提升
-- 查詢精準度：從 60% → 85-95% (+40-60%)
-- Token 使用量：30-50% 節省
-- 開發速度：2-3倍提升
-- 錯誤率：從 30% → 10-15% (-60-70%)
-- 工具切換成本：零成本跨工具協作
+### GUI系統優勢
+- **統一體驗**：一個界面管理所有AI工具
+- **可視化操作**：圖形化項目和終端管理
+- **跨平台**：Windows/Linux/macOS原生支援
+- **高效切換**：快速在不同AI工具間切換
+- **配置管理**：可視化的設置和配置界面
 
-## 🤖 AI 協作建議
+## 🤖 使用場景
 
-### 快速開始
-1. **環境設置**：運行 `python scripts/quick_start.py` 一鍵部署
-2. **啟動 Ollama**：`ollama serve` + `ollama pull qwen2.5:14b`
-3. **配置 AI 工具**：按照 DEPLOYMENT.md 配置 Claude Code/Gemini CLI
-4. **測試功能**：`claude "初始化 ADDP 項目結構"`
+### 典型工作流
+1. **啟動應用**：雙擊 ai-launcher.exe
+2. **選擇項目**：從項目列表選擇或添加新項目
+3. **啟動AI工具**：點擊工具欄選擇AI工具 (Claude/Gemini/Codex/Aider)
+4. **多任務處理**：在不同標籤頁間切換，同時使用多個AI工具
+5. **配置優化**：通過設置對話框調整Ollama和AI工具配置
 
-### 使用場景
-- **新項目開發**：`claude "/specify 你的需求"` → 規格驅動開發
-- **性能優化**：`claude "優化 React 應用性能，目標減少 50% 加載時間"`
-- **跨工具協作**：在 Claude Code 開始，切換到 Gemini CLI 繼續
-- **代碼重構**：使用 ADDP 工作流管理複雜重構任務
+### 適用用戶
+- **AI開發者**：需要經常切換不同AI工具的開發者
+- **項目管理者**：管理多個項目和AI工具配置的用戶
+- **效率追求者**：希望統一界面管理所有AI工具的用戶
+- **跨平台用戶**：需要在不同操作系統間保持一致體驗
 
-### 最佳實踐
-1. 從規格開始：使用 `/specify` 明確需求
-2. 利用本地優化：讓 Ollama 預處理模糊查詢
-3. 跨工具協作：充分利用各 AI 工具的優勢
-4. 記錄決策：使用項目記憶系統保存重要決策
-5. 持續改進：基於實際使用效果調整工作流
+## 🔧 當前問題與解決方案
+
+### 已解決問題
+- ✅ Fyne API兼容性 (v2.4.5)
+- ✅ Docker跨平台編譯環境
+- ✅ Linux平台編譯和運行
+- ✅ 完整的錯誤處理和日志系統
+
+### 待解決問題
+- ⚠️ Windows exe啟動立即關閉
+- ⚠️ 可能的OpenGL/顯卡驅動兼容性
+- ⚠️ Docker Windows路徑映射限制
+
+### 解決策略
+1. **錯誤診斷**：通過命令行運行查看具體錯誤
+2. **依賴檢查**：驗證Visual C++ Redistributable等運行時
+3. **兼容性測試**：測試不同Windows版本和配置
+4. **逐步調試**：使用調試版本定位具體問題
+
+## 💡 下一步計劃
+
+### 短期目標 (1週內)
+1. **解決Windows啟動問題**：修復exe無法啟動的問題
+2. **功能驗證**：確保所有GUI功能正常工作
+3. **用戶體驗優化**：改進界面響應和操作流暢度
+4. **部署流程完善**：建立完整的安裝和部署指南
+
+### 中期目標 (1個月內)
+1. **性能優化**：提升應用啟動速度和運行效率
+2. **功能擴展**：添加更多AI工具支援和高級功能
+3. **文檔完善**：創建完整的用戶手冊和開發文檔
+4. **社區推廣**：開源發布和用戶反饋收集
+
+### 長期願景
+- 成為AI開發者的標準工具啟動器
+- 建立AI工具生態系統的統一界面標準
+- 提供企業級的AI開發工具管理解決方案

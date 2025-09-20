@@ -25,6 +25,7 @@ const (
 	ModelClaudeCode AIModelType = "claude_code"
 	ModelGeminiCLI  AIModelType = "gemini_cli"
 	ModelCodex      AIModelType = "codex"
+	ModelAider      AIModelType = "aider"
 	ModelCustom     AIModelType = "custom"
 )
 
@@ -37,6 +38,8 @@ func (a AIModelType) String() string {
 		return "Gemini CLI"
 	case ModelCodex:
 		return "Codex"
+	case ModelAider:
+		return "Aider"
 	case ModelCustom:
 		return "Custom"
 	default:
@@ -62,6 +65,11 @@ func (a AIModelType) GetCommand(yoloMode bool) []string {
 			return []string{"codex", "--dangerously-bypass-approvals-and-sandbox"}
 		}
 		return []string{"codex"}
+	case ModelAider:
+		if yoloMode {
+			return []string{"aider", "--yes"}
+		}
+		return []string{"aider"}
 	default:
 		return []string{"echo", "Unknown model"}
 	}
@@ -76,6 +84,8 @@ func (a AIModelType) GetIcon() string {
 		return "💎"
 	case ModelCodex:
 		return "🔧"
+	case ModelAider:
+		return "🔬"
 	case ModelCustom:
 		return "⚙️"
 	default:
@@ -255,6 +265,7 @@ func (cm *ConfigManager) GetAvailableModels() []AIModelType {
 		ModelClaudeCode,
 		ModelGeminiCLI,
 		ModelCodex,
+		ModelAider,
 	}
 }
 
