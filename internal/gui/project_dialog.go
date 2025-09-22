@@ -1,3 +1,6 @@
+﻿//go:build !windows
+// +build !windows
+
 package gui
 
 import (
@@ -15,16 +18,16 @@ import (
 	"ai-launcher/internal/project"
 )
 
-// ProjectConfigDialog 项目配置弹窗
+// ProjectConfigDialog 椤圭洰閰嶇疆寮圭獥
 type ProjectConfigDialog struct {
 	window         fyne.Window
 	projectManager *project.ConfigManager
 	onConfigured   func(project.ProjectConfig, project.AIModelType)
 
-	// 弹窗组件
+	// 寮圭獥缁勪欢
 	dialog *dialog.CustomDialog
 
-	// 表单组件
+	// 琛ㄥ崟缁勪欢
 	pathEntry     *widget.Entry
 	browseButton  *widget.Button
 	nameLabel     *widget.Label
@@ -32,16 +35,16 @@ type ProjectConfigDialog struct {
 	modeSelect    *widget.RadioGroup
 	envStatus     *widget.RichText
 
-	// 按钮
+	// 鎸夐挳
 	launchButton *widget.Button
 	saveButton   *widget.Button
 	cancelButton *widget.Button
 
-	// 状态
+	// 鐘舵€?
 	selectedProject *project.ProjectConfig
 }
 
-// NewProjectConfigDialog 创建项目配置弹窗
+// NewProjectConfigDialog 鍒涘缓椤圭洰閰嶇疆寮圭獥
 func NewProjectConfigDialog(parent fyne.Window, pm *project.ConfigManager, onConfigured func(project.ProjectConfig, project.AIModelType)) *ProjectConfigDialog {
 	d := &ProjectConfigDialog{
 		window:         parent,
@@ -53,53 +56,53 @@ func NewProjectConfigDialog(parent fyne.Window, pm *project.ConfigManager, onCon
 	return d
 }
 
-// initializeUI 初始化弹窗UI
+// initializeUI 鍒濆鍖栧脊绐桿I
 func (d *ProjectConfigDialog) initializeUI() {
-	// 项目路径选择
+	// 椤圭洰璺緞閫夋嫨
 	d.pathEntry = widget.NewEntry()
-	d.pathEntry.SetPlaceHolder("选择项目目录...")
+	d.pathEntry.SetPlaceHolder("閫夋嫨椤圭洰鐩綍...")
 	d.pathEntry.OnChanged = d.onPathChanged
 
 	d.browseButton = widget.NewButtonWithIcon("", theme.FolderOpenIcon(), d.onBrowseClicked)
 
 	pathRow := container.NewBorder(nil, nil, nil, d.browseButton, d.pathEntry)
 
-	// 项目名称（自动从目录获取）
-	d.nameLabel = widget.NewLabel("(自动从目录名称获取)")
+	// 椤圭洰鍚嶇О锛堣嚜鍔ㄤ粠鐩綍鑾峰彇锛?
+	d.nameLabel = widget.NewLabel("(鑷姩浠庣洰褰曞悕绉拌幏鍙?")
 	d.nameLabel.TextStyle = fyne.TextStyle{Italic: true}
 
-	// AI工具选择
+	// AI宸ュ叿閫夋嫨
 	d.modelSelect = widget.NewRadioGroup([]string{
-		"🤖 Claude Code    (推荐用於通用開發)",
-		"💎 Gemini CLI     (推荐用於創意和分析)",
-		"🔧 Codex          (推荐用於代碼生成)",
-		"🔬 Aider          (推荐用於代碼重構)",
+		"馃 Claude Code    (鎺ㄨ崘鐢ㄦ柤閫氱敤闁嬬櫦)",
+		"馃拵 Gemini CLI     (鎺ㄨ崘鐢ㄦ柤鍓垫剰鍜屽垎鏋?",
+		"馃敡 Codex          (鎺ㄨ崘鐢ㄦ柤浠ｇ⒓鐢熸垚)",
+		"馃敩 Aider          (鎺ㄨ崘鐢ㄦ柤浠ｇ⒓閲嶆)",
 	}, d.onModelChanged)
-	d.modelSelect.SetSelected(d.modelSelect.Options[0]) // 默认选择第一个
+	d.modelSelect.SetSelected(d.modelSelect.Options[0]) // 榛樿閫夋嫨绗竴涓?
 
-	// 运行模式选择
+	// 杩愯妯″紡閫夋嫨
 	d.modeSelect = widget.NewRadioGroup([]string{
-		"🛡️ 普通模式 (需要確認操作，更安全)",
-		"⚡ YOLO模式 (跳過安全確認，快速開發)",
+		"馃洝锔?鏅€氭ā寮?(闇€瑕佺⒑瑾嶆搷浣滐紝鏇村畨鍏?",
+		"鈿?YOLO妯″紡 (璺抽亷瀹夊叏纰鸿獚锛屽揩閫熼枊鐧?",
 	}, d.onModeChanged)
-	d.modeSelect.SetSelected(d.modeSelect.Options[1]) // 默认YOLO模式
+	d.modeSelect.SetSelected(d.modeSelect.Options[1]) // 榛樿YOLO妯″紡
 
-	// 环境检测状态
+	// 鐜妫€娴嬬姸鎬?
 	d.envStatus = widget.NewRichText()
 	d.envStatus.Wrapping = fyne.TextWrapWord
 
-	// 按钮
-	d.launchButton = widget.NewButtonWithIcon("🚀啟動", theme.MediaPlayIcon(), d.onLaunchClicked)
+	// 鎸夐挳
+	d.launchButton = widget.NewButtonWithIcon("馃殌鍟熷嫊", theme.MediaPlayIcon(), d.onLaunchClicked)
 	d.launchButton.Importance = widget.HighImportance
 
-	d.saveButton = widget.NewButtonWithIcon("💾儲存", theme.DocumentSaveIcon(), d.onSaveClicked)
+	d.saveButton = widget.NewButtonWithIcon("馃捑鍎插瓨", theme.DocumentSaveIcon(), d.onSaveClicked)
 
-	d.cancelButton = widget.NewButtonWithIcon("❌取消", theme.CancelIcon(), d.onCancelClicked)
+	d.cancelButton = widget.NewButtonWithIcon("Cancel", theme.CancelIcon(), d.onCancelClicked)
 
-	// 创建表单布局
+	// 鍒涘缓琛ㄥ崟甯冨眬
 	form := d.createFormLayout(pathRow)
 
-	// 按钮行
+	// 鎸夐挳琛?
 	buttonRow := container.NewHBox(
 		d.launchButton,
 		d.saveButton,
@@ -107,50 +110,50 @@ func (d *ProjectConfigDialog) initializeUI() {
 		d.cancelButton,
 	)
 
-	// 主要内容
+	// 涓昏鍐呭
 	content := container.NewVBox(
 		form,
 		widget.NewSeparator(),
 		buttonRow,
 	)
 
-	// 创建自定义弹窗
-	d.dialog = dialog.NewCustom("📂 開啟/新建項目", "", content, d.window)
+	// 鍒涘缓鑷畾涔夊脊绐?
+	d.dialog = dialog.NewCustom("馃搨 闁嬪暉/鏂板缓闋呯洰", "", content, d.window)
 	d.dialog.Resize(fyne.NewSize(600, 450))
 }
 
-// createFormLayout 创建表单布局
+// createFormLayout 鍒涘缓琛ㄥ崟甯冨眬
 func (d *ProjectConfigDialog) createFormLayout(pathRow *fyne.Container) fyne.CanvasObject {
-	// 项目信息区域
+	// 椤圭洰淇℃伅鍖哄煙
 	projectInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 📁 項目信息"),
+		widget.NewRichTextFromMarkdown("### 馃搧 闋呯洰淇℃伅"),
 		container.NewVBox(
-			widget.NewLabel("項目路徑:"),
+			widget.NewLabel("闋呯洰璺緫:"),
 			pathRow,
-			widget.NewLabel("項目名稱:"),
+			widget.NewLabel("闋呯洰鍚嶇ū:"),
 			d.nameLabel,
 		),
 	)
 
-	// AI工具选择区域
+	// AI宸ュ叿閫夋嫨鍖哄煙
 	modelInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 🤖 選擇 AI CLI 工具"),
+		widget.NewRichTextFromMarkdown("### 馃 閬告搰 AI CLI 宸ュ叿"),
 		d.modelSelect,
 	)
 
-	// 运行模式区域
+	// 杩愯妯″紡鍖哄煙
 	modeInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### ⚡ 運行模式"),
+		widget.NewRichTextFromMarkdown("### 鈿?閬嬭妯″紡"),
 		d.modeSelect,
 	)
 
-	// 环境检测区域
+	// 鐜妫€娴嬪尯鍩?
 	envInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 🔧 環境檢測 (自動掃描項目)"),
+		widget.NewRichTextFromMarkdown("### 馃敡 鐠板妾㈡脯 (鑷嫊鎺冩弿闋呯洰)"),
 		d.envStatus,
 	)
 
-	// 滚动容器
+	// 婊氬姩瀹瑰櫒
 	scroll := container.NewScroll(container.NewVBox(
 		projectInfo,
 		widget.NewSeparator(),
@@ -164,50 +167,50 @@ func (d *ProjectConfigDialog) createFormLayout(pathRow *fyne.Container) fyne.Can
 	return scroll
 }
 
-// Show 显示弹窗
+// Show 鏄剧ず寮圭獥
 func (d *ProjectConfigDialog) Show() {
 	d.resetForm()
 	d.dialog.Show()
 }
 
-// Hide 隐藏弹窗
+// Hide 闅愯棌寮圭獥
 func (d *ProjectConfigDialog) Hide() {
 	d.dialog.Hide()
 }
 
-// resetForm 重置表单
+// resetForm 閲嶇疆琛ㄥ崟
 func (d *ProjectConfigDialog) resetForm() {
 	d.pathEntry.SetText("")
-	d.nameLabel.SetText("(自動從目錄名稱獲取)")
+	d.nameLabel.SetText("(鑷嫊寰炵洰閷勫悕绋辩嵅鍙?")
 	d.modelSelect.SetSelected(d.modelSelect.Options[0])
 	d.modeSelect.SetSelected(d.modeSelect.Options[1])
-	d.envStatus.ParseMarkdown("請先選擇項目目錄...")
+	d.envStatus.ParseMarkdown("璜嬪厛閬告搰闋呯洰鐩寗...")
 	d.updateButtonStates()
 }
 
-// 事件处理方法
+// 浜嬩欢澶勭悊鏂规硶
 
 func (d *ProjectConfigDialog) onPathChanged(path string) {
 	if path == "" {
-		d.nameLabel.SetText("(自動從目錄名稱獲取)")
-		d.envStatus.ParseMarkdown("請選擇項目目錄...")
+		d.nameLabel.SetText("(鑷嫊寰炵洰閷勫悕绋辩嵅鍙?")
+		d.envStatus.ParseMarkdown("璜嬮伕鎿囬爡鐩洰閷?..")
 		d.updateButtonStates()
 		return
 	}
 
-	// 验证路径是否存在
+	// 楠岃瘉璺緞鏄惁瀛樺湪
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		d.nameLabel.SetText("(路徑不存在)")
-		d.envStatus.ParseMarkdown("❌ 選擇的路徑不存在")
+		d.nameLabel.SetText("(璺緫涓嶅瓨鍦?")
+		d.envStatus.ParseMarkdown("鉂?閬告搰鐨勮矾寰戜笉瀛樺湪")
 		d.updateButtonStates()
 		return
 	}
 
-	// 设置项目名称
+	// 璁剧疆椤圭洰鍚嶇О
 	projectName := filepath.Base(path)
 	d.nameLabel.SetText(projectName)
 
-	// 执行环境检测
+	// 鎵ц鐜妫€娴?
 	d.performEnvironmentDetection(path)
 	d.updateButtonStates()
 }
@@ -221,12 +224,12 @@ func (d *ProjectConfigDialog) onBrowseClicked() {
 }
 
 func (d *ProjectConfigDialog) onModelChanged(selected string) {
-	// AI工具选择变更
+	// AI宸ュ叿閫夋嫨鍙樻洿
 	d.updateButtonStates()
 }
 
 func (d *ProjectConfigDialog) onModeChanged(selected string) {
-	// 运行模式变更
+	// 杩愯妯″紡鍙樻洿
 	d.updateButtonStates()
 }
 
@@ -242,9 +245,9 @@ func (d *ProjectConfigDialog) onSaveClicked() {
 	config, _ := d.buildProjectConfig()
 	if config != nil {
 		if err := d.projectManager.AddProject(*config); err != nil {
-			dialog.ShowError(fmt.Errorf("保存失败: %v", err), d.window)
+			dialog.ShowError(fmt.Errorf("淇濆瓨澶辫触: %v", err), d.window)
 		} else {
-			dialog.ShowInformation("保存成功", fmt.Sprintf("項目 '%s' 已保存到配置", config.Name), d.window)
+			dialog.ShowInformation("淇濆瓨鎴愬姛", fmt.Sprintf("闋呯洰 '%s' 宸蹭繚瀛樺埌閰嶇疆", config.Name), d.window)
 		}
 	}
 }
@@ -253,43 +256,35 @@ func (d *ProjectConfigDialog) onCancelClicked() {
 	d.Hide()
 }
 
-// 工具方法
+// 宸ュ叿鏂规硶
 
 func (d *ProjectConfigDialog) performEnvironmentDetection(path string) {
 	var detections []string
 
-	// 检测各种项目类型
 	if d.fileExists(filepath.Join(path, "package.json")) {
-		detections = append(detections, "✅ Node.js 項目 (檢測到 package.json)")
+		detections = append(detections, "Detected Node.js project (package.json)")
 	}
-
 	if d.fileExists(filepath.Join(path, "go.mod")) {
-		detections = append(detections, "✅ Go 項目 (檢測到 go.mod)")
+		detections = append(detections, "Detected Go project (go.mod)")
 	}
-
 	if d.fileExists(filepath.Join(path, "requirements.txt")) || d.fileExists(filepath.Join(path, "pyproject.toml")) {
-		detections = append(detections, "✅ Python 項目 (檢測到依賴文件)")
+		detections = append(detections, "Detected Python project (requirements/pyproject)")
 	}
-
 	if d.fileExists(filepath.Join(path, ".git")) {
-		detections = append(detections, "✅ Git 初始化完成")
+		detections = append(detections, "Detected Git repository")
 	} else {
-		detections = append(detections, "⚠️ 未初始化 Git")
+		detections = append(detections, "Git not initialized")
 	}
-
 	if d.fileExists(filepath.Join(path, "tsconfig.json")) {
-		detections = append(detections, "✅ TypeScript 配置正確")
+		detections = append(detections, "Detected TypeScript config")
 	}
-
 	if !d.fileExists(filepath.Join(path, ".env")) {
-		detections = append(detections, "⚠️ 缺少 .env 檔案")
+		detections = append(detections, "Missing .env file")
 	}
-
 	if len(detections) == 0 {
-		detections = append(detections, "📁 通用項目目錄")
+		detections = append(detections, "Generic project folder")
 	}
 
-	// 更新环境状态显示
 	statusText := ""
 	for _, detection := range detections {
 		statusText += detection + "\n"
@@ -305,52 +300,43 @@ func (d *ProjectConfigDialog) fileExists(path string) bool {
 func (d *ProjectConfigDialog) buildProjectConfig() (*project.ProjectConfig, project.AIModelType) {
 	path := d.pathEntry.Text
 	if path == "" {
-		dialog.ShowError(fmt.Errorf("請選擇項目目錄"), d.window)
+		dialog.ShowError(fmt.Errorf("Please select a project folder"), d.window)
 		return nil, ""
 	}
-
-	// 验证路径
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		dialog.ShowError(fmt.Errorf("選擇的路徑不存在"), d.window)
+		dialog.ShowError(fmt.Errorf("Selected path does not exist"), d.window)
 		return nil, ""
 	}
-
 	projectName := filepath.Base(path)
 	if projectName == "" || projectName == "." {
-		dialog.ShowError(fmt.Errorf("無效的項目名稱"), d.window)
+		dialog.ShowError(fmt.Errorf("Invalid project name"), d.window)
 		return nil, ""
 	}
-
-	// 解析AI模型
 	aiModel := d.parseAIModel()
 	if aiModel == "" {
-		dialog.ShowError(fmt.Errorf("請選擇 AI CLI 工具"), d.window)
+		dialog.ShowError(fmt.Errorf("Please select an AI CLI tool"), d.window)
 		return nil, ""
 	}
-
-	// 解析运行模式
 	yoloMode := d.parseRunMode()
-
 	config := &project.ProjectConfig{
 		Name:     projectName,
 		Path:     path,
 		AIModel:  aiModel,
 		YoloMode: yoloMode,
 	}
-
 	return config, aiModel
 }
 
 func (d *ProjectConfigDialog) parseAIModel() project.AIModelType {
 	selected := d.modelSelect.Selected
 	switch {
-	case selected == d.modelSelect.Options[0]: // Claude Code
+	case selected == d.modelSelect.Options[0]:
 		return project.ModelClaudeCode
-	case selected == d.modelSelect.Options[1]: // Gemini CLI
+	case selected == d.modelSelect.Options[1]:
 		return project.ModelGeminiCLI
-	case selected == d.modelSelect.Options[2]: // Codex
+	case selected == d.modelSelect.Options[2]:
 		return project.ModelCodex
-	case selected == d.modelSelect.Options[3]: // Aider
+	case selected == d.modelSelect.Options[3]:
 		return project.ModelAider
 	default:
 		return ""
@@ -359,20 +345,19 @@ func (d *ProjectConfigDialog) parseAIModel() project.AIModelType {
 
 func (d *ProjectConfigDialog) parseRunMode() bool {
 	selected := d.modeSelect.Selected
-	return selected == d.modeSelect.Options[1] // YOLO模式
+	return selected == d.modeSelect.Options[1]
 }
 
 func (d *ProjectConfigDialog) updateButtonStates() {
-	// 检查是否可以启动
-	canLaunch := d.pathEntry.Text != "" &&
-		d.modelSelect.Selected != "" &&
-		d.modeSelect.Selected != ""
-
+	if d.pathEntry == nil || d.modelSelect == nil || d.modeSelect == nil || d.launchButton == nil || d.saveButton == nil {
+		return
+	}
+	canLaunch := d.pathEntry.Text != "" && d.modelSelect.Selected != "" && d.modeSelect.Selected != ""
 	d.launchButton.Enable()
 	d.saveButton.Enable()
-
 	if !canLaunch {
 		d.launchButton.Disable()
 		d.saveButton.Disable()
 	}
 }
+

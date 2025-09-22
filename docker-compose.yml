@@ -4,7 +4,7 @@ services:
   ai-launcher-build:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: build/docker/Dockerfile
     image: ai-launcher:latest
     container_name: ai-launcher-gui
 
@@ -13,7 +13,7 @@ services:
       - DISPLAY=${DISPLAY:-:0}
       - QT_QPA_PLATFORM=minimal
 
-    # 挂载X11套接字 (Linux环境下启用)
+    # 挂载X11套接�?(Linux环境下启�?
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ~/.Xauthority:/home/appuser/.Xauthority:ro
@@ -34,11 +34,11 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # 开发模式服务 (仅构建，不运行)
+  # 开发模式服�?(仅构建，不运�?
   ai-launcher-dev:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: build/docker/Dockerfile
       target: builder
     image: ai-launcher:dev
     container_name: ai-launcher-dev

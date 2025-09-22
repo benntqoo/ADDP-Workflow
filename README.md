@@ -76,14 +76,18 @@
 git clone https://github.com/your-repo/ai-launcher.git
 cd ai-launcher
 
-# 2. 构建程序
-./build.bat
+# 2. 使用 Docker 构建程序
+# PowerShell (推荐)
+.\build\docker\build.ps1 -Target windows -OutputDir dist
+
+# CMD (可选)
+powershell -ExecutionPolicy Bypass -File build\docker\build.ps1 -Target windows -OutputDir dist
 
 # 3. 双击启动
 # 直接双击 ai-launcher.exe 即可使用
 ```
 
-> 💡 **中文用户注意**：如果批处理文件出现乱码，请查看 [WINDOWS_中文支持.md](WINDOWS_中文支持.md) 解决方案，或直接双击 `ai-launcher.exe` 避免编码问题。
+> 💡 **中文用户注意**：如果脚本输出乱码，请在运行命令前执行 `chcp 65001`（或在 PowerShell 7 中设置 `$PSDefaultParameterValues['*:Encoding'] = 'utf8'`）。
 
 #### 手动构建（所有平台）
 ```bash
@@ -93,8 +97,7 @@ go version
 # 克隆并构建
 git clone https://github.com/your-repo/ai-launcher.git
 cd ai-launcher
-go mod download
-go build -o ai-launcher ./cmd/launcher
+./build/docker/build.sh linux dist
 ```
 
 ### 🎯 使用方法
@@ -181,7 +184,6 @@ ai-launcher/
 │   ├── gui/              # GUI界面实现
 │   ├── project/          # 项目配置管理
 │   └── terminal/         # 终端管理
-├── build.bat             # Windows构建脚本
 ├── 启动AI助手.bat          # 便捷启动脚本
 └── GUI_DESIGN.md         # 界面设计文档
 ```
