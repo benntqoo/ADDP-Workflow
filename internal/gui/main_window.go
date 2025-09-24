@@ -1,4 +1,4 @@
-package gui
+﻿package gui
 
 import (
     "fmt"
@@ -16,31 +16,31 @@ import (
 )
 
 type MainWindow struct {
-    // Fyne 应用与窗口
+    // Fyne 搴旂敤涓庣獥鍙?
     fyneApp fyne.App
     window  fyne.Window
 
-    // 核心管理器
+    // 鏍稿績绠＄悊鍣?
     projectManager  *project.ConfigManager
     terminalManager *terminal.TerminalManager
 
-    // 主要 UI 组件
+    // 涓昏 UI 缁勪欢
     menuBar      *fyne.MainMenu
     toolbar      *widget.Toolbar
     projectPanel *ProjectHistoryPanel
     terminalTabs *TerminalTabContainer
     statusBar    *StatusBar
 
-    // 对话框组件
+    // 瀵硅瘽妗嗙粍浠?
     projectDialog  *ProjectConfigDialog
     settingsDialog *SettingsDialog
     newTermDialog  *NewTerminalDialog
 
-    // 窗口状态
+    // 绐楀彛鐘舵€?
     windowState *WindowState
 }
 
-// WindowState 保存窗口与主题等状态
+// WindowState 淇濆瓨绐楀彛涓庝富棰樼瓑鐘舵€?
 type WindowState struct {
     Width          float32 `json:"width"`
     Height         float32 `json:"height"`
@@ -55,7 +55,7 @@ func NewMainWindow() *MainWindow {
     myApp := app.NewWithID("ai.launcher.desktop")
     myApp.SetIcon(theme.ComputerIcon())
 
-    // Windows 下应用 CJK 字体与主题，避免中文显示为方框/乱码
+    // Windows 涓嬪簲鐢?CJK 瀛椾綋涓庝富棰橈紝閬垮厤涓枃鏄剧ず涓烘柟妗?涔辩爜
     if runtime.GOOS == "windows" {
         EnsureCJKFont()
         if fp := SelectCJKFont(); fp != "" {
@@ -79,19 +79,19 @@ func NewMainWindow() *MainWindow {
 func (mw *MainWindow) Run() {
     defer func() {
         if r := recover(); r != nil {
-            log.Printf("GUI运行时错误: %v", r)
+            log.Printf("GUI杩愯鏃堕敊璇? %v", r)
             panic(r)
         }
     }()
 
     if err := mw.projectManager.LoadProjects(); err != nil {
-        log.Printf("加载项目配置失败: %v", err)
+        log.Printf("鍔犺浇椤圭洰閰嶇疆澶辫触: %v", err)
     }
 
-    log.Println("创建主窗口...")
-    mw.window = mw.fyneApp.NewWindow("AI 启动器 v2.0 - Desktop GUI 版")
+    log.Println("鍒涘缓涓荤獥鍙?..")
+    mw.window = mw.fyneApp.NewWindow("AI 鍚姩鍣?v2.0 - Desktop GUI 鐗?)
     if mw.window == nil {
-        panic("无法创建 Fyne 窗口")
+        panic("鏃犳硶鍒涘缓 Fyne 绐楀彛")
     }
 
     mw.window.SetIcon(theme.ComputerIcon())
@@ -99,7 +99,7 @@ func (mw *MainWindow) Run() {
     mw.window.SetFixedSize(false)
     mw.window.CenterOnScreen()
 
-    log.Println("窗口创建成功，设置属性...")
+    log.Println("绐楀彛鍒涘缓鎴愬姛锛岃缃睘鎬?..")
     mw.window.SetCloseIntercept(func() {
         mw.saveWindowState()
         mw.fyneApp.Quit()
@@ -111,24 +111,24 @@ func (mw *MainWindow) Run() {
         mw.fyneApp.Settings().SetTheme(theme.LightTheme())
     }
 
-    log.Println("初始化 UI 组件...")
+    log.Println("鍒濆鍖?UI 缁勪欢...")
     mw.initializeComponents()
 
-    log.Println("创建主布局...")
+    log.Println("鍒涘缓涓诲竷灞€...")
     content := mw.createMainLayout()
     mw.window.SetContent(content)
 
-    log.Println("设置菜单...")
+    log.Println("璁剧疆鑿滃崟...")
     mw.window.SetMainMenu(mw.createMenuBar())
 
-    log.Println("显示窗口并开始事件循环...")
+    log.Println("鏄剧ず绐楀彛骞跺紑濮嬩簨浠跺惊鐜?..")
     mw.window.ShowAndRun()
 }
 
 func (mw *MainWindow) initializeComponents() {
     mw.toolbar = mw.createToolbar()
     mw.projectPanel = NewProjectHistoryPanel(mw.projectManager, mw.onProjectSelected)
-    mw.terminalTabs = NewTerminalTabContainer(mw.terminalManager)
+    mw.terminalTabs = NewTerminalTabContainer(mw.terminalManager, func(){ mw.onNewTerminalClicked() })
     mw.statusBar = NewStatusBar()
     mw.projectDialog = NewProjectConfigDialog(mw.window, mw.projectManager, mw.onProjectConfigured)
     mw.settingsDialog = NewSettingsDialog(mw.window, mw.onSettingsChanged)
@@ -170,35 +170,35 @@ func (mw *MainWindow) createToolbar() *widget.Toolbar {
 }
 
 func (mw *MainWindow) createMenuBar() *fyne.MainMenu {
-    fileMenu := fyne.NewMenu("文件",
-        fyne.NewMenuItem("打开项目", mw.onOpenProjectClicked),
-        fyne.NewMenuItem("新建终端", mw.onNewTerminalClicked),
+    fileMenu := fyne.NewMenu("鏂囦欢",
+        fyne.NewMenuItem("鎵撳紑椤圭洰", mw.onOpenProjectClicked),
+        fyne.NewMenuItem("鏂板缓缁堢", mw.onNewTerminalClicked),
         fyne.NewMenuItemSeparator(),
-        fyne.NewMenuItem("退出", func() { mw.fyneApp.Quit() }),
+        fyne.NewMenuItem("閫€鍑?, func() { mw.fyneApp.Quit() }),
     )
 
-    toolsMenu := fyne.NewMenu("工具",
-        fyne.NewMenuItem("设置", mw.onSettingsClicked),
-        fyne.NewMenuItem("监控", mw.onMonitorClicked),
+    toolsMenu := fyne.NewMenu("宸ュ叿",
+        fyne.NewMenuItem("璁剧疆", mw.onSettingsClicked),
+        fyne.NewMenuItem("鐩戞帶", mw.onMonitorClicked),
         fyne.NewMenuItemSeparator(),
-        fyne.NewMenuItem("清理缓存", mw.onClearCacheClicked),
+        fyne.NewMenuItem("娓呯悊缂撳瓨", mw.onClearCacheClicked),
     )
 
-    helpMenu := fyne.NewMenu("帮助",
-        fyne.NewMenuItem("使用说明", mw.onHelpClicked),
-        fyne.NewMenuItem("关于", mw.onAboutClicked),
+    helpMenu := fyne.NewMenu("甯姪",
+        fyne.NewMenuItem("浣跨敤璇存槑", mw.onHelpClicked),
+        fyne.NewMenuItem("鍏充簬", mw.onAboutClicked),
     )
 
     return fyne.NewMainMenu(fileMenu, toolsMenu, helpMenu)
 }
 
-// 事件处理
+// 浜嬩欢澶勭悊
 
 func (mw *MainWindow) onProjectSelected(proj project.ProjectConfig) {
-    // 左侧点击项目：优先切换到已有该项目的终端标签，否则创建一个
+    // 宸︿晶鐐瑰嚮椤圭洰锛氫紭鍏堝垏鎹㈠埌宸叉湁璇ラ」鐩殑缁堢鏍囩锛屽惁鍒欏垱寤轰竴涓?
     if id := mw.terminalTabs.FindTabByProjectPath(proj.Path); id != "" {
         mw.terminalTabs.SetActiveTab(id)
-        mw.statusBar.SetMessage(fmt.Sprintf("已切换到项目: %s", proj.Name))
+        mw.statusBar.SetMessage(fmt.Sprintf("宸插垏鎹㈠埌椤圭洰: %s", proj.Name))
         return
     }
     mw.createNewTerminal(proj, proj.AIModel)
@@ -225,31 +225,31 @@ func (mw *MainWindow) onSettingsChanged(settings map[string]interface{}) {
             mw.fyneApp.Settings().SetTheme(theme.LightTheme())
         }
     }
-    mw.statusBar.SetMessage("设置已应用")
+    mw.statusBar.SetMessage("璁剧疆宸插簲鐢?)
 }
 
 func (mw *MainWindow) onOpenProjectClicked() { mw.projectDialog.Show() }
 func (mw *MainWindow) onSettingsClicked()    { mw.settingsDialog.Show() }
 
 func (mw *MainWindow) onMonitorClicked() {
-    mw.statusBar.SetMessage("监控功能开发中...")
+    mw.statusBar.SetMessage("鐩戞帶鍔熻兘寮€鍙戜腑...")
 }
 
 func (mw *MainWindow) onHelpClicked() {
-    mw.statusBar.SetMessage("帮助功能开发中...")
+    mw.statusBar.SetMessage("甯姪鍔熻兘寮€鍙戜腑...")
 }
 
 func (mw *MainWindow) onNewTerminalClicked() { mw.newTermDialog.Show() }
 
 func (mw *MainWindow) onClearCacheClicked() {
-    mw.statusBar.SetMessage("缓存已清理")
+    mw.statusBar.SetMessage("缂撳瓨宸叉竻鐞?)
 }
 
 func (mw *MainWindow) onAboutClicked() {
-    mw.statusBar.SetMessage("AI 启动器 v2.0.0")
+    mw.statusBar.SetMessage("AI 鍚姩鍣?v2.0.0")
 }
 
-// 终端创建
+// 缁堢鍒涘缓
 func (mw *MainWindow) createNewTerminal(proj project.ProjectConfig, aiModel project.AIModelType) *TerminalTab {
     termName := fmt.Sprintf("%s(%s)", proj.Name, aiModel.String())
     termConfig := terminal.TerminalConfig{
@@ -262,10 +262,10 @@ func (mw *MainWindow) createNewTerminal(proj project.ProjectConfig, aiModel proj
 
     tab := mw.terminalTabs.CreateTab(termName, termConfig, proj)
     if tab != nil {
-        mw.statusBar.SetMessage(fmt.Sprintf("已创建终端: %s", termName))
+        mw.statusBar.SetMessage(fmt.Sprintf("宸插垱寤虹粓绔? %s", termName))
         return tab
     }
-    mw.statusBar.SetMessage("创建终端失败")
+    mw.statusBar.SetMessage("鍒涘缓缁堢澶辫触")
     return nil
 }
 
@@ -283,5 +283,6 @@ func (mw *MainWindow) getTerminalType(model project.AIModelType) terminal.Termin
 }
 
 func (mw *MainWindow) saveWindowState() {
-    log.Println("保存窗口状态...")
+    log.Println("淇濆瓨绐楀彛鐘舵€?..")
 }
+

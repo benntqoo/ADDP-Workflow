@@ -27,6 +27,9 @@ type TerminalTabContainer struct {
     activeTabID string
     nextTabID   int
     mutex       sync.RWMutex
+
+    // 回调：请求新建终端对话框
+    onRequestNew func()
 }
 
 // 单个终端标签
@@ -47,11 +50,12 @@ type TerminalTab struct {
     running bool
 }
 
-func NewTerminalTabContainer(tm *terminal.TerminalManager) *TerminalTabContainer {
+func NewTerminalTabContainer(tm *terminal.TerminalManager, onNew func()) *TerminalTabContainer {
     tc := &TerminalTabContainer{
         terminalManager: tm,
         tabs:            make(map[string]*TerminalTab),
         nextTabID:       1,
+        onRequestNew:    onNew,
     }
     tc.initializeUI()
     return tc
@@ -68,7 +72,7 @@ func (tc *TerminalTabContainer) initializeUI() {
 func (tc *TerminalTabContainer) addNewTabButton() {
     newTabContent := container.NewCenter(
         widget.NewButtonWithIcon("新建终端", theme.ContentAddIcon(), func() {
-            // TODO: 打开新建终端对话框
+            if tc.onRequestNew != nil { tc.onRequestNew() }
         }),
     )
     newTab := &container.TabItem{
