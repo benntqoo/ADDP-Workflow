@@ -122,7 +122,19 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
     }
     delete(tc.tabs, tabID)
     if tc.activeTabID == tabID {
-        tc.activateNextTab()
+        // 激活剩余任意标签，否则清空内容
+        activated := false
+        for id := range tc.tabs {
+            tc.activeTabID = ""
+            tc.SetActiveTab(id)
+            activated = true
+            break
+        }
+        if !activated {
+            tc.activeTabID = ""
+            tc.content.Objects = []fyne.CanvasObject{}
+            tc.content.Refresh()
+        }
     }
 }
 
