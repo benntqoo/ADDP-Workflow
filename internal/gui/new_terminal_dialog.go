@@ -1,4 +1,4 @@
-package gui
+﻿package gui
 
 import (
 	"fmt"
@@ -15,11 +15,11 @@ import (
 
 // NewTerminalDialog 新建终端对话框
 type NewTerminalDialog struct {
-	window          fyne.Window
-	projectManager  *project.ConfigManager
+	window             fyne.Window
+	projectManager     *project.ConfigManager
 	onTerminalRequested func(project.ProjectConfig, project.AIModelType, bool)
 
-	// 弹窗组件
+	// 对话框组件
 	dialog *dialog.CustomDialog
 
 	// 表单组件
@@ -50,82 +50,84 @@ func NewNewTerminalDialog(parent fyne.Window, pm *project.ConfigManager, onReque
 	return d
 }
 
-// initializeUI 初始化对话框UI
+// initializeUI 初始化对话框 UI
 func (d *NewTerminalDialog) initializeUI() {
-	// AI工具选择
+	// AI 工具选择（先创建控件，稍后再 SetSelected，避免回调早触发导致按钮为 nil）
 	d.modelSelect = widget.NewRadioGroup([]string{
-		"🤖 Claude Code    (推薦用於通用開發)",
-		"💎 Gemini CLI     (推薦用於創意和分析)",
-		"🔧 Codex          (推薦用於代碼生成)",
-		"🔬 Aider          (推薦用於代碼重構)",
+		"Claude Code（通用/推荐）",
+		"Gemini CLI（分析/推荐）",
+		"Codex（生成/推荐）",
+		"Aider（重构/推荐）",
 	}, d.onModelChanged)
-	d.modelSelect.SetSelected(d.modelSelect.Options[0]) // 默认选择第一个
 
 	// 项目选择
 	d.updateProjectOptions()
-
 	d.projectSelect = widget.NewRadioGroup([]string{}, d.onProjectChanged)
 
 	// 浏览按钮
-	d.browseButton = widget.NewButtonWithIcon("📂 瀏覽選擇其他項目...", theme.FolderOpenIcon(), d.onBrowseClicked)
+	d.browseButton = widget.NewButtonWithIcon("浏览其他项目...", theme.FolderOpenIcon(), d.onBrowseClicked)
+	d.inheritCheck = widget.NewCheck("继承项目设置（YOLO 模式等）", nil)
+	inherit := d.inheritCheck; inherit.SetChecked(true)
 
-	// 快速选项
-	d.inheritCheck = widget.NewCheck("繼承項目設置 (YOLO模式等)", nil)
-	d.inheritCheck.SetChecked(true)
-
-	d.backgroundCheck = widget.NewCheck("在背景運行 (不切換到新標籤頁)", nil)
+	d.backgroundCheck = widget.NewCheck("在后台运行（不切换到新终端）", nil)
 
 	// 按钮
-	d.launchButton = widget.NewButtonWithIcon("🚀啟動", theme.MediaPlayIcon(), d.onLaunchClicked)
-	d.launchButton.Importance = widget.HighImportance
+	launch := widget.NewButtonWithIcon("启动", theme.MediaPlayIcon(), d.onLaunchClicked)
+	launch.Importance = widget.HighImportance
+	d.launchButton = launch
 
-	d.cancelButton = widget.NewButtonWithIcon("❌取消", theme.CancelIcon(), d.onCancelClicked)
+	d.cancelButton = widget.NewButtonWithIcon("取消", theme.CancelIcon(), d.onCancelClicked)
+
+	// 设置默认选择（此时按钮已创建，避免 nil 回调崩溃）
+	if len(d.modelSelect.Options) > 0 {
+		d.modelSelect.SetSelected(d.modelSelect.Options[0])
+	}
 
 	// 创建表单布局
 	form := d.createFormLayout()
 
-	// 按钮行
+	// 底部按钮行
 	buttonRow := container.NewHBox(
 		d.launchButton,
 		layout.NewSpacer(),
 		d.cancelButton,
 	)
 
-	// 主要内容
+	// 主体内容
 	content := container.NewVBox(
 		form,
 		widget.NewSeparator(),
 		buttonRow,
 	)
 
-	// 创建自定义弹窗
-	d.dialog = dialog.NewCustom("➕ 新建終端", "", content, d.window)
+	// 创建自定义对话框
+	d.dialog = dialog.NewCustom("新建终端", "", content, d.window)
 	d.dialog.Resize(fyne.NewSize(450, 350))
 }
 
 // createFormLayout 创建表单布局
 func (d *NewTerminalDialog) createFormLayout() fyne.CanvasObject {
-	// AI工具选择区域
+	// AI 工具选择
 	modelSection := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 🤖 選擇 AI CLI 工具"),
+		widget.NewRichTextFromMarkdown("### 选择 AI CLI 工具"),
 		d.modelSelect,
 	)
 
-	// 项目选择区域
+	// 项目选择
 	projectSection := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 📁 目標項目 (終端標籤頁名稱將使用項目名稱+AI工具)"),
+		widget.NewRichTextFromMarkdown("### 选择项目（从最近项目或手动选择）"),
 		d.projectSelect,
 		d.browseButton,
 	)
 
-	// 快速选项区域
+	// 选项
 	optionsSection := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### ⚡ 快速選項"),
+		widget.NewRichTextFromMarkdown("### 选项"),
 		d.inheritCheck,
 		d.backgroundCheck,
 	)
 
-	// 滚动容器
+	// 可滚动容器
 	scroll := container.NewScroll(container.NewVBox(
 		modelSection,
 		widget.NewSeparator(),
@@ -158,22 +160,19 @@ func (d *NewTerminalDialog) updateProjectOptions() {
 	options := []string{}
 	if len(d.recentProjects) > 0 {
 		// 默认选择第一个项目
-		options = append(options, "● 當前項目: "+d.recentProjects[0].Name)
+		options = append(options, "• 当前项目: "+d.recentProjects[0].Name)
 		d.selectedProject = &d.recentProjects[0]
 
-		// 添加其他最近项目
-		if len(d.recentProjects) > 1 {
-			options = append(options, "○ 從左側歷史項目選擇")
-			for i := 1; i < len(d.recentProjects); i++ {
-				proj := d.recentProjects[i]
-				options = append(options, "  • "+proj.Name)
-			}
+		// 追加其他最近项目
+		for i := 1; i < len(d.recentProjects); i++ {
+			proj := d.recentProjects[i]
+			options = append(options, "  • "+proj.Name)
 		}
 	} else {
-		options = append(options, "○ 無最近項目，請瀏覽選擇")
+		options = append(options, "• 暂无最近项目，请浏览选择")
 	}
 
-	// 更新RadioGroup选项
+	// 更新 RadioGroup 选项
 	if d.projectSelect != nil {
 		d.projectSelect.Options = options
 		if len(options) > 0 {
@@ -182,26 +181,23 @@ func (d *NewTerminalDialog) updateProjectOptions() {
 	}
 }
 
-// 事件处理方法
+// 事件处理
 
 func (d *NewTerminalDialog) onModelChanged(selected string) {
 	d.updateButtonStates()
 }
 
 func (d *NewTerminalDialog) onProjectChanged(selected string) {
-	// 解析选中的项目
 	if selected == "" {
 		return
 	}
 
-	// 如果选择的是"当前项目"
 	if len(d.recentProjects) > 0 && selected == d.projectSelect.Options[0] {
 		d.selectedProject = &d.recentProjects[0]
 		d.updateButtonStates()
 		return
 	}
 
-	// 如果选择的是历史项目中的某一个
 	for _, proj := range d.recentProjects {
 		if selected == "  • "+proj.Name {
 			d.selectedProject = &proj
@@ -218,54 +214,46 @@ func (d *NewTerminalDialog) onBrowseClicked() {
 		if err == nil && uri != nil {
 			// 创建临时项目配置
 			path := uri.Path()
-			projectName := path[len(path)-1:]
+			projectName := path
 			if projectName == "" {
-				projectName = "新項目"
+				projectName = "新项目"
 			}
 
 			tempProject := project.ProjectConfig{
 				Name:     projectName,
 				Path:     path,
-				AIModel:  project.ModelClaudeCode, // 默认模型
-				YoloMode: true,                    // 默认YOLO模式
+				AIModel:  project.ModelClaudeCode,
+				YoloMode: true,
 			}
 
 			d.selectedProject = &tempProject
 			d.updateButtonStates()
 
 			// 更新项目选择显示
-			d.projectSelect.SetSelected("● 選中項目: " + projectName)
+			d.projectSelect.SetSelected("• 当前项目: " + projectName)
 		}
 	}, d.window)
 }
 
 func (d *NewTerminalDialog) onLaunchClicked() {
 	if d.selectedProject == nil {
-		dialog.ShowError(fmt.Errorf("請選擇目標項目"), d.window)
+		dialog.ShowError(fmt.Errorf("请先选择项目"), d.window)
 		return
 	}
 
-	// 获取选择的AI模型
 	aiModel := d.parseAIModel()
 	if aiModel == "" {
-		dialog.ShowError(fmt.Errorf("請選擇 AI CLI 工具"), d.window)
+		dialog.ShowError(fmt.Errorf("请选择 AI CLI 工具"), d.window)
 		return
 	}
 
-	// 应用继承设置
 	project := *d.selectedProject
 	if !d.inheritCheck.Checked {
-		// 不继承设置时，使用默认配置
 		project.YoloMode = false
 	}
-
-	// 更新AI模型
 	project.AIModel = aiModel
 
-	// 获取背景运行选项
 	runInBackground := d.backgroundCheck.Checked
-
-	// 触发回调
 	if d.onTerminalRequested != nil {
 		d.onTerminalRequested(project, aiModel, runInBackground)
 	}
@@ -282,13 +270,13 @@ func (d *NewTerminalDialog) onCancelClicked() {
 func (d *NewTerminalDialog) parseAIModel() project.AIModelType {
 	selected := d.modelSelect.Selected
 	switch {
-	case selected == d.modelSelect.Options[0]: // Claude Code
+	case selected == d.modelSelect.Options[0]:
 		return project.ModelClaudeCode
-	case selected == d.modelSelect.Options[1]: // Gemini CLI
+	case selected == d.modelSelect.Options[1]:
 		return project.ModelGeminiCLI
-	case selected == d.modelSelect.Options[2]: // Codex
+	case selected == d.modelSelect.Options[2]:
 		return project.ModelCodex
-	case selected == d.modelSelect.Options[3]: // Aider
+	case selected == d.modelSelect.Options[3]:
 		return project.ModelAider
 	default:
 		return ""
@@ -296,9 +284,11 @@ func (d *NewTerminalDialog) parseAIModel() project.AIModelType {
 }
 
 func (d *NewTerminalDialog) updateButtonStates() {
-	// 检查是否可以启动
+	// 组件可能尚未初始化，先做空指针防护
+	if d.modelSelect == nil || d.launchButton == nil {
+		return
+	}
 	canLaunch := d.modelSelect.Selected != "" && d.selectedProject != nil
-
 	if canLaunch {
 		d.launchButton.Enable()
 	} else {

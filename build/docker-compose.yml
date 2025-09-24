@@ -1,0 +1,71 @@
+﻿services:
+  ai-launcher-build:
+    build:
+      context: ..
+      dockerfile: build/docker/Dockerfile
+    image: ai-launcher:latest
+    container_name: ai-launcher-gui
+
+    # GUI应用需要X11转发 (Linux环境)
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_QPA_PLATFORM=minimal
+
+    # 挂载X11套接�?(Linux环境下启�?
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/home/appuser/.Xauthority:ro
+
+    # 网络模式
+    network_mode: host
+
+    # 权限设置
+    privileged: false
+
+    # 重启策略
+    restart: unless-stopped
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # 开发模式服�?(仅构建，不运�?
+  ai-launcher-dev:
+    build:
+      context: ..
+      dockerfile: build/docker/Dockerfile
+      target: builder
+    image: ai-launcher:dev
+    container_name: ai-launcher-dev
+    volumes:
+      - ..:/app
+      - go-mod-cache-ai-launcher-go1.23:/go/pkg/mod
+      - go-build-cache-ai-launcher-go1.23:/root/.cache/go-build
+    working_dir: /app
+    command: /bin/sh
+    stdin_open: true
+    tty: true
+
+  # Windows 交叉编译：使用 Dockerfile.windows 的 cross 基础层，避免每次 run 都 apt 安装
+  win-build:
+    build:
+      context: ..
+      dockerfile: build/docker/Dockerfile.windows
+      target: cross
+    image: ai-launcher:win-cross-go1.23
+    working_dir: /app
+    volumes:
+      - ..:/app
+      - go-mod-cache-ai-launcher-go1.23:/go/pkg/mod
+      - go-build-cache-ai-launcher-go1.23:/root/.cache/go-build
+    entrypoint: ["/bin/bash", "-lc"]
+    # 由你执行：docker compose run --rm win-build
+    command:
+      - export PATH=/usr/local/go/bin:$$PATH && go version && go mod download && CGO_ENABLED=1 GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc go build -v -o ai-launcher.exe ./cmd/gui
+
+volumes:
+  go-mod-cache-ai-launcher-go1.23:
+  go-build-cache-ai-launcher-go1.23:

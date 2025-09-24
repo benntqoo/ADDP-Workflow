@@ -1,5 +1,5 @@
 # Windows Cross-Compilation Dockerfile for AI Launcher GUI
-FROM golang:1.23-bullseye AS builder
+FROM golang:1.23-bullseye AS cross
 
 # Set working directory
 WORKDIR /app
@@ -10,6 +10,13 @@ RUN apt-get update && apt-get install -y \
     gcc-mingw-w64 \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
+
+# Ensure Go is on PATH (normally set by the base image)
+ENV PATH=/usr/local/go/bin:${PATH}
+
+# ------------------------------
+# Builder stage uses preinstalled cross toolchain
+FROM cross AS builder
 
 # Copy go mod files
 COPY go.mod go.sum ./

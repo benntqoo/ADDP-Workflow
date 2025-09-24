@@ -60,7 +60,7 @@ func NewProjectConfigDialog(parent fyne.Window, pm *project.ConfigManager, onCon
 func (d *ProjectConfigDialog) initializeUI() {
 	// 椤圭洰璺緞閫夋嫨
 	d.pathEntry = widget.NewEntry()
-	d.pathEntry.SetPlaceHolder("閫夋嫨椤圭洰鐩綍...")
+    d.pathEntry.SetPlaceHolder("选择项目目录...")
 	d.pathEntry.OnChanged = d.onPathChanged
 
 	d.browseButton = widget.NewButtonWithIcon("", theme.FolderOpenIcon(), d.onBrowseClicked)
@@ -68,23 +68,23 @@ func (d *ProjectConfigDialog) initializeUI() {
 	pathRow := container.NewBorder(nil, nil, nil, d.browseButton, d.pathEntry)
 
 	// 椤圭洰鍚嶇О锛堣嚜鍔ㄤ粠鐩綍鑾峰彇锛?
-	d.nameLabel = widget.NewLabel("(鑷姩浠庣洰褰曞悕绉拌幏鍙?")
+    d.nameLabel = widget.NewLabel("(自动从目录名获取)")
 	d.nameLabel.TextStyle = fyne.TextStyle{Italic: true}
 
 	// AI宸ュ叿閫夋嫨
-	d.modelSelect = widget.NewRadioGroup([]string{
-		"馃 Claude Code    (鎺ㄨ崘鐢ㄦ柤閫氱敤闁嬬櫦)",
-		"馃拵 Gemini CLI     (鎺ㄨ崘鐢ㄦ柤鍓垫剰鍜屽垎鏋?",
-		"馃敡 Codex          (鎺ㄨ崘鐢ㄦ柤浠ｇ⒓鐢熸垚)",
-		"馃敩 Aider          (鎺ㄨ崘鐢ㄦ柤浠ｇ⒓閲嶆)",
-	}, d.onModelChanged)
+    d.modelSelect = widget.NewRadioGroup([]string{
+        "Claude Code（通用/推荐）",
+        "Gemini CLI（分析/推荐）",
+        "Codex（生成/推荐）",
+        "Aider（重构/推荐）",
+    }, d.onModelChanged)
 	d.modelSelect.SetSelected(d.modelSelect.Options[0]) // 榛樿閫夋嫨绗竴涓?
 
 	// 杩愯妯″紡閫夋嫨
-	d.modeSelect = widget.NewRadioGroup([]string{
-		"馃洝锔?鏅€氭ā寮?(闇€瑕佺⒑瑾嶆搷浣滐紝鏇村畨鍏?",
-		"鈿?YOLO妯″紡 (璺抽亷瀹夊叏纰鸿獚锛屽揩閫熼枊鐧?",
-	}, d.onModeChanged)
+    d.modeSelect = widget.NewRadioGroup([]string{
+        "普通模式（需要确认，更安全）",
+        "YOLO 模式（跳过确认，速度优先）",
+    }, d.onModeChanged)
 	d.modeSelect.SetSelected(d.modeSelect.Options[1]) // 榛樿YOLO妯″紡
 
 	// 鐜妫€娴嬬姸鎬?
@@ -92,10 +92,10 @@ func (d *ProjectConfigDialog) initializeUI() {
 	d.envStatus.Wrapping = fyne.TextWrapWord
 
 	// 鎸夐挳
-	d.launchButton = widget.NewButtonWithIcon("馃殌鍟熷嫊", theme.MediaPlayIcon(), d.onLaunchClicked)
+    d.launchButton = widget.NewButtonWithIcon("启动", theme.MediaPlayIcon(), d.onLaunchClicked)
 	d.launchButton.Importance = widget.HighImportance
 
-	d.saveButton = widget.NewButtonWithIcon("馃捑鍎插瓨", theme.DocumentSaveIcon(), d.onSaveClicked)
+    d.saveButton = widget.NewButtonWithIcon("保存", theme.DocumentSaveIcon(), d.onSaveClicked)
 
 	d.cancelButton = widget.NewButtonWithIcon("Cancel", theme.CancelIcon(), d.onCancelClicked)
 
@@ -118,15 +118,15 @@ func (d *ProjectConfigDialog) initializeUI() {
 	)
 
 	// 鍒涘缓鑷畾涔夊脊绐?
-	d.dialog = dialog.NewCustom("馃搨 闁嬪暉/鏂板缓闋呯洰", "", content, d.window)
+    d.dialog = dialog.NewCustom("打开/新建项目", "", content, d.window)
 	d.dialog.Resize(fyne.NewSize(600, 450))
 }
 
 // createFormLayout 鍒涘缓琛ㄥ崟甯冨眬
 func (d *ProjectConfigDialog) createFormLayout(pathRow *fyne.Container) fyne.CanvasObject {
 	// 椤圭洰淇℃伅鍖哄煙
-	projectInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 馃搧 闋呯洰淇℃伅"),
+    projectInfo := container.NewVBox(
+        widget.NewRichTextFromMarkdown("### 项目信息"),
 		container.NewVBox(
 			widget.NewLabel("闋呯洰璺緫:"),
 			pathRow,
@@ -136,20 +136,20 @@ func (d *ProjectConfigDialog) createFormLayout(pathRow *fyne.Container) fyne.Can
 	)
 
 	// AI宸ュ叿閫夋嫨鍖哄煙
-	modelInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 馃 閬告搰 AI CLI 宸ュ叿"),
+    modelInfo := container.NewVBox(
+        widget.NewRichTextFromMarkdown("### 选择 AI CLI 工具"),
 		d.modelSelect,
 	)
 
 	// 杩愯妯″紡鍖哄煙
-	modeInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 鈿?閬嬭妯″紡"),
+    modeInfo := container.NewVBox(
+        widget.NewRichTextFromMarkdown("### 运行模式"),
 		d.modeSelect,
 	)
 
 	// 鐜妫€娴嬪尯鍩?
-	envInfo := container.NewVBox(
-		widget.NewRichTextFromMarkdown("### 馃敡 鐠板妾㈡脯 (鑷嫊鎺冩弿闋呯洰)"),
+    envInfo := container.NewVBox(
+        widget.NewRichTextFromMarkdown("### 环境检测（自动识别项目）"),
 		d.envStatus,
 	)
 
@@ -181,10 +181,10 @@ func (d *ProjectConfigDialog) Hide() {
 // resetForm 閲嶇疆琛ㄥ崟
 func (d *ProjectConfigDialog) resetForm() {
 	d.pathEntry.SetText("")
-	d.nameLabel.SetText("(鑷嫊寰炵洰閷勫悕绋辩嵅鍙?")
+    d.nameLabel.SetText("(自动等待目录名)")
 	d.modelSelect.SetSelected(d.modelSelect.Options[0])
 	d.modeSelect.SetSelected(d.modeSelect.Options[1])
-	d.envStatus.ParseMarkdown("璜嬪厛閬告搰闋呯洰鐩寗...")
+    d.envStatus.ParseMarkdown("请先选择项目目录...")
 	d.updateButtonStates()
 }
 
@@ -192,16 +192,16 @@ func (d *ProjectConfigDialog) resetForm() {
 
 func (d *ProjectConfigDialog) onPathChanged(path string) {
 	if path == "" {
-		d.nameLabel.SetText("(鑷嫊寰炵洰閷勫悕绋辩嵅鍙?")
-		d.envStatus.ParseMarkdown("璜嬮伕鎿囬爡鐩洰閷?..")
+        d.nameLabel.SetText("(自动等待目录名)")
+        d.envStatus.ParseMarkdown("请先选择项目目录...")
 		d.updateButtonStates()
 		return
 	}
 
 	// 楠岃瘉璺緞鏄惁瀛樺湪
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		d.nameLabel.SetText("(璺緫涓嶅瓨鍦?")
-		d.envStatus.ParseMarkdown("鉂?閬告搰鐨勮矾寰戜笉瀛樺湪")
+    if _, err := os.Stat(path); os.IsNotExist(err) {
+        d.nameLabel.SetText("(路径不存在)")
+        d.envStatus.ParseMarkdown("路径不存在，请重新选择")
 		d.updateButtonStates()
 		return
 	}
@@ -244,11 +244,11 @@ func (d *ProjectConfigDialog) onLaunchClicked() {
 func (d *ProjectConfigDialog) onSaveClicked() {
 	config, _ := d.buildProjectConfig()
 	if config != nil {
-		if err := d.projectManager.AddProject(*config); err != nil {
-			dialog.ShowError(fmt.Errorf("淇濆瓨澶辫触: %v", err), d.window)
-		} else {
-			dialog.ShowInformation("淇濆瓨鎴愬姛", fmt.Sprintf("闋呯洰 '%s' 宸蹭繚瀛樺埌閰嶇疆", config.Name), d.window)
-		}
+        if err := d.projectManager.AddProject(*config); err != nil {
+            dialog.ShowError(fmt.Errorf("保存失败: %v", err), d.window)
+        } else {
+            dialog.ShowInformation("保存成功", fmt.Sprintf("项目 '%s' 已保存到配置", config.Name), d.window)
+        }
 	}
 }
 

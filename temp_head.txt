@@ -1,0 +1,140 @@
+package gui
+
+import (
+	"fmt"
+	"log"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
+
+	"ai-launcher/internal/project"
+	"ai-launcher/internal/terminal"
+)
+
+// MainWindow ä¸»çª—å£ç»“æ?
+type MainWindow struct {
+	// Fyneåº”ç”¨å’Œçª—å?
+	fyneApp fyne.App
+	window  fyne.Window
+
+	// æ ¸å¿ƒç®¡ç†å™?
+	projectManager  *project.ConfigManager
+	terminalManager *terminal.TerminalManager
+
+	// ä¸»è¦UIç»„ä»¶
+	menuBar         *fyne.MainMenu
+	toolbar         *widget.Toolbar
+	projectPanel    *ProjectHistoryPanel
+	terminalTabs    *TerminalTabContainer
+	statusBar       *StatusBar
+
+	// å¼¹çª—ç»„ä»¶
+	projectDialog  *ProjectConfigDialog
+	settingsDialog *SettingsDialog
+	newTermDialog  *NewTerminalDialog
+
+	// çª—å£çŠ¶æ€?
+	windowState *WindowState
+}
+
+// WindowState çª—å£çŠ¶æ€ç®¡ç?
+type WindowState struct {
+	Width      float32 `json:"width"`
+	Height     float32 `json:"height"`
+	X          float32 `json:"x"`
+	Y          float32 `json:"y"`
+	Maximized  bool    `json:"maximized"`
+	Theme      string  `json:"theme"`
+	LeftPanelWidth float32 `json:"left_panel_width"`
+}
+
+// NewMainWindow åˆ›å»ºä¸»çª—å?
+func NewMainWindow() *MainWindow {
+	myApp := app.NewWithID("ai.launcher.desktop")
+	myApp.SetIcon(theme.ComputerIcon())\r\n\r\n\t// Windows ÏÂÓ¦ÓÃ CJK Ö÷Ìâ£¬±ÜÃâÖĞÎÄ·½¿ò/ÂÒÂë\r\n\tif runtime.GOOS == "windows" {\r\n\t\tEnsureCJKFont()\r\n\t\tif fp := SelectCJKFont(); fp != "" {\r\n\t\t\t_ = ApplyCJKTheme(myApp, fp)\r\n\t\t}\r\n\t}
+
+	// è¨­ç½®æ‡‰ç”¨å…ƒæ•¸æ“?- åœ¨Fyne v2.4.5ä¸­éœ€è¦é€šéä¸åŒæ–¹å¼è¨­ç½®
+	// myApp.Metadata().Name åœ¨æ­¤ç‰ˆæœ¬ä¸­ä¸å¯ç›´æ¥è³¦å€?
+
+	return &MainWindow{
+		fyneApp:         myApp,
+		projectManager:  project.NewConfigManager(),
+		terminalManager: terminal.NewTerminalManager(),
+		windowState: &WindowState{
+			Width:          1200,
+			Height:         800,
+			Theme:          "dark",
+			LeftPanelWidth: 250,
+		},
+	}
+}
+
+// Run å¯åŠ¨ä¸»çª—å?
+func (mw *MainWindow) Run() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("GUIè¿è¡Œæ—¶é”™è¯? %v", r)
+			panic(r) // é‡æ–°æŠ›å‡ºï¼Œè®©mainå‡½æ•°å¤„ç†
+		}
+	}()
+
+	// åŠ è½½é…ç½®
+	if err := mw.projectManager.LoadProjects(); err != nil {
+		log.Printf("åŠ è½½é¡¹ç›®é…ç½®å¤±è´¥: %v", err)
+	}
+
+	log.Println("´´½¨Ö÷´°¿Ú...")
+	// åˆ›å»ºä¸»çª—å?
+	mw.window = mw.fyneApp.NewWindow("AI Æô¶¯Æ÷ v2.0 - Desktop GUI °æ")
+	if mw.window == nil {
+		panic("æ— æ³•åˆ›å»ºFyneçª—å£")
+	}
+
+	mw.window.SetIcon(theme.ComputerIcon())
+	mw.window.Resize(fyne.NewSize(mw.windowState.Width, mw.windowState.Height))
+	mw.window.SetFixedSize(false)
+	mw.window.CenterOnScreen()
+
+	log.Println("´°¿Ú´´½¨³É¹¦£¬ÉèÖÃÊôĞÔ...")
+
+	// è®¾ç½®çª—å£å…³é—­è¡Œä¸º
+	mw.window.SetCloseIntercept(func() {
+		mw.saveWindowState()
+		mw.fyneApp.Quit()
+	})
+
+	// åº”ç”¨ä¸»é¢˜
+	if mw.windowState.Theme == "dark" {
+		mw.fyneApp.Settings().SetTheme(theme.DarkTheme())
+	} else {
+		mw.fyneApp.Settings().SetTheme(theme.LightTheme())
+	}
+
+	log.Println("³õÊ¼»¯ UI ×é¼ş...")
+	// åˆå§‹åŒ–UIç»„ä»¶
+	mw.initializeComponents()
+
+	log.Println("´´½¨Ö÷²¼¾Ö...")
+	// åˆ›å»ºä¸»å¸ƒå±€
+	content := mw.createMainLayout()
+	mw.window.SetContent(content)
+
+	log.Println("ÉèÖÃ²Ëµ¥...")
+	// è®¾ç½®èœå•
+	mw.window.SetMainMenu(mw.createMenuBar())
+
+	log.Println("æ˜¾ç¤ºçª—å£å¹¶å¼€å§‹äº‹ä»¶å¾ªç?..")
+	// æ˜¾ç¤ºçª—å£
+	mw.window.ShowAndRun()
+}
+
+// initializeComponents åˆå§‹åŒ–UIç»„ä»¶
+func (mw *MainWindow) initializeComponents() {
+	// åˆ›å»ºå·¥å…·æ ?
+	mw.toolbar = mw.createToolbar()
+
+	// åˆ›å»ºå·¦ä¾§é¡¹ç›®å†å²é¢æ¿
+	mw.projectPanel = NewProjectHistoryPanel(mw.projectManager, mw.onProjectSelected)
