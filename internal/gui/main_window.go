@@ -195,13 +195,13 @@ func (mw *MainWindow) createMenuBar() *fyne.MainMenu {
 // 事件处理
 
 func (mw *MainWindow) onProjectSelected(proj project.ProjectConfig) {
-    activeTab := mw.terminalTabs.GetActiveTab()
-    if activeTab != nil {
-        activeTab.SwitchProject(proj)
-        mw.statusBar.SetMessage(fmt.Sprintf("已切换项目: %s", proj.Name))
-    } else {
-        mw.createNewTerminal(proj, proj.AIModel)
+    // 左侧点击项目：优先切换到已有该项目的终端标签，否则创建一个
+    if id := mw.terminalTabs.FindTabByProjectPath(proj.Path); id != "" {
+        mw.terminalTabs.SetActiveTab(id)
+        mw.statusBar.SetMessage(fmt.Sprintf("已切换到项目: %s", proj.Name))
+        return
     }
+    mw.createNewTerminal(proj, proj.AIModel)
 }
 
 func (mw *MainWindow) onProjectConfigured(proj project.ProjectConfig, aiModel project.AIModelType) {
@@ -285,4 +285,3 @@ func (mw *MainWindow) getTerminalType(model project.AIModelType) terminal.Termin
 func (mw *MainWindow) saveWindowState() {
     log.Println("保存窗口状态...")
 }
-

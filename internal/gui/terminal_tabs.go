@@ -177,12 +177,27 @@ func (tc *TerminalTabContainer) GetTabHeader() *fyne.Container { return tc.tabHe
 func (tc *TerminalTabContainer) GetContent() *fyne.Container  { return tc.content }
 
 func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
+    // 来自用户点击的选项卡切换，不要在此再次调用 SelectTabIndex 以避免递归。
     for id, t := range tc.tabs {
         if t.name == tabItem.Text {
-            tc.SetActiveTab(id)
-            return
+            tc.activeTabID = id
+            tc.content.Objects = []fyne.CanvasObject{t.GetContent()}
+            tc.content.Refresh()
+            break
         }
     }
+}
+
+// FindTabByProjectPath 根据项目路径查找标签ID（若存在多个，返回第一个）
+func (tc *TerminalTabContainer) FindTabByProjectPath(path string) string {
+    tc.mutex.RLock()
+    defer tc.mutex.RUnlock()
+    for id, t := range tc.tabs {
+        if t.project.Path == path {
+            return id
+        }
+    }
+    return ""
 }
 
 // TerminalTab UI 初始化

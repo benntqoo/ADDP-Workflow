@@ -87,28 +87,7 @@ func (p *ProjectHistoryPanel) initializeUI() {
         p.refreshProjects()
     })
 
-    // 快捷操作按钮：新建终端
-    newTerminalBtn := widget.NewButtonWithIcon("新建终端", theme.ContentAddIcon(), func() {
-        // TODO: 瑙﹀彂鏂板缓缁堢瀵硅瘽妗?
-    })
-
-    // 快捷操作按钮：设置
-    settingsBtn := widget.NewButtonWithIcon("设置", theme.SettingsIcon(), func() {
-        // TODO: 瑙﹀彂璁剧疆瀵硅瘽妗?
-    })
-
-    // 快捷操作按钮：监控
-    monitorBtn := widget.NewButtonWithIcon("监控", theme.VisibilityIcon(), func() {
-        // TODO: 瑙﹀彂鐩戞帶鐣岄潰
-    })
-
-    // 快捷操作区
-    quickActions := container.NewVBox(
-        widget.NewLabel("快捷操作"),
-        newTerminalBtn,
-        settingsBtn,
-        monitorBtn,
-    )
+    // 左侧已提供顶部工具栏功能，此处不再重复“快捷操作”按钮
 
 	// 涓诲鍣?
 	p.container = container.NewVBox(
@@ -118,8 +97,7 @@ func (p *ProjectHistoryPanel) initializeUI() {
 		widget.NewSeparator(),
 		p.autoRefreshCheck,
 		p.refreshButton,
-		widget.NewSeparator(),
-		quickActions,
+        // 移除冗余快捷操作区域
 	)
 }
 
