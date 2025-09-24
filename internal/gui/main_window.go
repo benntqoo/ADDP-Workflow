@@ -88,8 +88,8 @@ func (mw *MainWindow) Run() {
         log.Printf("鍔犺浇椤圭洰閰嶇疆澶辫触: %v", err)
     }
 
-    log.Println("鍒涘缓涓荤獥鍙?..")
-    mw.window = mw.fyneApp.NewWindow("AI 鍚姩鍣?v2.0 - Desktop GUI 鐗?)
+    log.Println("创建主窗口...")
+    mw.window = mw.fyneApp.NewWindow("AI 启动器 v2.0 - Desktop GUI 版")
     if mw.window == nil {
         panic("鏃犳硶鍒涘缓 Fyne 绐楀彛")
     }
@@ -99,7 +99,7 @@ func (mw *MainWindow) Run() {
     mw.window.SetFixedSize(false)
     mw.window.CenterOnScreen()
 
-    log.Println("绐楀彛鍒涘缓鎴愬姛锛岃缃睘鎬?..")
+    log.Println("窗口创建成功，设置属性...")
     mw.window.SetCloseIntercept(func() {
         mw.saveWindowState()
         mw.fyneApp.Quit()
@@ -170,23 +170,23 @@ func (mw *MainWindow) createToolbar() *widget.Toolbar {
 }
 
 func (mw *MainWindow) createMenuBar() *fyne.MainMenu {
-    fileMenu := fyne.NewMenu("鏂囦欢",
-        fyne.NewMenuItem("鎵撳紑椤圭洰", mw.onOpenProjectClicked),
-        fyne.NewMenuItem("鏂板缓缁堢", mw.onNewTerminalClicked),
+    fileMenu := fyne.NewMenu("文件",
+        fyne.NewMenuItem("打开项目", mw.onOpenProjectClicked),
+        fyne.NewMenuItem("新建终端", mw.onNewTerminalClicked),
         fyne.NewMenuItemSeparator(),
-        fyne.NewMenuItem("閫€鍑?, func() { mw.fyneApp.Quit() }),
+        fyne.NewMenuItem("退出", func() { mw.fyneApp.Quit() }),
     )
 
-    toolsMenu := fyne.NewMenu("宸ュ叿",
-        fyne.NewMenuItem("璁剧疆", mw.onSettingsClicked),
-        fyne.NewMenuItem("鐩戞帶", mw.onMonitorClicked),
+    toolsMenu := fyne.NewMenu("工具",
+        fyne.NewMenuItem("设置", mw.onSettingsClicked),
+        fyne.NewMenuItem("监控", mw.onMonitorClicked),
         fyne.NewMenuItemSeparator(),
-        fyne.NewMenuItem("娓呯悊缂撳瓨", mw.onClearCacheClicked),
+        fyne.NewMenuItem("清理缓存", mw.onClearCacheClicked),
     )
 
-    helpMenu := fyne.NewMenu("甯姪",
-        fyne.NewMenuItem("浣跨敤璇存槑", mw.onHelpClicked),
-        fyne.NewMenuItem("鍏充簬", mw.onAboutClicked),
+    helpMenu := fyne.NewMenu("帮助",
+        fyne.NewMenuItem("使用说明", mw.onHelpClicked),
+        fyne.NewMenuItem("关于", mw.onAboutClicked),
     )
 
     return fyne.NewMainMenu(fileMenu, toolsMenu, helpMenu)
@@ -225,24 +225,24 @@ func (mw *MainWindow) onSettingsChanged(settings map[string]interface{}) {
             mw.fyneApp.Settings().SetTheme(theme.LightTheme())
         }
     }
-    mw.statusBar.SetMessage("璁剧疆宸插簲鐢?)
+    mw.statusBar.SetMessage("设置已应用")
 }
 
 func (mw *MainWindow) onOpenProjectClicked() { mw.projectDialog.Show() }
 func (mw *MainWindow) onSettingsClicked()    { mw.settingsDialog.Show() }
 
 func (mw *MainWindow) onMonitorClicked() {
-    mw.statusBar.SetMessage("鐩戞帶鍔熻兘寮€鍙戜腑...")
+    mw.statusBar.SetMessage("监控功能开发中...")
 }
 
 func (mw *MainWindow) onHelpClicked() {
-    mw.statusBar.SetMessage("甯姪鍔熻兘寮€鍙戜腑...")
+    mw.statusBar.SetMessage("帮助功能开发中...")
 }
 
 func (mw *MainWindow) onNewTerminalClicked() { mw.newTermDialog.Show() }
 
 func (mw *MainWindow) onClearCacheClicked() {
-    mw.statusBar.SetMessage("缂撳瓨宸叉竻鐞?)
+    mw.statusBar.SetMessage("缓存已清理")
 }
 
 func (mw *MainWindow) onAboutClicked() {
