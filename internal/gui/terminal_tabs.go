@@ -94,7 +94,7 @@ func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.Termi
         project:      proj,
     }
     tab.initializeUI()
-    go tab.startTerminal(termConfig)
+    tab.startTerminal(termConfig)
 
     appTab := &container.TabItem{Text: name, Content: tab.GetContent()}
     tc.tabContainer.Append(appTab)
@@ -231,17 +231,18 @@ func (tab *TerminalTab) initializeUI() {
 }
 
 func (tab *TerminalTab) startTerminal(config terminal.TerminalConfig) {
-    // 后台任务：所有 UI 更新必须在主线程执行
-    tab.appendOutputSafe(fmt.Sprintf("正在启动 %s...\n", config.Type))
-    tab.appendOutputSafe(fmt.Sprintf("工作目录: %s\n", config.WorkingDir))
-    tab.appendOutputSafe(fmt.Sprintf("模式: %s\n", map[bool]string{true: "YOLO", false: "普通"}[config.YoloMode]))
-    tab.setStatusSafe("运行中...")
-    tab.appendOutputSafe("终端已启动，准备接收命令\n\n")
+    tab.running = true
+    tab.appendOutput(fmt.Sprintf("正在启动 %s...\n", config.Type))
+    tab.appendOutput(fmt.Sprintf("工作目录: %s\n", config.WorkingDir))
+    tab.appendOutput(fmt.Sprintf("模式: %s\n", map[bool]string{true: "YOLO", false: "普通"}[config.YoloMode]))
+    tab.statusLabel.SetText("运行中...")
+    tab.appendOutput("终端已启动，准备接收命令\n\n")
 }
 
 func (tab *TerminalTab) stopTerminal() {
-    tab.setStatusSafe("已停止")
-    tab.appendOutputSafe("\n终端已停止\n")
+    tab.running = false
+    tab.statusLabel.SetText("已停止")
+    tab.appendOutput("\n终端已停止\n")
 }
 
 func (tab *TerminalTab) GetContent() *fyne.Container { return tab.content }
@@ -257,26 +258,6 @@ func (tab *TerminalTab) appendOutput(text string) {
     current := tab.outputArea.String() + text
     tab.outputArea.ParseMarkdown(current)
     tab.outputArea.Refresh()
-}
-
-// --- 主线程安全的 UI 更新 ---
-func runOnMain(fn func()) {
-    if app := fyne.CurrentApp(); app != nil {
-        app.Driver().RunOnMain(fn)
-        return
-    }
-    fn()
-}
-
-func (tab *TerminalTab) appendOutputSafe(text string) {
-    runOnMain(func() { tab.appendOutput(text) })
-}
-
-func (tab *TerminalTab) setStatusSafe(text string) {
-    runOnMain(func() {
-        tab.running = (text == "运行中...")
-        tab.statusLabel.SetText(text)
-    })
 }
 
 func (tab *TerminalTab) onInputSubmitted(input string) {

@@ -1,16 +1,15 @@
 ﻿package gui
 
 import (
-	"fmt"
-	"time"
+    "fmt"
+    "time"
 
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
+    "fyne.io/fyne/v2"
+    "fyne.io/fyne/v2/container"
+    "fyne.io/fyne/v2/layout"
+    "fyne.io/fyne/v2/widget"
 
-	"ai-launcher/internal/project"
+    "ai-launcher/internal/project"
 )
 
 // ProjectHistoryPanel 椤圭洰鍘嗗彶闈㈡澘
