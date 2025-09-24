@@ -21,8 +21,7 @@ type ProjectHistoryPanel struct {
 	// UI缁勪欢
 	container        *fyne.Container
 	projectList      *widget.List
-	refreshButton    *widget.Button
-	autoRefreshCheck *widget.Check
+    // 已移除刷新与自动刷新按钮，避免冗余
 
 	// 鐘舵€?
 	projects         []project.ProjectConfig
