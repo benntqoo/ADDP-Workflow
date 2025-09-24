@@ -13,42 +13,42 @@ import (
 	"ai-launcher/internal/terminal"
 )
 
-// TerminalTabContainer 缁堢鏍囩椤靛鍣?
+// TerminalTabContainer 缂佸牏顏弽鍥╊劮妞ら潧顔愰崳?
 type TerminalTabContainer struct {
 	terminalManager *terminal.TerminalManager
 
-	// UI缁勪欢
+	// UI缂佸嫪娆?
 	tabContainer *container.AppTabs
 	tabHeader    *fyne.Container
 	content      *fyne.Container
 
-	// 鏍囩椤电鐞?
+	// 閺嶅洨顒锋い鐢殿吀閻?
 	tabs         map[string]*TerminalTab
 	activeTabID  string
 	nextTabID    int
 	mutex        sync.RWMutex
 }
 
-// TerminalTab 缁堢鏍囩椤?
+// TerminalTab 缂佸牏顏弽鍥╊劮妞?
 type TerminalTab struct {
 	id           string
 	name         string
 	terminalType terminal.TerminalType
 	project      project.ProjectConfig
 
-	// UI缁勪欢
+	// UI缂佸嫪娆?
 	content      *fyne.Container
-	terminal     *widget.Entry // 绠€鍖栫増鏈紝鍚庣画鍙互鏇挎崲涓虹湡姝ｇ殑缁堢缁勪欢
+	terminal     *widget.Entry // 缁犫偓閸栨牜澧楅張顒婄礉閸氬海鐢婚崣顖欎簰閺囨寧宕叉稉铏规埂濮濓絿娈戠紒鍫㈩伂缂佸嫪娆?
 	outputArea   *widget.RichText
 	inputArea    *widget.Entry
 	statusLabel  *widget.Label
 
-	// 鐘舵€?
+	// 閻樿埖鈧?
 	active       bool
 	running      bool
 }
 
-// NewTerminalTabContainer 鍒涘缓缁堢鏍囩椤靛鍣?
+// NewTerminalTabContainer 閸掓稑缂撶紒鍫㈩伂閺嶅洨顒锋い闈涱啇閸?
 func NewTerminalTabContainer(tm *terminal.TerminalManager) *TerminalTabContainer {
 	container := &TerminalTabContainer{
 		terminalManager: tm,
@@ -60,82 +60,70 @@ func NewTerminalTabContainer(tm *terminal.TerminalManager) *TerminalTabContainer
 	return container
 }
 
-// initializeUI 鍒濆鍖朥I
+// initializeUI 閸掓繂顫愰崠鏈
 func (tc *TerminalTabContainer) initializeUI() {
-	// 鍒涘缓鏍囩椤靛鍣?
+	// 閸掓稑缂撻弽鍥╊劮妞ら潧顔愰崳?
 	tc.tabContainer = container.NewAppTabs()
 
-	// 鍒涘缓"鏂板缓"鏍囩椤?
+	// 閸掓稑缂?閺傛澘缂?閺嶅洨顒锋い?
 	tc.addNewTabButton()
 
-	// 鏍囩椤靛ご閮ㄥ鍣?
+	// 閺嶅洨顒锋い闈涖仈闁劌顔愰崳?
 	tc.tabHeader = container.NewBorder(nil, nil, nil, nil, tc.tabContainer)
 
-	// 鍐呭鍖哄煙锛堟樉绀哄綋鍓嶆椿鍔ㄦ爣绛鹃〉鐨勫唴瀹癸級
+	// 閸愬懎顔愰崠鍝勭厵閿涘牊妯夌粈鍝勭秼閸撳秵妞块崝銊︾垼缁涢箖銆夐惃鍕敶鐎圭櫢绱?
 	tc.content = container.NewMax()
 
-	// 璁剧疆鏍囩椤靛垏鎹簨浠?
+	// 鐠佸墽鐤嗛弽鍥╊劮妞ら潧鍨忛幑顫皑娴?
 	tc.tabContainer.OnChanged = tc.onTabChanged
 }
 
-// addNewTabButton 娣诲姞"鏂板缓"鏍囩椤垫寜閽?
+// addNewTabButton 濞ｈ濮?閺傛澘缂?閺嶅洨顒锋い鍨瘻闁?
 func (tc *TerminalTabContainer) addNewTabButton() {
 	newTabContent := container.NewCenter(
 		widget.NewButtonWithIcon("新建终端", theme.ContentAddIcon(), func() {
-			// TODO: 瑙﹀彂鏂板缓缁堢瀵硅瘽妗?
+			// TODO: 打开新建终端对话框
 		}),
 	)
 
 	newTab := &container.TabItem{
 		Text: "+ 新建",
 		Icon: theme.ContentAddIcon(),
-		Icon: theme.ContentAddIcon(),
 		Content: newTabContent,
 	}
-	tc.tabContainer.Append(newTab)
-// CreateTab 鍒涘缓鏂扮殑缁堢鏍囩椤?
-func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.TerminalConfig, proj project.ProjectConfig) *TerminalTab {
-	tc.mutex.Lock()
-	defer tc.mutex.Unlock()
-
-	// 鐢熸垚鍞竴ID
-	tabID := fmt.Sprintf("tab_%d", tc.nextTabID)
-	tc.nextTabID++
-
-	// 鍒涘缓缁堢鏍囩椤?
-	tab := &TerminalTab{
-		id:           tabID,
-		name:         name,
-		terminalType: termConfig.Type,
-		project:      proj,
-	}
-
-	// 鍒濆鍖栨爣绛鹃〉UI
-	tab.initializeUI()
-
-	// 鍚姩缁堢
-	go tab.startTerminal(termConfig)
-
-	// 娣诲姞鍒版爣绛鹃〉瀹瑰櫒锛堝湪"鏂板缓"鏍囩椤典箣鍓嶏級
-	tabContent := tab.GetContent()
-	appTab := &container.TabItem{
-		Text: name,
-		Content: tabContent,
-	}
-
-	// 鎻掑叆鍒版渶鍚庝竴涓綅缃紙"鏂板缓"鏍囩椤典箣鍓嶏級
-	tc.tabContainer.Append(appTab)
-
-	// 淇濆瓨鏍囩椤靛紩鐢?
-	tc.tabs[tabID] = tab
-
-	// 璁剧疆涓烘椿鍔ㄦ爣绛鹃〉
-	tc.SetActiveTab(tabID)
-
-	return tab
+    tc.tabContainer.Append(newTab)
 }
 
-// RemoveTab 绉婚櫎鏍囩椤?
+// CreateTab 创建新的终端标签页
+func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.TerminalConfig, proj project.ProjectConfig) *TerminalTab {
+    tc.mutex.Lock()
+    defer tc.mutex.Unlock()
+
+    tabID := fmt.Sprintf("tab_%d", tc.nextTabID)
+    tc.nextTabID++
+
+    tab := &TerminalTab{
+        id:           tabID,
+        name:         name,
+        terminalType: termConfig.Type,
+        project:      proj,
+    }
+
+    tab.initializeUI()
+    go tab.startTerminal(termConfig)
+
+    appTab := &container.TabItem{
+        Text:    name,
+        Content: tab.GetContent(),
+    }
+    tc.tabContainer.Append(appTab)
+
+    tc.tabs[tabID] = tab
+    tc.SetActiveTab(tabID)
+    return tab
+}
+
+// RemoveTab 缁夊娅庨弽鍥╊劮妞?
 func (tc *TerminalTabContainer) RemoveTab(tabID string) {
 	tc.mutex.Lock()
 	defer tc.mutex.Unlock()
@@ -145,27 +133,27 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
 		return
 	}
 
-	// 鍋滄缁堢
+	// 閸嬫粍顒涚紒鍫㈩伂
 	tab.stopTerminal()
 
-	// 浠庢爣绛鹃〉瀹瑰櫒涓Щ闄?
-	for i := 0; i < len(tc.tabContainer.Items)-1; i++ { // 鎺掗櫎"鏂板缓"鏍囩椤?
+	// 娴犲孩鐖ｇ粵楣冦€夌€圭懓娅掓稉顓犘╅梽?
+	for i := 0; i < len(tc.tabContainer.Items)-1; i++ { // 閹烘帡娅?閺傛澘缂?閺嶅洨顒锋い?
 		if tc.tabContainer.Items[i].Text == tab.name {
 			tc.tabContainer.RemoveIndex(i)
 			break
 		}
 	}
 
-	// 浠庢槧灏勪腑鍒犻櫎
+	// 娴犲孩妲х亸鍕厬閸掔娀娅?
 	delete(tc.tabs, tabID)
 
-	// 濡傛灉鍒犻櫎鐨勬槸娲诲姩鏍囩椤碉紝鍒囨崲鍒颁笅涓€涓?
+	// 婵″倹鐏夐崚鐘绘珟閻ㄥ嫭妲稿ú璇插З閺嶅洨顒锋い纰夌礉閸掑洦宕查崚棰佺瑓娑撯偓娑?
 	if tc.activeTabID == tabID {
 		tc.activateNextTab()
 	}
 }
 
-// SetActiveTab 璁剧疆娲诲姩鏍囩椤?
+// SetActiveTab 鐠佸墽鐤嗗ú璇插З閺嶅洨顒锋い?
 func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
 	tc.mutex.Lock()
 	defer tc.mutex.Unlock()
@@ -175,22 +163,22 @@ func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
 		return
 	}
 
-	// 鍙栨秷涔嬪墠鐨勬椿鍔ㄧ姸鎬?
+	// 閸欐牗绉锋稊瀣閻ㄥ嫭妞块崝銊уЦ閹?
 	if tc.activeTabID != "" {
 		if prevTab := tc.tabs[tc.activeTabID]; prevTab != nil {
 			prevTab.active = false
 		}
 	}
 
-	// 璁剧疆鏂扮殑娲诲姩鏍囩椤?
+	// 鐠佸墽鐤嗛弬鎵畱濞茶濮╅弽鍥╊劮妞?
 	tc.activeTabID = tabID
 	tab.active = true
 
-	// 鏇存柊鍐呭鍖哄煙
+	// 閺囧瓨鏌婇崘鍛啇閸栧搫鐓?
 	tc.content.Objects = []fyne.CanvasObject{tab.GetContent()}
 	tc.content.Refresh()
 
-	// 鍒囨崲鏍囩椤靛鍣ㄧ殑閫変腑鐘舵€?
+	// 閸掑洦宕查弽鍥╊劮妞ら潧顔愰崳銊ф畱闁鑵戦悩鑸碘偓?
 	for i := 0; i < len(tc.tabContainer.Items)-1; i++ {
 		if tc.tabContainer.Items[i].Text == tab.name {
 			tc.tabContainer.SelectTabIndex(i)
@@ -199,7 +187,7 @@ func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
 	}
 }
 
-// GetActiveTab 鑾峰彇褰撳墠娲诲姩鐨勬爣绛鹃〉
+// GetActiveTab 閼惧嘲褰囪ぐ鎾冲濞茶濮╅惃鍕垼缁涢箖銆?
 func (tc *TerminalTabContainer) GetActiveTab() *TerminalTab {
 	tc.mutex.RLock()
 	defer tc.mutex.RUnlock()
@@ -211,19 +199,19 @@ func (tc *TerminalTabContainer) GetActiveTab() *TerminalTab {
 	return tc.tabs[tc.activeTabID]
 }
 
-// GetTabHeader 鑾峰彇鏍囩椤靛ご閮ㄥ鍣?
+// GetTabHeader 閼惧嘲褰囬弽鍥╊劮妞ら潧銇旈柈銊ヮ啇閸?
 func (tc *TerminalTabContainer) GetTabHeader() *fyne.Container {
 	return tc.tabHeader
 }
 
-// GetContent 鑾峰彇鍐呭鍖哄煙瀹瑰櫒
+// GetContent 閼惧嘲褰囬崘鍛啇閸栧搫鐓欑€圭懓娅?
 func (tc *TerminalTabContainer) GetContent() *fyne.Container {
 	return tc.content
 }
 
-// onTabChanged 鏍囩椤靛垏鎹簨浠跺鐞?
+// onTabChanged 閺嶅洨顒锋い闈涘瀼閹诡澀绨ㄦ禒璺侯槱閻?
 func (tc *TerminalTabContainer) onTabChanged(tab *container.TabItem) {
-	// 鏌ユ壘瀵瑰簲鐨勭粓绔爣绛鹃〉
+	// 閺屻儲澹樼€电懓绨查惃鍕矒缁旑垱鐖ｇ粵楣冦€?
 	for tabID, termTab := range tc.tabs {
 		if termTab.name == tab.Text {
 			tc.SetActiveTab(tabID)
@@ -232,7 +220,7 @@ func (tc *TerminalTabContainer) onTabChanged(tab *container.TabItem) {
 	}
 }
 
-// activateNextTab 婵€娲讳笅涓€涓爣绛鹃〉
+// activateNextTab 濠碘偓濞茶绗呮稉鈧稉顏呯垼缁涢箖銆?
 func (tc *TerminalTabContainer) activateNextTab() {
 	if len(tc.tabs) == 0 {
 		tc.activeTabID = ""
@@ -241,31 +229,31 @@ func (tc *TerminalTabContainer) activateNextTab() {
 		return
 	}
 
-	// 婵€娲荤涓€涓彲鐢ㄧ殑鏍囩椤?
+	// 濠碘偓濞茶崵顑囨稉鈧稉顏勫讲閻劎娈戦弽鍥╊劮妞?
 	for tabID := range tc.tabs {
 		tc.SetActiveTab(tabID)
 		return
 	}
 }
 
-// TerminalTab 鏂规硶瀹炵幇
+// TerminalTab 閺傝纭剁€圭偟骞?
 
-// initializeUI 鍒濆鍖栫粓绔爣绛鹃〉UI
+// initializeUI 閸掓繂顫愰崠鏍矒缁旑垱鐖ｇ粵楣冦€塙I
 func (tab *TerminalTab) initializeUI() {
-	// 杈撳嚭鍖哄煙锛堝彧璇伙級
+	// 鏉堟挸鍤崠鍝勭厵閿涘牆褰х拠浼欑礆
 	tab.outputArea = widget.NewRichText()
 	tab.outputArea.Wrapping = fyne.TextWrapWord
 	tab.outputArea.Scroll = container.ScrollBoth
 
-	// 杈撳叆鍖哄煙
+	// 鏉堟挸鍙嗛崠鍝勭厵
 	tab.inputArea = widget.NewEntry()
-	tab.inputArea.SetPlaceHolder("杈撳叆鍛戒护鎴栦笌AI浜や簰...")
+	tab.inputArea.SetPlaceHolder("鏉堟挸鍙嗛崨鎴掓姢閹存牔绗孉I娴溿倓绨?..")
 	tab.inputArea.OnSubmitted = tab.onInputSubmitted
 
-	// 鐘舵€佹爣绛?
-	tab.statusLabel = widget.NewLabel("鍑嗗灏辩华")
+	// 閻樿埖鈧焦鐖ｇ粵?
+	tab.statusLabel = widget.NewLabel("閸戝棗顦亸杈╁崕")
 
-	// 宸ュ叿鏍?
+	// 瀹搞儱鍙块弽?
 	toolbar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.MediaPlayIcon(), tab.onStartTerminal),
 		widget.NewToolbarAction(theme.MediaStopIcon(), tab.onStopTerminal),
@@ -274,85 +262,84 @@ func (tab *TerminalTab) initializeUI() {
 		widget.NewToolbarAction(theme.SettingsIcon(), tab.onTerminalSettings),
 	)
 
-	// 搴曢儴鐘舵€佹爮
+	// 鎼存洟鍎撮悩鑸碘偓浣圭埉
 	statusBar := container.NewBorder(nil, nil, tab.statusLabel, nil, tab.statusLabel)
 
-	// 涓昏鍐呭甯冨眬
+	// 娑撴槒顩﹂崘鍛啇鐢啫鐪?
 	tab.content = container.NewBorder(
-		toolbar,           // 椤堕儴锛氬伐鍏锋爮
-		container.NewVBox( // 搴曢儴锛氳緭鍏ュ尯鍩熷拰鐘舵€佹爮
+		toolbar,           // 妞ゅ爼鍎撮敍姘紣閸忛攱鐖?
+		container.NewVBox( // 鎼存洟鍎撮敍姘崇翻閸忋儱灏崺鐔锋嫲閻樿埖鈧焦鐖?
 			tab.inputArea,
 			statusBar,
 		),
-		nil, nil,          // 宸﹀彸鐣欑┖
-		container.NewScroll(tab.outputArea), // 涓ぎ锛氳緭鍑哄尯鍩?
+		nil, nil,          // 瀹革箑褰搁悾娆戔敄
+		container.NewScroll(tab.outputArea), // 娑擃厼銇庨敍姘崇翻閸戝搫灏崺?
 	)
 }
 
-// startTerminal 鍚姩缁堢
+// startTerminal 閸氼垰濮╃紒鍫㈩伂
 func (tab *TerminalTab) startTerminal(config terminal.TerminalConfig) {
 	tab.running = true
 	tab.statusLabel.SetText("运行中...")
 
-	// TODO: 闆嗘垚鐪熸鐨勭粓绔鐞嗗櫒
 	tab.appendOutput(fmt.Sprintf("正在启动 %s...\n", config.Type))
 	tab.appendOutput(fmt.Sprintf("工作目录: %s\n", config.WorkingDir))
 	tab.appendOutput(fmt.Sprintf("模式: %s\n", map[bool]string{true: "YOLO", false: "普通"}[config.YoloMode]))
 	tab.appendOutput("终端已启动，准备接收命令\n\n")
 }
 
-// stopTerminal 鍋滄缁堢
+// stopTerminal 閸嬫粍顒涚紒鍫㈩伂
 func (tab *TerminalTab) stopTerminal() {
 	tab.running = false
 	tab.statusLabel.SetText("已停止")
 	tab.appendOutput("\n终端已停止\n")
 }
 
-// GetContent 鑾峰彇鏍囩椤靛唴瀹?
+// GetContent 閼惧嘲褰囬弽鍥╊劮妞ら潧鍞寸€?
 func (tab *TerminalTab) GetContent() *fyne.Container {
 	return tab.content
 }
 
-// GetID 鑾峰彇鏍囩椤礗D
+// GetID 閼惧嘲褰囬弽鍥╊劮妞ょD
 func (tab *TerminalTab) GetID() string {
 	return tab.id
 }
 
-// SwitchProject 鍒囨崲椤圭洰
+// SwitchProject 閸掑洦宕叉い鍦窗
 func (tab *TerminalTab) SwitchProject(proj project.ProjectConfig) {
 	tab.project = proj
-	tab.appendOutput(fmt.Sprintf("\n馃搧 宸插垏鎹㈠埌椤圭洰: %s\n", proj.Name))
-	tab.appendOutput(fmt.Sprintf("馃搷 璺緞: %s\n\n", proj.Path))
+	tab.appendOutput(fmt.Sprintf("\n棣冩惂 瀹告彃鍨忛幑銏犲煂妞ゅ湱娲? %s\n", proj.Name))
+	tab.appendOutput(fmt.Sprintf("棣冩惙 鐠侯垰绶? %s\n\n", proj.Path))
 }
 
-// appendOutput 杩藉姞杈撳嚭鍐呭
+// appendOutput 鏉╄棄濮炴潏鎾冲毉閸愬懎顔?
 func (tab *TerminalTab) appendOutput(text string) {
 	currentText := tab.outputArea.String() + text
 	tab.outputArea.ParseMarkdown(currentText)
 	tab.outputArea.Refresh()
 }
 
-// 浜嬩欢澶勭悊鏂规硶
+// 娴滃娆㈡径鍕倞閺傝纭?
 
 func (tab *TerminalTab) onInputSubmitted(input string) {
 	if input == "" {
 		return
 	}
 
-	// 鏄剧ず鐢ㄦ埛杈撳叆
+	// 閺勫墽銇氶悽銊﹀煕鏉堟挸鍙?
 	tab.appendOutput(fmt.Sprintf("> %s\n", input))
 
-	// TODO: 鍙戦€佸埌缁堢绠＄悊鍣ㄥ鐞?
-	tab.appendOutput("馃摑 鍛戒护宸叉帴鏀讹紝姝ｅ湪澶勭悊...\n")
+	// TODO: 閸欐垿鈧礁鍩岀紒鍫㈩伂缁狅紕鎮婇崳銊ヮ槱閻?
+	tab.appendOutput("棣冩憫 閸涙垝鎶ゅ鍙夊复閺€璁圭礉濮濓絽婀径鍕倞...\n")
 
-	// 娓呯┖杈撳叆
+	// 濞撳懐鈹栨潏鎾冲弳
 	tab.inputArea.SetText("")
 }
 
 func (tab *TerminalTab) onStartTerminal() {
 	if !tab.running {
-		// TODO: 閲嶆柊鍚姩缁堢
-		tab.appendOutput("馃攧 閲嶆柊鍚姩缁堢...\n")
+		// TODO: 闁插秵鏌婇崥顖氬З缂佸牏顏?
+		tab.appendOutput("棣冩敡 闁插秵鏌婇崥顖氬З缂佸牏顏?..\n")
 	}
 }
 
@@ -365,11 +352,13 @@ func (tab *TerminalTab) onStopTerminal() {
 func (tab *TerminalTab) onClearOutput() {
 	tab.outputArea.ParseMarkdown("")
 	tab.outputArea.Refresh()
-	tab.appendOutput("馃搫 杈撳嚭宸叉竻绌篭n\n")
+	tab.appendOutput("棣冩惈 鏉堟挸鍤鍙夌缁岀n\n")
 }
 
 func (tab *TerminalTab) onTerminalSettings() {
-	// TODO: 鏄剧ず缁堢璁剧疆
-	tab.appendOutput("鈿欙笍 缁堢璁剧疆鍔熻兘寮€鍙戜腑...\n")
+	// TODO: 閺勫墽銇氱紒鍫㈩伂鐠佸墽鐤?
+	tab.appendOutput("閳挎瑱绗?缂佸牏顏拋鍓х枂閸旂喕鍏樺鈧崣鎴滆厬...\n")
 }
+
+
 
