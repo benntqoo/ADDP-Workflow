@@ -71,20 +71,7 @@ func (p *ProjectHistoryPanel) initializeUI() {
 		}
 	}
 
-    // 自动刷新复选框
-    p.autoRefreshCheck = widget.NewCheck("自动刷新", func(checked bool) {
-        if checked {
-            // TODO: 鍚姩鑷姩鍒锋柊瀹氭椂鍣?
-        } else {
-            // TODO: 鍋滄鑷姩鍒锋柊瀹氭椂鍣?
-        }
-    })
-	p.autoRefreshCheck.SetChecked(true)
-
-    // 快捷操作按钮：刷新
-    p.refreshButton = widget.NewButtonWithIcon("刷新", theme.ViewRefreshIcon(), func() {
-        p.refreshProjects()
-    })
+    // 不再提供自动刷新与刷新按钮，左侧保持简洁
 
     // 左侧已提供顶部工具栏功能，此处不再重复“快捷操作”按钮
 
@@ -93,10 +80,7 @@ func (p *ProjectHistoryPanel) initializeUI() {
 		title,
 		widget.NewSeparator(),
 		p.projectList,
-		widget.NewSeparator(),
-		p.autoRefreshCheck,
-		p.refreshButton,
-        // 移除冗余快捷操作区域
+        // 左侧仅保留项目列表
 	)
 }
 
