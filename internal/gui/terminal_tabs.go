@@ -161,7 +161,9 @@ func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
     }
     tc.activeTabID = tabID
     tab.active = true
-    tc.content.Objects = []fyne.CanvasObject{tab.GetContent()}
+    // 通过 Add/Refresh 确保布局引擎正确计算
+    tc.content.Objects = []fyne.CanvasObject{}
+    tc.content.Add(tab.GetContent())
     tc.content.Refresh()
     // 如需同步头部选中，可在不触发 OnChanged 的条件下处理；当前避免递归触发
     tc.updating = false
