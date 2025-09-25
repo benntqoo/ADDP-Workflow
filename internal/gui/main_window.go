@@ -126,7 +126,8 @@ func (mw *MainWindow) Run() {
 }
 
 func (mw *MainWindow) initializeComponents() {
-    mw.toolbar = mw.createToolbar()
+    // 顶部工具栏取消（避免与主菜单重复），保持简洁导航
+    mw.toolbar = nil
     mw.projectPanel = NewProjectHistoryPanel(mw.projectManager, mw.onProjectSelected)
     mw.terminalTabs = NewTerminalTabContainer(mw.terminalManager, func(){ mw.onNewTerminalClicked() })
     mw.statusBar = NewStatusBar()
@@ -147,7 +148,7 @@ func (mw *MainWindow) createMainLayout() *fyne.Container {
     )
 
     mainLayout := container.NewBorder(
-        mw.toolbar,
+        nil,
         nil,
         leftPanel,
         nil,
@@ -157,31 +158,23 @@ func (mw *MainWindow) createMainLayout() *fyne.Container {
     return mainLayout
 }
 
-func (mw *MainWindow) createToolbar() *widget.Toolbar {
-    toolbar := widget.NewToolbar(
-        widget.NewToolbarAction(theme.FolderOpenIcon(), mw.onOpenProjectClicked),
-        widget.NewToolbarSeparator(),
-        widget.NewToolbarAction(theme.SettingsIcon(), mw.onSettingsClicked),
-        widget.NewToolbarAction(theme.InfoIcon(), mw.onMonitorClicked),
-        widget.NewToolbarSeparator(),
-        widget.NewToolbarAction(theme.HelpIcon(), mw.onHelpClicked),
-    )
-    return toolbar
-}
+// 工具栏已移除，避免与菜单重复。如需恢复，可按需实现 createToolbar()
 
 func (mw *MainWindow) createMenuBar() *fyne.MainMenu {
     fileMenu := fyne.NewMenu("文件",
-        fyne.NewMenuItem("打开项目", mw.onOpenProjectClicked),
         fyne.NewMenuItem("新建终端", mw.onNewTerminalClicked),
         fyne.NewMenuItemSeparator(),
         fyne.NewMenuItem("退出", func() { mw.fyneApp.Quit() }),
     )
 
     toolsMenu := fyne.NewMenu("工具",
-        fyne.NewMenuItem("设置", mw.onSettingsClicked),
         fyne.NewMenuItem("监控", mw.onMonitorClicked),
         fyne.NewMenuItemSeparator(),
         fyne.NewMenuItem("清理缓存", mw.onClearCacheClicked),
+    )
+
+    settingsMenu := fyne.NewMenu("设置",
+        fyne.NewMenuItem("首选项", mw.onSettingsClicked),
     )
 
     helpMenu := fyne.NewMenu("帮助",
@@ -189,7 +182,8 @@ func (mw *MainWindow) createMenuBar() *fyne.MainMenu {
         fyne.NewMenuItem("关于", mw.onAboutClicked),
     )
 
-    return fyne.NewMainMenu(fileMenu, toolsMenu, helpMenu)
+    // 顶部导航顺序：文件 | 工具 | 设置 | 帮助
+    return fyne.NewMainMenu(fileMenu, toolsMenu, settingsMenu, helpMenu)
 }
 
 // 浜嬩欢澶勭悊
@@ -210,6 +204,7 @@ func (mw *MainWindow) onProjectConfigured(proj project.ProjectConfig, aiModel pr
 }
 
 func (mw *MainWindow) onNewTerminalRequested(proj project.ProjectConfig, aiModel project.AIModelType, runInBackground bool) {
+    log.Printf("[MainWindow] new terminal requested: path=%s model=%s yolo=%t bg=%t", proj.Path, aiModel, proj.YoloMode, runInBackground)
     tab := mw.createNewTerminal(proj, aiModel)
     if !runInBackground && tab != nil {
         mw.terminalTabs.SetActiveTab(tab.GetID())

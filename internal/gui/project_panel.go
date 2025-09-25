@@ -14,8 +14,8 @@ import (
 
 // ProjectHistoryPanel 椤圭洰鍘嗗彶闈㈡澘
 type ProjectHistoryPanel struct {
-	projectManager   *project.ConfigManager
-	onProjectSelect  func(project.ProjectConfig)
+    	projectManager   *project.ConfigManager
+    	onProjectSelect  func(project.ProjectConfig)
 
 	// UI缁勪欢
 	container        *fyne.Container
@@ -29,11 +29,11 @@ type ProjectHistoryPanel struct {
 
 // NewProjectHistoryPanel 鍒涘缓椤圭洰鍘嗗彶闈㈡澘
 func NewProjectHistoryPanel(pm *project.ConfigManager, onSelect func(project.ProjectConfig)) *ProjectHistoryPanel {
-	panel := &ProjectHistoryPanel{
-		projectManager:  pm,
-		onProjectSelect: onSelect,
-		projects:        []project.ProjectConfig{},
-	}
+    	panel := &ProjectHistoryPanel{
+    		projectManager:  pm,
+    		onProjectSelect: onSelect,
+    		projects:        []project.ProjectConfig{},
+    	}
 
 	panel.initializeUI()
 	panel.refreshProjects()
@@ -43,9 +43,9 @@ func NewProjectHistoryPanel(pm *project.ConfigManager, onSelect func(project.Pro
 
 // initializeUI 鍒濆鍖朥I
 func (p *ProjectHistoryPanel) initializeUI() {
-	// 鏍囬
-	title := widget.NewRichTextFromMarkdown("## 项目历史")
-	title.Wrapping = fyne.TextWrapWord
+    	// 标题
+    	title := widget.NewRichTextFromMarkdown("## 项目历史")
+    	title.Wrapping = fyne.TextWrapWord
 
 	// 椤圭洰鍒楄〃
 	p.projectList = widget.NewList(
@@ -74,13 +74,13 @@ func (p *ProjectHistoryPanel) initializeUI() {
 
     // 左侧已提供顶部工具栏功能，此处不再重复“快捷操作”按钮
 
-	// 涓诲鍣?
-	p.container = container.NewVBox(
-		title,
-		widget.NewSeparator(),
-		p.projectList,
+    	// 容器
+    	p.container = container.NewVBox(
+    		title,
+        	widget.NewSeparator(),
+        	p.projectList,
         // 左侧仅保留项目列表
-	)
+    	)
 }
 
 // createProjectCard 鍒涘缓椤圭洰鍗＄墖妯℃澘

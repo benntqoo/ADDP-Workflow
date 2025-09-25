@@ -72,7 +72,9 @@ func (tc *TerminalTabContainer) initializeUI() {
 func (tc *TerminalTabContainer) addNewTabButton() {
     newTabContent := container.NewCenter(
         widget.NewButtonWithIcon("新建终端", theme.ContentAddIcon(), func() {
-            if tc.onRequestNew != nil { tc.onRequestNew() }
+            if tc.onRequestNew != nil {
+                tc.onRequestNew()
+            }
         }),
     )
     newTab := &container.TabItem{
@@ -126,7 +128,7 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
     }
     delete(tc.tabs, tabID)
     if tc.activeTabID == tabID {
-        // 激活剩余任意标签，否则清空内容
+        // 若还有其它标签则激活，否则清空内容
         activated := false
         for id := range tc.tabs {
             tc.activeTabID = ""
@@ -181,7 +183,7 @@ func (tc *TerminalTabContainer) GetTabHeader() *fyne.Container { return tc.tabHe
 func (tc *TerminalTabContainer) GetContent() *fyne.Container  { return tc.content }
 
 func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
-    // 来自用户点击的选项卡切换，不要在此再次调用 SelectTabIndex 以避免递归。
+    // 用户点击的选项卡切换；不要在此再次调用 SelectTabIndex 以避免递归
     for id, t := range tc.tabs {
         if t.name == tabItem.Text {
             tc.activeTabID = id
@@ -192,7 +194,7 @@ func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
     }
 }
 
-// FindTabByProjectPath 根据项目路径查找标签ID（若存在多个，返回第一个）
+// FindTabByProjectPath 根据项目路径查找标签ID（多于一个时返回第一个）
 func (tc *TerminalTabContainer) FindTabByProjectPath(path string) string {
     tc.mutex.RLock()
     defer tc.mutex.RUnlock()
@@ -238,7 +240,8 @@ func (tab *TerminalTab) startTerminal(config terminal.TerminalConfig) {
     tab.running = true
     tab.appendOutput(fmt.Sprintf("正在启动 %s...\n", config.Type))
     tab.appendOutput(fmt.Sprintf("工作目录: %s\n", config.WorkingDir))
-    tab.appendOutput(fmt.Sprintf("模式: %s\n", map[bool]string{true: "YOLO", false: "普通"}[config.YoloMode]))
+    mode := map[bool]string{true: "YOLO", false: "普通"}[config.YoloMode]
+    tab.appendOutput(fmt.Sprintf("模式: %s\n", mode))
     tab.statusLabel.SetText("运行中...")
     tab.appendOutput("终端已启动，准备接收命令\n\n")
 }
@@ -281,5 +284,5 @@ func (tab *TerminalTab) onStartTerminal() {
 
 func (tab *TerminalTab) onStopTerminal() { if tab.running { tab.stopTerminal() } }
 func (tab *TerminalTab) onClearOutput()   { tab.outputArea.ParseMarkdown(""); tab.outputArea.Refresh(); tab.appendOutput("已清空输出\n") }
-func (tab *TerminalTab) onTerminalSettings() { tab.appendOutput("终端设置暂未实现...\n") }
+func (tab *TerminalTab) onTerminalSettings() { tab.appendOutput("终端设置尚未实现...\n") }
 
