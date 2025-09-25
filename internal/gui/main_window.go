@@ -140,8 +140,9 @@ func (mw *MainWindow) createMainLayout() *fyne.Container {
     leftPanel := container.NewBorder(nil, nil, nil, nil, mw.projectPanel.GetContainer())
     leftPanel.Resize(fyne.NewSize(mw.windowState.LeftPanelWidth, 0))
 
+    // 为排查 AppTabs 可能导致的交互阻塞，暂时不在顶部渲染 tab header，仅显示内容区与状态栏
     rightContent := container.NewBorder(
-        mw.terminalTabs.GetTabHeader(),
+        nil,
         mw.statusBar.GetContainer(),
         nil, nil,
         mw.terminalTabs.GetContent(),
