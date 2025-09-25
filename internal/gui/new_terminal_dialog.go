@@ -4,7 +4,6 @@ import (
     "fmt"
     "path/filepath"
     "log"
-    "fyne.io/fyne/v2/app"
 
     "fyne.io/fyne/v2"
     "fyne.io/fyne/v2/container"
@@ -141,13 +140,8 @@ func (d *NewTerminalDialog) onConfirmClicked() {
     d.Hide()
     // 将创建请求投递到下一轮 UI 事件循环，避免与对话框关闭产生竞态
     if d.onTerminalRequested != nil {
-        fyneApp := app.Current()
-        if fyneApp != nil && fyneApp.Driver() != nil {
-            fyneApp.Driver().CallOnMain(func(){ d.onTerminalRequested(proj, aiModel, false) })
-        } else {
-            // 兜底：直接调用
-            d.onTerminalRequested(proj, aiModel, false)
-        }
+        // 直接调用回调；已先 Hide() 避免对话框遮罩阻塞
+        d.onTerminalRequested(proj, aiModel, false)
     } else {
         log.Printf("[NewTerminalDialog] onTerminalRequested is nil")
     }

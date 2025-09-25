@@ -5,11 +5,17 @@ FROM golang:1.23-bullseye AS cross
 WORKDIR /app
 
 # Install build dependencies for Windows cross-compilation
-# Note: For Fyne GUI on Windows, we need different dependencies
-RUN apt-get update && apt-get install -y \
-    gcc-mingw-w64 \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+# Note: Network on some hosts (e.g. corporate/China networks) may fail DNS to deb.debian.org
+# Add retries, fallback DNS, and optional mirror support via build-arg APT_MIRROR
+ARG APT_MIRROR=deb.debian.org
+RUN set -eux; \
+    echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80retries; \
+    sed -i "s|deb.debian.org|${APT_MIRROR}|g" /etc/apt/sources.list; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      gcc-mingw-w64 \
+      pkg-config; \
+    rm -rf /var/lib/apt/lists/*
 
 # Ensure Go is on PATH (normally set by the base image)
 ENV PATH=/usr/local/go/bin:${PATH}
