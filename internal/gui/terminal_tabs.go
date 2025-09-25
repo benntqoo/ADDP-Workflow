@@ -27,7 +27,7 @@ type TerminalTabContainer struct {
     tabs        map[string]*TerminalTab
     activeTabID string
     nextTabID   int
-    mutex       sync.RWMutex
+    mutex       sync.RWMutex // retained but not used to avoid UI deadlocks
     updating    bool
 
     // 回调：请求新建终端对话框
@@ -68,7 +68,8 @@ func (tc *TerminalTabContainer) initializeUI() {
     tc.addNewTabButton()
     tc.tabHeader = container.NewBorder(nil, nil, nil, nil, tc.tabContainer)
     tc.content = container.NewMax()
-    tc.tabContainer.OnChanged = tc.onTabChanged
+    // 暂停 AppTabs 的 OnChanged 回调，避免在某些环境下递归卡死
+    tc.tabContainer.OnChanged = nil
 }
 
 func (tc *TerminalTabContainer) addNewTabButton() {
@@ -90,8 +91,7 @@ func (tc *TerminalTabContainer) addNewTabButton() {
 // CreateTab 创建新的终端标签页
 func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.TerminalConfig, proj project.ProjectConfig) *TerminalTab {
     log.Printf("[TerminalTabs] CreateTab name=%s type=%s", name, termConfig.Type)
-    tc.mutex.Lock()
-    defer tc.mutex.Unlock()
+    // 不加锁，所有 UI 变更在主线程进行，避免死锁
 
     tabID := fmt.Sprintf("tab_%d", tc.nextTabID)
     tc.nextTabID++
@@ -150,24 +150,17 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
 
 func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
     log.Printf("[TerminalTabs] SetActiveTab id=%s", tabID)
-    tc.mutex.Lock()
-    if tc.updating { tc.mutex.Unlock(); return }
+    if tc.updating { return }
     tc.updating = true
-    // 先复制引用，尽快释放锁，避免阻塞 UI
     tab, ok := tc.tabs[tabID]
-    tc.mutex.Unlock()
     if !ok { tc.updating = false; return }
 
     // 更新当前激活状态（不再在这里选择头部索引，避免递归）
-    tc.mutex.Lock()
     if tc.activeTabID != "" {
-        if prev := tc.tabs[tc.activeTabID]; prev != nil {
-            prev.active = false
-        }
+        if prev := tc.tabs[tc.activeTabID]; prev != nil { prev.active = false }
     }
     tc.activeTabID = tabID
     tab.active = true
-    tc.mutex.Unlock()
     tc.content.Objects = []fyne.CanvasObject{tab.GetContent()}
     tc.content.Refresh()
     // 如需同步头部选中，可在不触发 OnChanged 的条件下处理；当前避免递归触发
@@ -187,7 +180,7 @@ func (tc *TerminalTabContainer) GetTabHeader() *fyne.Container { return tc.tabHe
 func (tc *TerminalTabContainer) GetContent() *fyne.Container  { return tc.content }
 
 func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
-    log.Printf("[TerminalTabs] onTabChanged -> %s", tabItem.Text)
+    log.Printf("[TerminalTabs] onTabChanged -> %s (disabled)", tabItem.Text)
     // 用户点击的选项卡切换；不要在此再次调用 SelectTabIndex 以避免递归
     if tc.updating { return }
     for id, t := range tc.tabs {
