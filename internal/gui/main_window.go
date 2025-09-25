@@ -246,6 +246,7 @@ func (mw *MainWindow) onAboutClicked() {
 
 // 缁堢鍒涘缓
 func (mw *MainWindow) createNewTerminal(proj project.ProjectConfig, aiModel project.AIModelType) *TerminalTab {
+    log.Printf("[MainWindow] createNewTerminal name=%s path=%s model=%s yolo=%t", proj.Name, proj.Path, aiModel, proj.YoloMode)
     termName := fmt.Sprintf("%s(%s)", proj.Name, aiModel.String())
     termConfig := terminal.TerminalConfig{
         Type:       mw.getTerminalType(aiModel),
@@ -258,9 +259,11 @@ func (mw *MainWindow) createNewTerminal(proj project.ProjectConfig, aiModel proj
     tab := mw.terminalTabs.CreateTab(termName, termConfig, proj)
     if tab != nil {
         mw.statusBar.SetMessage(fmt.Sprintf("宸插垱寤虹粓绔? %s", termName))
+        log.Printf("[MainWindow] tab created id=%s", tab.GetID())
         return tab
     }
     mw.statusBar.SetMessage("鍒涘缓缁堢澶辫触")
+    log.Printf("[MainWindow] failed to create terminal tab")
     return nil
 }
 

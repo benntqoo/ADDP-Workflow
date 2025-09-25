@@ -2,6 +2,7 @@ package gui
 
 import (
     "fmt"
+    "log"
     "sync"
 
     "fyne.io/fyne/v2"
@@ -88,6 +89,7 @@ func (tc *TerminalTabContainer) addNewTabButton() {
 
 // CreateTab 创建新的终端标签页
 func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.TerminalConfig, proj project.ProjectConfig) *TerminalTab {
+    log.Printf("[TerminalTabs] CreateTab name=%s type=%s", name, termConfig.Type)
     tc.mutex.Lock()
     defer tc.mutex.Unlock()
 
@@ -107,6 +109,7 @@ func (tc *TerminalTabContainer) CreateTab(name string, termConfig terminal.Termi
     tc.tabContainer.Append(appTab)
 
     tc.tabs[tabID] = tab
+    // 激活新建标签
     tc.SetActiveTab(tabID)
     return tab
 }
@@ -146,15 +149,17 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
 }
 
 func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
+    log.Printf("[TerminalTabs] SetActiveTab id=%s", tabID)
     tc.mutex.Lock()
     if tc.updating { tc.mutex.Unlock(); return }
     tc.updating = true
-    defer func(){ tc.updating = false; tc.mutex.Unlock() }()
-
+    // 先复制引用，尽快释放锁，避免阻塞 UI
     tab, ok := tc.tabs[tabID]
-    if !ok {
-        return
-    }
+    tc.mutex.Unlock()
+    if !ok { tc.updating = false; return }
+
+    // 更新当前激活状态（不再在这里选择头部索引，避免递归）
+    tc.mutex.Lock()
     if tc.activeTabID != "" {
         if prev := tc.tabs[tc.activeTabID]; prev != nil {
             prev.active = false
@@ -162,15 +167,11 @@ func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
     }
     tc.activeTabID = tabID
     tab.active = true
+    tc.mutex.Unlock()
     tc.content.Objects = []fyne.CanvasObject{tab.GetContent()}
     tc.content.Refresh()
-
-    for i := 0; i < len(tc.tabContainer.Items); i++ {
-        if tc.tabContainer.Items[i].Text == tab.name {
-            tc.tabContainer.SelectTabIndex(i)
-            break
-        }
-    }
+    // 如需同步头部选中，可在不触发 OnChanged 的条件下处理；当前避免递归触发
+    tc.updating = false
 }
 
 func (tc *TerminalTabContainer) GetActiveTab() *TerminalTab {
@@ -186,6 +187,7 @@ func (tc *TerminalTabContainer) GetTabHeader() *fyne.Container { return tc.tabHe
 func (tc *TerminalTabContainer) GetContent() *fyne.Container  { return tc.content }
 
 func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
+    log.Printf("[TerminalTabs] onTabChanged -> %s", tabItem.Text)
     // 用户点击的选项卡切换；不要在此再次调用 SelectTabIndex 以避免递归
     if tc.updating { return }
     for id, t := range tc.tabs {
@@ -241,6 +243,7 @@ func (tab *TerminalTab) initializeUI() {
 }
 
 func (tab *TerminalTab) startTerminal(config terminal.TerminalConfig) {
+    log.Printf("[TerminalTabs] startTerminal type=%s dir=%s yolo=%t", config.Type, config.WorkingDir, config.YoloMode)
     tab.running = true
     tab.appendOutput(fmt.Sprintf("正在启动 %s...\n", config.Type))
     tab.appendOutput(fmt.Sprintf("工作目录: %s\n", config.WorkingDir))
