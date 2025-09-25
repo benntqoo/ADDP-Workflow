@@ -4,6 +4,7 @@ import (
     "fmt"
     "path/filepath"
     "log"
+    "fyne.io/fyne/v2/app"
 
     "fyne.io/fyne/v2"
     "fyne.io/fyne/v2/container"
@@ -138,8 +139,15 @@ func (d *NewTerminalDialog) onConfirmClicked() {
     log.Printf("[NewTerminalDialog] confirm path=%s model=%s yolo=%t", proj.Path, proj.AIModel, proj.YoloMode)
     // 先关闭对话框，避免遮罩未关闭造成界面看似“无响应”
     d.Hide()
+    // 将创建请求投递到下一轮 UI 事件循环，避免与对话框关闭产生竞态
     if d.onTerminalRequested != nil {
-        d.onTerminalRequested(proj, aiModel, false)
+        fyneApp := app.Current()
+        if fyneApp != nil && fyneApp.Driver() != nil {
+            fyneApp.Driver().CallOnMain(func(){ d.onTerminalRequested(proj, aiModel, false) })
+        } else {
+            // 兜底：直接调用
+            d.onTerminalRequested(proj, aiModel, false)
+        }
     } else {
         log.Printf("[NewTerminalDialog] onTerminalRequested is nil")
     }

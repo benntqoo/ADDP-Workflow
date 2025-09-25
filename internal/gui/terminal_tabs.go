@@ -27,6 +27,7 @@ type TerminalTabContainer struct {
     activeTabID string
     nextTabID   int
     mutex       sync.RWMutex
+    updating    bool
 
     // 回调：请求新建终端对话框
     onRequestNew func()
@@ -146,7 +147,9 @@ func (tc *TerminalTabContainer) RemoveTab(tabID string) {
 
 func (tc *TerminalTabContainer) SetActiveTab(tabID string) {
     tc.mutex.Lock()
-    defer tc.mutex.Unlock()
+    if tc.updating { tc.mutex.Unlock(); return }
+    tc.updating = true
+    defer func(){ tc.updating = false; tc.mutex.Unlock() }()
 
     tab, ok := tc.tabs[tabID]
     if !ok {
@@ -184,6 +187,7 @@ func (tc *TerminalTabContainer) GetContent() *fyne.Container  { return tc.conten
 
 func (tc *TerminalTabContainer) onTabChanged(tabItem *container.TabItem) {
     // 用户点击的选项卡切换；不要在此再次调用 SelectTabIndex 以避免递归
+    if tc.updating { return }
     for id, t := range tc.tabs {
         if t.name == tabItem.Text {
             tc.activeTabID = id
@@ -285,4 +289,3 @@ func (tab *TerminalTab) onStartTerminal() {
 func (tab *TerminalTab) onStopTerminal() { if tab.running { tab.stopTerminal() } }
 func (tab *TerminalTab) onClearOutput()   { tab.outputArea.ParseMarkdown(""); tab.outputArea.Refresh(); tab.appendOutput("已清空输出\n") }
 func (tab *TerminalTab) onTerminalSettings() { tab.appendOutput("终端设置尚未实现...\n") }
-
